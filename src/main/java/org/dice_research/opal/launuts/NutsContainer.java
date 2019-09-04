@@ -1,5 +1,8 @@
 package org.dice_research.opal.launuts;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Container for NUTS data.
  * 
@@ -7,12 +10,25 @@ package org.dice_research.opal.launuts;
  */
 public class NutsContainer {
 
-	public String key;
+	public static String uriToNutsCode(String uri) {
+		if (uri.startsWith(Vocabularies.NS_NUTS_CODE)) {
+			return uri.substring(Vocabularies.NS_NUTS_CODE.length());
+		} else {
+			throw new RuntimeException("Wrong URI: " + uri);
+		}
+	}
+
 	public String prefLabel;
 	public String notation;
 
+	public String replacedBy;
+	public Set<String> replaces = new HashSet<String>();
+
+	public String mergedInto;
+	public Set<String> mergedFrom = new HashSet<String>();
+
 	public String getUri() {
-		return Vocabularies.NS_NUTS + key;
+		return Vocabularies.NS_NUTS_CODE + notation;
 	}
 
 	@Override

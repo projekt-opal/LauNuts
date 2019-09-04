@@ -3,6 +3,7 @@ package org.dice_research.opal.launuts;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,8 +19,8 @@ public class ModelBuilder {
 	private Model model = ModelFactory.createDefaultModel();
 	private Map<String, Resource> nuts3map = new HashMap<String, Resource>();
 
-	public ModelBuilder addNuts(List<NutsContainer> nutsList) {
-		for (NutsContainer container : nutsList) {
+	public ModelBuilder addNuts(Collection<NutsContainer> nutsCollection) {
+		for (NutsContainer container : nutsCollection) {
 			Resource nuts = getModel().createResource(container.getUri());
 			getModel().add(nuts, Vocabularies.PROP_NOTATION, getModel().createLiteral(container.notation));
 			getModel().add(nuts, Vocabularies.PROP_PREFLABEL, getModel().createLiteral(container.prefLabel));

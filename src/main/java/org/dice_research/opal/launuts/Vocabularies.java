@@ -11,13 +11,20 @@ import org.apache.jena.rdf.model.ResourceFactory;
  */
 public abstract class Vocabularies {
 
+	public static final String NS_DCTERMS = "http://purl.org/dc/terms/";
+	public static final Property PROP_REPLACES = ResourceFactory.createProperty(NS_DCTERMS, "replaces");
+	public static final Property PROP_ISREPLACEDBY = ResourceFactory.createProperty(NS_DCTERMS, "isReplacedBy");
+
 	public static final String NS_SKOS = "http://www.w3.org/2004/02/skos/core#";
 	public static final Property PROP_NARROWER = ResourceFactory.createProperty(NS_SKOS, "narrower");
 	public static final Property PROP_PREFLABEL = ResourceFactory.createProperty(NS_SKOS, "prefLabel");
 	public static final Property PROP_NOTATION = ResourceFactory.createProperty(NS_SKOS, "notation");
 
 	public static final String NS_NUTS = "http://data.europa.eu/nuts/";
-	public static final Resource RES_DE = ResourceFactory.createResource(NS_NUTS + "code/DE");
+	public static final String NS_NUTS_CODE = NS_NUTS + "code/";
+	public static final Resource RES_DE = ResourceFactory.createResource(NS_NUTS_CODE + "DE");
+	public static final Property PROP_MERGEDFROM = ResourceFactory.createProperty(NS_NUTS, "mergedFrom");
+	public static final Property PROP_MERGEDINTO = ResourceFactory.createProperty(NS_NUTS, "mergedInto");
 
 	public static final String NS_LAU = "http://projekt-opal.de/lau/";
 }

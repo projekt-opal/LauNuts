@@ -17,6 +17,9 @@ import java.io.File;
  */
 public class Main {
 
+	private static final boolean PRINT_LAU = false;
+	private static final boolean PRINT_NUTS = false;
+
 	public static void main(String[] args) throws Exception {
 		new Main().configure(args).run();
 	}
@@ -25,18 +28,8 @@ public class Main {
 	public File nutsRdfFile;
 	public File outTurtleFile;
 
-	public void run() throws Exception {
-		ModelBuilder modelBuilder = new ModelBuilder()
-
-				.addNuts(new NutsRdfExtractor(nutsRdfFile.getPath()).extract())
-
-				.addLau(new LauCsvParser().parse(lauCsvFile.getPath()))
-
-				.writeModel(outTurtleFile);
-
-		System.out.println("Size of generated model: " + modelBuilder.getModel().size());
-		System.out.println("File: " + outTurtleFile);
-	}
+	private LauCsvParser lauCsvParser;
+	private NutsRdfExtractor nutsRdfExtractor;
 
 	private Main configure(String[] args) {
 		if (args.length < 3) {
@@ -59,5 +52,48 @@ public class Main {
 		outTurtleFile = new File(args[2]);
 
 		return this;
+	}
+
+	private void run() throws Exception {
+
+		// Extract NUTS RDF
+		nutsRdfExtractor = new NutsRdfExtractor(nutsRdfFile.getPath()).extractNuts();
+
+		// Parse LAU CSV
+		lauCsvParser = new LauCsvParser().parse(lauCsvFile.getPath());
+
+		// Create new model
+		ModelBuilder modelBuilder = new ModelBuilder()
+
+				.addNuts(nutsRdfExtractor.getNutsIndex().values())
+
+				.addLau(lauCsvParser.getLauList())
+
+				.writeModel(outTurtleFile);
+
+		// Print results
+		printNuts();
+		printLau();
+		System.out.println();
+		System.out.println("Size (statements) of generated model: " + modelBuilder.getModel().size());
+		System.out.println("Generated file: " + outTurtleFile);
+	}
+
+	private void printLau() {
+		if (PRINT_LAU) {
+			for (LauContainer lau : lauCsvParser.getLauList()) {
+				System.out.println(lau);
+			}
+			System.out.println(lauCsvParser.getLauList().size());
+		}
+	}
+
+	private void printNuts() {
+		if (PRINT_NUTS) {
+			for (NutsContainer nuts : nutsRdfExtractor.getNutsIndex().values()) {
+				System.out.println(nuts);
+			}
+			System.out.println(nutsRdfExtractor.getNutsIndex().size());
+		}
 	}
 }

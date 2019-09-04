@@ -1,25 +1,31 @@
 package org.dice_research.opal.launuts;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.NodeIterator;
+import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.RDFDataMgr;
 
 /**
  * Extracts data from NUTS RDF.
  * 
- * Creates map of NUTS3 data, which can be received via {@link #getNuts3Map()}.
- * 
  * @author Adrian Wilke
  */
 public class NutsRdfExtractor {
 
+	private static final boolean PRINT_REPLACEMENT_INFO = true;
+
 	private Model model;
+	private Map<String, NutsContainer> nutsIndex = new HashMap<String, NutsContainer>();
+	private Map<String, String> replacedBy = new HashMap<String, String>();
+	private Map<String, String> mergedInto = new HashMap<String, String>();
 
 	/**
 	 * Loads NUTS RDF file to model.
@@ -31,26 +37,55 @@ public class NutsRdfExtractor {
 	/**
 	 * Extracts RDF data into container objects.
 	 */
-	public List<NutsContainer> extract() throws Exception {
-		List<NutsContainer> list = new LinkedList<NutsContainer>();
-
+	public NutsRdfExtractor extractNuts() throws Exception {
+		NutsContainer container;
 		List<Resource> nuts1 = getNarrower(Vocabularies.RES_DE);
 		for (Resource res1 : nuts1) {
-			list.add(createContainer(res1));
+			container = createContainer(replaceDeprecated(res1));
+			nutsIndex.put(container.notation, container);
 
 			List<Resource> nuts2 = getNarrower(res1);
 			for (Resource res2 : nuts2) {
-				list.add(createContainer(res2));
+				container = createContainer(replaceDeprecated(res2));
+				nutsIndex.put(container.notation, container);
 
 				List<Resource> nuts3 = getNarrower(res2);
 				for (Resource res3 : nuts3) {
-					list.add(createContainer(res3));
+					container = createContainer(replaceDeprecated(res3));
+					nutsIndex.put(container.notation, container);
 				}
-
 			}
 		}
+		return this;
+	}
 
-		return list;
+	/**
+	 * If NUTS is replaced by another or merged into another, the resource is also
+	 * replaced.
+	 */
+	private Resource replaceDeprecated(Resource resource) {
+		NodeIterator nodeIterator = model.listObjectsOfProperty(resource, Vocabularies.PROP_MERGEDINTO);
+		if (nodeIterator.hasNext()) {
+			Resource newResource = nodeIterator.next().asResource();
+			if (PRINT_REPLACEMENT_INFO) {
+				System.out.println("Replacing " + NutsContainer.uriToNutsCode(resource.getURI()) + " with "
+						+ NutsContainer.uriToNutsCode(newResource.getURI()));
+			}
+			return newResource;
+		}
+
+		nodeIterator = model.listObjectsOfProperty(resource, Vocabularies.PROP_ISREPLACEDBY);
+		if (nodeIterator.hasNext()) {
+			Resource newResource = nodeIterator.next().asResource();
+			if (PRINT_REPLACEMENT_INFO) {
+				System.out.println("Replacing " + NutsContainer.uriToNutsCode(resource.getURI()) + " with "
+						+ NutsContainer.uriToNutsCode(newResource.getURI()));
+			}
+			return newResource;
+		}
+
+		return resource;
+
 	}
 
 	/**
@@ -58,13 +93,7 @@ public class NutsRdfExtractor {
 	 */
 	NutsContainer createContainer(Resource resource) throws Exception {
 		NutsContainer container = new NutsContainer();
-
 		String uri = resource.getURI().toString();
-		if (uri.startsWith(Vocabularies.NS_NUTS)) {
-			container.key = uri.substring(Vocabularies.NS_NUTS.length());
-		} else {
-			throw new Exception("Unexpected URI: " + uri);
-		}
 
 		NodeIterator nodeIterator = model.listObjectsOfProperty(resource, Vocabularies.PROP_NOTATION);
 		if (nodeIterator.hasNext()) {
@@ -80,6 +109,40 @@ public class NutsRdfExtractor {
 		}
 		if (nodeIterator.hasNext()) {
 			System.err.println("Multiple prefLabels for " + uri);
+		}
+
+		// Replaced NUTS
+
+		nodeIterator = model.listObjectsOfProperty(resource, Vocabularies.PROP_REPLACES);
+		while (nodeIterator.hasNext()) {
+			container.replaces.add(NutsContainer.uriToNutsCode(nodeIterator.next().toString()));
+		}
+
+		ResIterator resIterator = model.listSubjectsWithProperty(Vocabularies.PROP_REPLACES, resource);
+		if (resIterator.hasNext()) {
+			String replacebByCode = NutsContainer.uriToNutsCode(resIterator.next().asResource().toString());
+			container.replacedBy = replacebByCode;
+			replacedBy.put(container.notation, replacebByCode);
+		}
+		if (resIterator.hasNext()) {
+			System.err.println("Multiple replacements for " + uri);
+		}
+
+		// Merged NUTS
+
+		nodeIterator = model.listObjectsOfProperty(resource, Vocabularies.PROP_MERGEDFROM);
+		while (nodeIterator.hasNext()) {
+			container.mergedFrom.add(NutsContainer.uriToNutsCode(nodeIterator.next().toString()));
+		}
+
+		resIterator = model.listSubjectsWithProperty(Vocabularies.PROP_MERGEDFROM, resource);
+		if (resIterator.hasNext()) {
+			String mergedIntoCode = NutsContainer.uriToNutsCode(resIterator.next().asResource().toString());
+			container.mergedInto = mergedIntoCode;
+			mergedInto.put(container.notation, mergedIntoCode);
+		}
+		if (resIterator.hasNext()) {
+			System.err.println("Multiple merges for " + uri);
 		}
 
 		return container;
@@ -107,5 +170,21 @@ public class NutsRdfExtractor {
 	private void loadModel(String nutsRdfFile) {
 		this.model = ModelFactory.createDefaultModel();
 		RDFDataMgr.read(this.model, new File(nutsRdfFile).toURI().toString());
+	}
+
+	public NutsContainer getNuts(String key) {
+		return nutsIndex.get(key);
+	}
+
+	public Map<String, NutsContainer> getNutsIndex() {
+		return nutsIndex;
+	}
+
+	public Map<String, String> getReplacedBy() {
+		return replacedBy;
+	}
+
+	public Map<String, String> getMergedInto() {
+		return mergedInto;
 	}
 }

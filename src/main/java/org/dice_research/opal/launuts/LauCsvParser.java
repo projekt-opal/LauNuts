@@ -21,12 +21,13 @@ public class LauCsvParser {
 	public final static String HEADER_LAUNAMENATIONAL = "LAU NAME NATIONAL";
 	public final static String HEADER_NUTS3CODE = "NUTS 3 CODE";
 
+	private List<LauContainer> lauList = new LinkedList<LauContainer>();
+
 	private CSVFormat getCsvFormat() {
 		return CSVFormat.EXCEL.withHeader();
 	}
 
-	public List<LauContainer> parse(String file) throws IOException {
-		List<LauContainer> list = new LinkedList<LauContainer>();
+	public LauCsvParser parse(String file) throws IOException {
 		Reader reader = new FileReader(file);
 		Iterable<CSVRecord> records = getCsvFormat().parse(reader);
 		for (CSVRecord record : records) {
@@ -35,8 +36,12 @@ public class LauCsvParser {
 			container.lauNameLatin = record.get(HEADER_LAUNAMELATIN);
 			container.lauNameNational = record.get(HEADER_LAUNAMENATIONAL);
 			container.nuts3code = record.get(HEADER_NUTS3CODE);
-			list.add(container);
+			lauList.add(container);
 		}
-		return list;
+		return this;
+	}
+
+	public List<LauContainer> getLauList() {
+		return lauList;
 	}
 }
