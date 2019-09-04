@@ -26,7 +26,7 @@ public class Main {
 
 	public File lauCsvFile;
 	public File nutsRdfFile;
-	public File outTurtleFile;
+	public File outDirectory;
 
 	private LauCsvParser lauCsvParser;
 	private NutsRdfExtractor nutsRdfExtractor;
@@ -49,7 +49,10 @@ public class Main {
 			System.exit(1);
 		}
 
-		outTurtleFile = new File(args[2]);
+		outDirectory = new File(args[2]);
+		if (!outDirectory.exists()) {
+			outDirectory.mkdirs();
+		}
 
 		return this;
 	}
@@ -69,14 +72,14 @@ public class Main {
 
 				.addLau(lauCsvParser.getLauList())
 
-				.writeModel(outTurtleFile);
+				.writeModel(outDirectory);
 
 		// Print results
 		printNuts();
 		printLau();
 		System.out.println();
 		System.out.println("Size (statements) of generated model: " + modelBuilder.getModel().size());
-		System.out.println("Generated file: " + outTurtleFile);
+		System.out.println("Output directory: " + outDirectory);
 	}
 
 	private void printLau() {

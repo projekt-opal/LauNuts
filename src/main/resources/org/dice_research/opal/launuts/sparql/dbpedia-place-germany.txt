@@ -1,0 +1,10 @@
+select distinct ?place ?labelde ?labelen ?lat ?long where {
+?place <http://dbpedia.org/ontology/country> <http://dbpedia.org/resource/Germany> .
+?place a <http://dbpedia.org/ontology/Place> .
+OPTIONAL { ?place <http://www.w3.org/2000/01/rdf-schema#label> ?labelde } .
+OPTIONAL { ?place <http://www.w3.org/2000/01/rdf-schema#label> ?labelen } .
+OPTIONAL { ?place <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat } .
+OPTIONAL { ?place <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?long } .
+FILTER (lang(?labelde) = 'de') .
+FILTER (lang(?labelen) = 'en')
+}
