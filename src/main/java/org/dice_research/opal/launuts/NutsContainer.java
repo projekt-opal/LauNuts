@@ -18,8 +18,9 @@ public class NutsContainer {
 		}
 	}
 
-	public String prefLabel;
+	public Set<String> prefLabel = new HashSet<String>();
 	public String notation;
+	public NutsContainer parent;
 
 	public String replacedBy;
 	public Set<String> replaces = new HashSet<String>();

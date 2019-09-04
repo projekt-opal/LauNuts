@@ -7,8 +7,6 @@ package org.dice_research.opal.launuts;
  */
 public class LauContainer {
 
-	public static final String PREFIX_DE = "DE";
-
 	public String lauCode;
 	public String lauNameLatin;
 	public String lauNameNational;
@@ -24,7 +22,7 @@ public class LauContainer {
 	}
 
 	public String getUri() {
-		return Vocabularies.NS_LAU + PREFIX_DE + lauCode;
+		return Vocabularies.NS_LAU_DE + lauCode;
 	}
 
 	@Override

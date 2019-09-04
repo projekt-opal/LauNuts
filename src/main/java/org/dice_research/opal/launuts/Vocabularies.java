@@ -7,6 +7,8 @@ import org.apache.jena.rdf.model.ResourceFactory;
 /**
  * Used RDF vocabularies.
  * 
+ * Also see org.apache.jena.vocabulary.*
+ * 
  * @author Adrian Wilke
  */
 public abstract class Vocabularies {
@@ -22,9 +24,10 @@ public abstract class Vocabularies {
 
 	public static final String NS_NUTS = "http://data.europa.eu/nuts/";
 	public static final String NS_NUTS_CODE = NS_NUTS + "code/";
-	public static final Resource RES_DE = ResourceFactory.createResource(NS_NUTS_CODE + "DE");
 	public static final Property PROP_MERGEDFROM = ResourceFactory.createProperty(NS_NUTS, "mergedFrom");
 	public static final Property PROP_MERGEDINTO = ResourceFactory.createProperty(NS_NUTS, "mergedInto");
+	public static final Resource RES_DE = ResourceFactory.createResource(NS_NUTS_CODE + "DE");
 
 	public static final String NS_LAU = "http://projekt-opal.de/lau/";
+	public static final String NS_LAU_DE = "http://projekt-opal.de/lau/DE/";
 }

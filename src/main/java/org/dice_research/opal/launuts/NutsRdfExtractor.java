@@ -38,21 +38,26 @@ public class NutsRdfExtractor {
 	 * Extracts RDF data into container objects.
 	 */
 	public NutsRdfExtractor extractNuts() throws Exception {
-		NutsContainer container;
+		NutsContainer container0 = createContainer(replaceDeprecated(Vocabularies.RES_DE));
+		nutsIndex.put(container0.notation, container0);
+
 		List<Resource> nuts1 = getNarrower(Vocabularies.RES_DE);
 		for (Resource res1 : nuts1) {
-			container = createContainer(replaceDeprecated(res1));
-			nutsIndex.put(container.notation, container);
+			NutsContainer container1 = createContainer(replaceDeprecated(res1));
+			container1.parent = container0;
+			nutsIndex.put(container1.notation, container1);
 
 			List<Resource> nuts2 = getNarrower(res1);
 			for (Resource res2 : nuts2) {
-				container = createContainer(replaceDeprecated(res2));
-				nutsIndex.put(container.notation, container);
+				NutsContainer container2 = createContainer(replaceDeprecated(res2));
+				container2.parent = container1;
+				nutsIndex.put(container2.notation, container2);
 
 				List<Resource> nuts3 = getNarrower(res2);
 				for (Resource res3 : nuts3) {
-					container = createContainer(replaceDeprecated(res3));
-					nutsIndex.put(container.notation, container);
+					NutsContainer container3 = createContainer(replaceDeprecated(res3));
+					container3.parent = container2;
+					nutsIndex.put(container3.notation, container3);
 				}
 			}
 		}
@@ -104,11 +109,8 @@ public class NutsRdfExtractor {
 		}
 
 		nodeIterator = model.listObjectsOfProperty(resource, Vocabularies.PROP_PREFLABEL);
-		if (nodeIterator.hasNext()) {
-			container.prefLabel = nodeIterator.next().asLiteral().toString();
-		}
-		if (nodeIterator.hasNext()) {
-			System.err.println("Multiple prefLabels for " + uri);
+		while (nodeIterator.hasNext()) {
+			container.prefLabel.add(nodeIterator.next().asLiteral().toString());
 		}
 
 		// Replaced NUTS
