@@ -3,10 +3,10 @@ package org.dice_research.opal.launuts;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.query.QueryExecution;
@@ -22,30 +22,18 @@ import org.apache.jena.rdfconnection.RDFConnectionRemote;
  */
 public class DbpediaRemote {
 
-	public static final String labelsFilename = "dbpediaLabels.txt";
-
 	private RDFConnection rdfConnection;
-	private List<DbpediaPlaceContainer> dbpediaPlaces = new LinkedList<DbpediaPlaceContainer>();
+	private List<DbpediaPlaceContainer> places = new LinkedList<DbpediaPlaceContainer>();
 
-	public static void main(String[] args) throws IOException {
-		if (args.length < 1) {
-			System.err.println("Please provide arguments.");
-			System.exit(1);
-		}
-
-		File labelsFile = new File(args[0]);
-		labelsFile.getParentFile().mkdirs();
-
-		new DbpediaRemote().connect().getPlacesInGermany().exportLabels(labelsFile);
-		System.out.println("Labels file: " + labelsFile.getPath());
-	}
-
-	private DbpediaRemote getPlacesInGermany() throws IOException {
+	private DbpediaRemote queryPlacesInGermany() throws IOException {
+		// TODO return max 10,000.
+		// TODO lat lon non optional
+		connect();
 		ResultSet resultSet = execSelect("dbpedia-place-germany");
 		while (resultSet.hasNext()) {
 			QuerySolution querySolution = resultSet.next();
 			DbpediaPlaceContainer container = new DbpediaPlaceContainer();
-			container.place = querySolution.getResource("place").getURI().toString();
+			container.uri = querySolution.getResource("place").getURI().toString();
 			if (querySolution.getLiteral("labelde") != null)
 				container.labelDe = querySolution.getLiteral("labelde").getLexicalForm();
 			if (querySolution.getLiteral("labelen") != null)
@@ -54,7 +42,7 @@ public class DbpediaRemote {
 				container.lat = querySolution.getLiteral("lat").getFloat();
 			if (querySolution.getLiteral("long") != null)
 				container.lon = querySolution.getLiteral("long").getFloat();
-			dbpediaPlaces.add(container);
+			places.add(container);
 		}
 		return this;
 	}
@@ -70,24 +58,59 @@ public class DbpediaRemote {
 	}
 
 	private DbpediaRemote connect() {
-		rdfConnection = RDFConnectionRemote.create().destination("http://dbpedia.org/sparql").build();
+		if (rdfConnection == null) {
+			rdfConnection = RDFConnectionRemote.create().destination("http://dbpedia.org/sparql").build();
+		}
 		return this;
 	}
 
-	public List<DbpediaPlaceContainer> getDbpediaPlaces() {
-		return dbpediaPlaces;
+	public List<DbpediaPlaceContainer> getPlaces() throws IOException {
+		if (places.isEmpty()) {
+			queryPlacesInGermany();
+		}
+		return places;
 	}
 
-	private void exportLabels(File labelsFile) throws IOException {
-		Set<String> labels = new HashSet<String>();
-		for (DbpediaPlaceContainer container : dbpediaPlaces) {
-			if (container.labelDe != null) {
-				labels.add(container.labelDe);
-			}
+	// TODO eventually remove
+	public Map<String, String> getLabelUriMap() throws IOException {
+		if (places.isEmpty()) {
+			queryPlacesInGermany();
+		}
+
+		Map<String, String> labels = new HashMap<String, String>();
+
+		// German labels have higher priority and replace englisch labels
+		for (DbpediaPlaceContainer container : places) {
 			if (container.labelEn != null) {
-				labels.add(container.labelEn);
+				labels.put(container.labelEn, container.uri);
+			}
+			if (container.labelDe != null) {
+				labels.put(container.labelDe, container.uri);
 			}
 		}
-		FileUtils.writeLines(labelsFile, labels);
+
+		return labels;
+	}
+
+	// TODO eventually remove
+	public Map<String, List<String>> getUrisToLabels() throws Exception {
+		if (places.isEmpty()) {
+			queryPlacesInGermany();
+		}
+
+		Map<String, List<String>> urisToLabels = new HashMap<String, List<String>>(places.size());
+		for (DbpediaPlaceContainer container : places) {
+			List<String> list = new LinkedList<String>();
+			if (container.labelDe != null) {
+				list.add(container.labelDe);
+			}
+			if (container.labelEn != null) {
+				if (!list.contains(container.labelEn)) {
+					list.add(container.labelEn);
+				}
+			}
+			urisToLabels.put(container.uri, list);
+		}
+		return urisToLabels;
 	}
 }

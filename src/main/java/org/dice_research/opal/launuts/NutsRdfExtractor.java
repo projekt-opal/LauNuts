@@ -189,4 +189,22 @@ public class NutsRdfExtractor {
 	public Map<String, String> getMergedInto() {
 		return mergedInto;
 	}
+
+	// TODO eventually remove
+	public Map<String, String> getLabelUriMap() throws Exception {
+		if (nutsIndex.isEmpty()) {
+			extractNuts();
+		}
+
+		Map<String, String> labels = new HashMap<String, String>();
+		for (NutsContainer container : nutsIndex.values()) {
+			if (container.prefLabel != null) {
+				for (String label : container.prefLabel) {
+					labels.put(label, container.getUri());
+				}
+			}
+		}
+		return labels;
+	}
+
 }

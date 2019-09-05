@@ -1,11 +1,15 @@
 package org.dice_research.opal.launuts;
 
+import java.io.Serializable;
+
 /**
  * Container for LAU data.
  * 
  * @author Adrian Wilke
  */
-public class LauContainer {
+public class LauContainer implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	public String lauCode;
 	public String lauNameLatin;

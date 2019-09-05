@@ -1,11 +1,15 @@
 package org.dice_research.opal.launuts;
 
-public class DbpediaPlaceContainer {
+import java.io.Serializable;
 
-	public String place;
+public class DbpediaPlaceContainer implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	public String uri;
 	public String labelDe;
 	public String labelEn;
 	public float lat;
 	public float lon;
-	
+
 }

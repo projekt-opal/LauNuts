@@ -105,7 +105,9 @@ public class ModelBuilder {
 	}
 
 	public ModelBuilder writeModel(File outputDirectory) throws IOException {
-		FileOutputStream outputStream = new FileOutputStream(new File(outputDirectory, "launuts.ttl"));
+		File file = new File(outputDirectory, "launuts.ttl");
+		file.getParentFile().mkdirs();
+		FileOutputStream outputStream = new FileOutputStream(file);
 		outputStream.write(getTurtleComment().getBytes());
 		RDFDataMgr.write(outputStream, model, Lang.TURTLE);
 		return this;

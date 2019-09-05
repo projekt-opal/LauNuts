@@ -1,5 +1,6 @@
 package org.dice_research.opal.launuts;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -8,7 +9,9 @@ import java.util.Set;
  * 
  * @author Adrian Wilke
  */
-public class NutsContainer {
+public class NutsContainer implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 
 	public static String uriToNutsCode(String uri) {
 		if (uri.startsWith(Vocabularies.NS_NUTS_CODE)) {
