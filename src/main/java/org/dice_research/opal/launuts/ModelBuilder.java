@@ -33,7 +33,6 @@ public class ModelBuilder {
 		model.setNsPrefix("lau", Vocabularies.NS_LAU);
 		model.setNsPrefix("nuts", Vocabularies.NS_NUTS);
 		model.setNsPrefix("skos", Vocabularies.NS_SKOS);
-		model.setNsPrefix("geo", Vocabularies.NS_GEO);
 		model.setNsPrefix("xsd", Vocabularies.NS_XSD);
 		model.setNsPrefix("ogc", Vocabularies.NS_OGC);
 

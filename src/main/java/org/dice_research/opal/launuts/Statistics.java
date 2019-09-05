@@ -7,6 +7,8 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 
+import io.github.galbiston.geosparql_jena.implementation.vocabulary.Geo;
+
 public class Statistics {
 
 	private Model model;
@@ -42,7 +44,7 @@ public class Statistics {
 	private void count(Resource resource, int level) {
 		counterNodes++;
 
-		if (resource.hasProperty(Vocabularies.PROP_LAT) && resource.hasProperty(Vocabularies.PROP_LONG)) {
+		if (resource.hasProperty(Geo.HAS_GEOMETRY_PROP)) {
 			counterGeo++;
 		} else {
 			counterNoGeo++;
