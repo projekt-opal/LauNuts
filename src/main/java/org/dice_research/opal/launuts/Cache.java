@@ -20,8 +20,9 @@ public abstract class Cache extends Serialization {
 
 	public static List<DbpediaPlaceContainer> getDbpedia(boolean useCache) throws Exception {
 		if (useCache && Cache.FILE_DBPEDIA.exists()) {
-			System.out.println("Reading DBPEDIA from cache.");
-			return Cache.readDbpedia();
+			List<DbpediaPlaceContainer> dbpedia = Cache.readDbpedia();
+			System.out.println("Read " + dbpedia.size() + " DBPEDIA from cache.");
+			return dbpedia;
 		} else {
 			System.out.println("Computing DBPEDIA.");
 			DbpediaRemote dbpediaRemote = new DbpediaRemote();
@@ -34,8 +35,9 @@ public abstract class Cache extends Serialization {
 
 	public static List<LauContainer> getLau(boolean useCache) throws Exception {
 		if (useCache && Cache.FILE_LAU.exists()) {
-			System.out.println("Reading LAU from cache.");
-			return Cache.readLau();
+			List<LauContainer> lau = Cache.readLau();
+			System.out.println("Read " + lau.size() + " LAU from cache.");
+			return lau;
 		} else {
 			System.out.println("Computing LAU.");
 			LauCsvParser lauCsvParser = new LauCsvParser().parse(Cfg.getInstance().get(Cfg.LAU_FILE));
@@ -48,8 +50,9 @@ public abstract class Cache extends Serialization {
 
 	public static Map<String, NutsContainer> getNuts(boolean useCache) throws Exception {
 		if (useCache && Cache.FILE_NUTS.exists()) {
-			System.out.println("Reading NUTS from cache.");
-			return Cache.readNuts();
+			Map<String, NutsContainer> nuts = Cache.readNuts();
+			System.out.println("Read " + nuts.size() + " NUTS from cache.");
+			return nuts;
 		} else {
 			System.out.println("Computing NUTS.");
 			NutsRdfExtractor nutsRdfExtractor = new NutsRdfExtractor(Cfg.getInstance().get(Cfg.NUTS_FILE))
