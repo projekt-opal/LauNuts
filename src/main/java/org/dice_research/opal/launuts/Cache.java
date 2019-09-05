@@ -24,7 +24,6 @@ public abstract class Cache extends Serialization {
 			return Cache.readDbpedia();
 		} else {
 			System.out.println("Computing DBPEDIA.");
-
 			DbpediaRemote dbpediaRemote = new DbpediaRemote();
 			if (useCache) {
 				Cache.writeDbpedia(dbpediaRemote.getPlaces());

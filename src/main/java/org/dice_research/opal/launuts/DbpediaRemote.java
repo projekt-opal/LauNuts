@@ -24,13 +24,26 @@ public class DbpediaRemote {
 
 	private RDFConnection rdfConnection;
 	private List<DbpediaPlaceContainer> places = new LinkedList<DbpediaPlaceContainer>();
+	private static final int maxResults = 10000;
 
 	private DbpediaRemote queryPlacesInGermany() throws IOException {
-		// TODO return max 10,000.
-		// TODO lat lon non optional
+		int numberOfResults = maxResults;
+		int offset = 0;
+		while (numberOfResults == maxResults) {
+			numberOfResults = subQueryPlacesInGermany(offset);
+			offset += maxResults;
+		}
+		return this;
+	}
+
+	private int subQueryPlacesInGermany(int offset) throws IOException {
 		connect();
-		ResultSet resultSet = execSelect("dbpedia-place-germany");
+		String query = getSparqlQuery("dbpedia-place-germany");
+		query = query.replace("OFFSET 0", "OFFSET " + offset);
+		ResultSet resultSet = execSelect(query);
+		int counter = 0;
 		while (resultSet.hasNext()) {
+			counter++;
 			QuerySolution querySolution = resultSet.next();
 			DbpediaPlaceContainer container = new DbpediaPlaceContainer();
 			container.uri = querySolution.getResource("place").getURI().toString();
@@ -44,11 +57,11 @@ public class DbpediaRemote {
 				container.lon = querySolution.getLiteral("long").getFloat();
 			places.add(container);
 		}
-		return this;
+		return counter;
 	}
 
-	private ResultSet execSelect(String queryId) throws IOException {
-		QueryExecution queryExecution = rdfConnection.query(getSparqlQuery(queryId));
+	private ResultSet execSelect(String query) throws IOException {
+		QueryExecution queryExecution = rdfConnection.query(query);
 		return queryExecution.execSelect();
 	}
 

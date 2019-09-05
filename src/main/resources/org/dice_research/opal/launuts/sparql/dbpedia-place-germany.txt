@@ -8,3 +8,5 @@ OPTIONAL { ?place <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?long } .
 FILTER (lang(?labelde) = 'de') .
 FILTER (lang(?labelen) = 'en')
 }
+LIMIT 10000
+OFFSET 0
