@@ -27,15 +27,15 @@ public class Matcher {
 	private HashMap<String, String> lauToDbpediaMap = new HashMap<String, String>();
 	private HashMap<String, String> nutsToDbpediaMap = new HashMap<String, String>();
 
-	public HashMap<String, String> getLauToDbpedia() {
+	public Map<String, String> getLauToDbpedia() {
 		return lauToDbpediaMap;
 	}
 
-	public HashMap<String, String> getNutsToDbpedia() {
+	public Map<String, String> getNutsToDbpedia() {
 		return nutsToDbpediaMap;
 	}
 
-	public void run() throws Exception {
+	public Matcher run() throws Exception {
 
 		// Get data
 		getDbpedia();
@@ -89,8 +89,8 @@ public class Matcher {
 		System.out.println("Simplified matches");
 
 		Map<String, List<String>> simplifiedDbpedia = simplify(dbpedia, false);
-		Map<String, List<String>> simplifiedLau = simplify(lau, true);
-		Map<String, List<String>> simplifiedNuts = simplify(nuts, true);
+		Map<String, List<String>> simplifiedLau = simplify(lau, false);
+		Map<String, List<String>> simplifiedNuts = simplify(nuts, false);
 
 		labelsDbpedia = new LinkedList<String>(simplifiedDbpedia.keySet());
 		labelsLau = new LinkedList<String>(simplifiedLau.keySet());
@@ -131,12 +131,14 @@ public class Matcher {
 			printCollection(labelsLau, "LAU");
 			printCollection(labelsNuts, "NUTS");
 		}
+
+		return this;
 	}
 
 	private Map<String, List<String>> simplify(Map<String, List<String>> map, boolean addOnlySimplified) {
 		Map<String, List<String>> simplifiedMap = new HashMap<String, List<String>>();
 		for (String key : map.keySet()) {
-			String newKey = key;
+			String newKey = key.toLowerCase();
 			boolean simplified = false;
 			if (newKey.contains(",")) {
 				newKey = newKey.substring(0, newKey.indexOf(",")).trim();

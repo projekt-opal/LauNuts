@@ -7,10 +7,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 
@@ -19,11 +21,16 @@ public class ModelBuilder {
 	private Model model = ModelFactory.createDefaultModel();
 	private Map<String, Resource> nuts3map = new HashMap<String, Resource>();
 
+	private final static boolean ADD_TYPE = false;
+	private final static boolean ADD_NARROWER = false;
+
 	ModelBuilder() {
 		model.setNsPrefix("dct", Vocabularies.NS_DCTERMS);
 		model.setNsPrefix("lau", Vocabularies.NS_LAU);
 		model.setNsPrefix("nuts", Vocabularies.NS_NUTS);
 		model.setNsPrefix("skos", Vocabularies.NS_SKOS);
+		model.setNsPrefix("geo", Vocabularies.NS_GEO);
+		model.setNsPrefix("xsd", Vocabularies.NS_XSD);
 
 		// Additional prefixes to reduce model size
 		model.setNsPrefix("laude", Vocabularies.NS_LAU_DE);
@@ -34,14 +41,19 @@ public class ModelBuilder {
 		for (NutsContainer container : nutsCollection) {
 
 			Resource nuts = getModel().createResource(container.getUri());
-			getModel().add(nuts, org.apache.jena.vocabulary.RDF.type, org.apache.jena.vocabulary.SKOS.Concept);
+
+			if (ADD_TYPE) {
+				getModel().add(nuts, org.apache.jena.vocabulary.RDF.type, org.apache.jena.vocabulary.SKOS.Concept);
+			}
 
 			if (container.parent != null) {
 				// Not available for root
 				getModel().add(nuts, org.apache.jena.vocabulary.SKOS.broader,
 						model.getResource(container.parent.getUri()));
-				getModel().add(model.getResource(container.parent.getUri()), org.apache.jena.vocabulary.SKOS.narrower,
-						nuts);
+				if (ADD_NARROWER) {
+					getModel().add(model.getResource(container.parent.getUri()),
+							org.apache.jena.vocabulary.SKOS.narrower, nuts);
+				}
 			}
 
 			getModel().add(nuts, org.apache.jena.vocabulary.SKOS.notation,
@@ -56,22 +68,51 @@ public class ModelBuilder {
 		return this;
 	}
 
+	public ModelBuilder addGeoData(Map<String, DbpediaPlaceContainer> dbpediaIndex, Map<String, String> nutsToDbpedia,
+			Map<String, String> lauToDbpedia) {
+
+		for (Entry<String, String> nuts2dbp : nutsToDbpedia.entrySet()) {
+			Resource res = ResourceFactory.createResource(nuts2dbp.getKey());
+			if (getModel().containsResource(res) && dbpediaIndex.containsKey(nuts2dbp.getValue())) {
+				getModel().addLiteral(res, Vocabularies.PROP_LAT, dbpediaIndex.get(nuts2dbp.getValue()).lat);
+				getModel().addLiteral(res, Vocabularies.PROP_LONG, dbpediaIndex.get(nuts2dbp.getValue()).lon);
+			}
+		}
+
+		for (Entry<String, String> lau2dbp : lauToDbpedia.entrySet()) {
+			Resource res = ResourceFactory.createResource(lau2dbp.getKey());
+			if (getModel().containsResource(res) && dbpediaIndex.containsKey(lau2dbp.getValue())) {
+				getModel().addLiteral(res, Vocabularies.PROP_LAT, dbpediaIndex.get(lau2dbp.getValue()).lat);
+				getModel().addLiteral(res, Vocabularies.PROP_LONG, dbpediaIndex.get(lau2dbp.getValue()).lon);
+			}
+		}
+
+		return this;
+	}
+
 	public ModelBuilder addLau(List<LauContainer> lauList) {
 		for (LauContainer container : lauList) {
 			Resource lau = getModel().createResource(container.getUri());
 			if (nuts3map.containsKey(container.nuts3code)) {
-				getModel().add(lau, org.apache.jena.vocabulary.RDF.type, org.apache.jena.vocabulary.SKOS.Concept);
+
+				if (ADD_TYPE) {
+					getModel().add(lau, org.apache.jena.vocabulary.RDF.type, org.apache.jena.vocabulary.SKOS.Concept);
+				}
 
 				getModel().add(lau, org.apache.jena.vocabulary.SKOS.broader, nuts3map.get(container.nuts3code));
-				getModel().add(nuts3map.get(container.nuts3code), org.apache.jena.vocabulary.SKOS.narrower, lau);
+				if (ADD_NARROWER) {
+					getModel().add(nuts3map.get(container.nuts3code), org.apache.jena.vocabulary.SKOS.narrower, lau);
+				}
 
 				getModel().add(lau, org.apache.jena.vocabulary.SKOS.notation,
 						getModel().createLiteral(container.lauCode));
 
 				getModel().add(lau, org.apache.jena.vocabulary.SKOS.prefLabel,
-						getModel().createLiteral(container.lauNameLatin));
-				getModel().add(lau, org.apache.jena.vocabulary.SKOS.altLabel,
 						getModel().createLiteral(container.getSimpleName()));
+				if (!container.getSimpleName().equals(container.lauNameLatin)) {
+					getModel().add(lau, org.apache.jena.vocabulary.SKOS.altLabel,
+							getModel().createLiteral(container.lauNameLatin));
+				}
 			} else {
 				System.err.println("Unknown NUTS3 code: " + container.nuts3code + " for " + container.lauCode);
 				continue;

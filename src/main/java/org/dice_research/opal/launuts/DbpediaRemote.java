@@ -3,8 +3,10 @@ package org.dice_research.opal.launuts;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.query.QueryExecution;
@@ -80,6 +82,14 @@ public class DbpediaRemote {
 			queryPlacesInGermany();
 		}
 		return places;
+	}
+
+	public static Map<String, DbpediaPlaceContainer> createPlacesIndex(List<DbpediaPlaceContainer> placesList) {
+		Map<String, DbpediaPlaceContainer> map = new HashMap<String, DbpediaPlaceContainer>();
+		for (DbpediaPlaceContainer container : placesList) {
+			map.put(container.uri, container);
+		}
+		return map;
 	}
 
 }
