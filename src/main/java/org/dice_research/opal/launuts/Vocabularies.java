@@ -36,4 +36,7 @@ public abstract class Vocabularies {
 	public static final Property PROP_LONG = ResourceFactory.createProperty(NS_GEO, "long");
 
 	public static final String NS_XSD = "http://www.w3.org/2001/XMLSchema#";
+	
+	public static final String NS_OGC = "http://www.opengis.net/ont/geosparql#";
+	
 }
