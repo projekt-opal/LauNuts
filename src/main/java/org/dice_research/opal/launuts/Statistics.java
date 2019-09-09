@@ -22,7 +22,7 @@ public class Statistics {
 	}
 
 	public Statistics compute() {
-		compute(model.getResource(Vocabularies.RES_DE.getURI()), 0);
+		compute(model.getResource(Vocabularies.RES_EU_DE.getURI()), 0);
 
 		if (counterLevel.containsKey(5)) {
 			System.err.println("Warning: Statistics counted level 5");

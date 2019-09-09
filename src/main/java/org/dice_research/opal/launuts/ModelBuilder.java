@@ -25,13 +25,14 @@ public class ModelBuilder {
 	private Model model = ModelFactory.createDefaultModel();
 	private Map<String, Resource> nuts3map = new HashMap<String, Resource>();
 
-	private final static boolean ADD_TYPE = false;
+	private final static boolean ADD_TYPE_CONCEPT = false;
 	private final static boolean ADD_NARROWER = false;
 
 	ModelBuilder() {
 		model.setNsPrefix("dct", Vocabularies.NS_DCTERMS);
+		model.setNsPrefix("launuts", Vocabularies.NS_LAUNUTS);
 		model.setNsPrefix("lau", Vocabularies.NS_LAU);
-		model.setNsPrefix("nuts", Vocabularies.NS_NUTS);
+		model.setNsPrefix("nuts", Vocabularies.NS_EU_NUTS);
 		model.setNsPrefix("skos", Vocabularies.NS_SKOS);
 		model.setNsPrefix("xsd", Vocabularies.NS_XSD);
 		model.setNsPrefix("ogc", Vocabularies.NS_OGC);
@@ -39,7 +40,7 @@ public class ModelBuilder {
 
 		// Additional prefixes to reduce model size
 		model.setNsPrefix("laude", Vocabularies.NS_LAU_DE);
-		model.setNsPrefix("nutscode", Vocabularies.NS_NUTS_CODE);
+		model.setNsPrefix("nutscode", Vocabularies.NS_EU_NUTS_CODE);
 	}
 
 	public ModelBuilder addNuts(Collection<NutsContainer> nutsCollection) {
@@ -47,28 +48,75 @@ public class ModelBuilder {
 
 			Resource nuts = getModel().createResource(container.getUri());
 
-			if (ADD_TYPE) {
-				getModel().add(nuts, org.apache.jena.vocabulary.RDF.type, org.apache.jena.vocabulary.SKOS.Concept);
+			if (ADD_TYPE_CONCEPT) {
+				getModel().add(nuts, Vocabularies.PROP_TYPE, Vocabularies.RES_CONCEPT);
+			}
+			getModel().add(nuts, Vocabularies.PROP_TYPE, Vocabularies.RES_NUTS);
+			if (container.nutsLevel == null) {
+				System.err.println("Warning: no level for container " + container.getUri());
+			} else {
+				switch (container.nutsLevel) {
+				case 0:
+					getModel().add(nuts, Vocabularies.PROP_TYPE, Vocabularies.RES_NUTS_0);
+					break;
+				case 1:
+					getModel().add(nuts, Vocabularies.PROP_TYPE, Vocabularies.RES_NUTS_1);
+					break;
+				case 2:
+					getModel().add(nuts, Vocabularies.PROP_TYPE, Vocabularies.RES_NUTS_2);
+					break;
+				case 3:
+					getModel().add(nuts, Vocabularies.PROP_TYPE, Vocabularies.RES_NUTS_3);
+					break;
+				default:
+					break;
+				}
 			}
 
 			if (container.parent != null) {
 				// Not available for root
-				getModel().add(nuts, org.apache.jena.vocabulary.SKOS.broader,
-						model.getResource(container.parent.getUri()));
+				getModel().add(nuts, Vocabularies.PROP_BROADER, model.getResource(container.parent.getUri()));
 				if (ADD_NARROWER) {
-					getModel().add(model.getResource(container.parent.getUri()),
-							org.apache.jena.vocabulary.SKOS.narrower, nuts);
+					getModel().add(model.getResource(container.parent.getUri()), Vocabularies.PROP_NARROWER, nuts);
 				}
 			}
 
-			getModel().add(nuts, org.apache.jena.vocabulary.SKOS.notation,
-					getModel().createLiteral(container.notation));
+			getModel().add(nuts, Vocabularies.PROP_NOTATION, getModel().createLiteral(container.notation));
 
 			for (String prefLabel : container.prefLabel) {
-				getModel().add(nuts, org.apache.jena.vocabulary.SKOS.prefLabel, getModel().createLiteral(prefLabel));
+				getModel().add(nuts, Vocabularies.PROP_PREFLABEL, getModel().createLiteral(prefLabel));
 			}
 
 			nuts3map.put(container.notation, nuts);
+		}
+		return this;
+	}
+
+	public ModelBuilder addLau(List<LauContainer> lauList) {
+		for (LauContainer container : lauList) {
+			Resource lau = getModel().createResource(container.getUri());
+			if (nuts3map.containsKey(container.nuts3code)) {
+
+				if (ADD_TYPE_CONCEPT) {
+					getModel().add(lau, Vocabularies.PROP_TYPE, Vocabularies.RES_CONCEPT);
+				}
+				getModel().add(lau, Vocabularies.PROP_TYPE, Vocabularies.RES_LAU);
+
+				getModel().add(lau, Vocabularies.PROP_BROADER, nuts3map.get(container.nuts3code));
+				if (ADD_NARROWER) {
+					getModel().add(nuts3map.get(container.nuts3code), Vocabularies.PROP_NARROWER, lau);
+				}
+
+				getModel().add(lau, Vocabularies.PROP_NOTATION, getModel().createLiteral(container.lauCode));
+
+				getModel().add(lau, Vocabularies.PROP_PREFLABEL, getModel().createLiteral(container.getSimpleName()));
+				if (!container.getSimpleName().equals(container.lauNameLatin)) {
+					getModel().add(lau, Vocabularies.PROP_ALTLABEL, getModel().createLiteral(container.lauNameLatin));
+				}
+			} else {
+				System.err.println("Unknown NUTS3 code: " + container.nuts3code + " for " + container.lauCode);
+				continue;
+			}
 		}
 		return this;
 	}
@@ -99,37 +147,6 @@ public class ModelBuilder {
 			}
 		}
 
-		return this;
-	}
-
-	public ModelBuilder addLau(List<LauContainer> lauList) {
-		for (LauContainer container : lauList) {
-			Resource lau = getModel().createResource(container.getUri());
-			if (nuts3map.containsKey(container.nuts3code)) {
-
-				if (ADD_TYPE) {
-					getModel().add(lau, org.apache.jena.vocabulary.RDF.type, org.apache.jena.vocabulary.SKOS.Concept);
-				}
-
-				getModel().add(lau, org.apache.jena.vocabulary.SKOS.broader, nuts3map.get(container.nuts3code));
-				if (ADD_NARROWER) {
-					getModel().add(nuts3map.get(container.nuts3code), org.apache.jena.vocabulary.SKOS.narrower, lau);
-				}
-
-				getModel().add(lau, org.apache.jena.vocabulary.SKOS.notation,
-						getModel().createLiteral(container.lauCode));
-
-				getModel().add(lau, org.apache.jena.vocabulary.SKOS.prefLabel,
-						getModel().createLiteral(container.getSimpleName()));
-				if (!container.getSimpleName().equals(container.lauNameLatin)) {
-					getModel().add(lau, org.apache.jena.vocabulary.SKOS.altLabel,
-							getModel().createLiteral(container.lauNameLatin));
-				}
-			} else {
-				System.err.println("Unknown NUTS3 code: " + container.nuts3code + " for " + container.lauCode);
-				continue;
-			}
-		}
 		return this;
 	}
 

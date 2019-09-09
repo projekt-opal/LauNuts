@@ -10,16 +10,18 @@ import java.util.Set;
  * @author Adrian Wilke
  */
 public class NutsContainer implements Serializable {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	public static String uriToNutsCode(String uri) {
-		if (uri.startsWith(Vocabularies.NS_NUTS_CODE)) {
-			return uri.substring(Vocabularies.NS_NUTS_CODE.length());
+		if (uri.startsWith(Vocabularies.NS_EU_NUTS_CODE)) {
+			return uri.substring(Vocabularies.NS_EU_NUTS_CODE.length());
 		} else {
 			throw new RuntimeException("Wrong URI: " + uri);
 		}
 	}
+
+	public Integer nutsLevel;
 
 	public Set<String> prefLabel = new HashSet<String>();
 	public String notation;
@@ -32,7 +34,7 @@ public class NutsContainer implements Serializable {
 	public Set<String> mergedFrom = new HashSet<String>();
 
 	public String getUri() {
-		return Vocabularies.NS_NUTS_CODE + notation;
+		return Vocabularies.NS_EU_NUTS_CODE + notation;
 	}
 
 	@Override

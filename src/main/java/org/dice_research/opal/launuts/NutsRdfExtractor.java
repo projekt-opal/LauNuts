@@ -38,24 +38,24 @@ public class NutsRdfExtractor {
 	 * Extracts RDF data into container objects.
 	 */
 	public NutsRdfExtractor extractNuts() throws Exception {
-		NutsContainer container0 = createContainer(replaceDeprecated(Vocabularies.RES_DE));
+		NutsContainer container0 = createContainer(replaceDeprecated(Vocabularies.RES_EU_DE), 0);
 		nutsIndex.put(container0.notation, container0);
 
-		List<Resource> nuts1 = getNarrower(Vocabularies.RES_DE);
+		List<Resource> nuts1 = getNarrower(Vocabularies.RES_EU_DE);
 		for (Resource res1 : nuts1) {
-			NutsContainer container1 = createContainer(replaceDeprecated(res1));
+			NutsContainer container1 = createContainer(replaceDeprecated(res1), 1);
 			container1.parent = container0;
 			nutsIndex.put(container1.notation, container1);
 
 			List<Resource> nuts2 = getNarrower(res1);
 			for (Resource res2 : nuts2) {
-				NutsContainer container2 = createContainer(replaceDeprecated(res2));
+				NutsContainer container2 = createContainer(replaceDeprecated(res2), 2);
 				container2.parent = container1;
 				nutsIndex.put(container2.notation, container2);
 
 				List<Resource> nuts3 = getNarrower(res2);
 				for (Resource res3 : nuts3) {
-					NutsContainer container3 = createContainer(replaceDeprecated(res3));
+					NutsContainer container3 = createContainer(replaceDeprecated(res3), 3);
 					container3.parent = container2;
 					nutsIndex.put(container3.notation, container3);
 				}
@@ -69,7 +69,7 @@ public class NutsRdfExtractor {
 	 * replaced.
 	 */
 	private Resource replaceDeprecated(Resource resource) {
-		NodeIterator nodeIterator = model.listObjectsOfProperty(resource, Vocabularies.PROP_MERGEDINTO);
+		NodeIterator nodeIterator = model.listObjectsOfProperty(resource, Vocabularies.PROP_EU_MERGEDINTO);
 		if (nodeIterator.hasNext()) {
 			Resource newResource = nodeIterator.next().asResource();
 			if (PRINT_REPLACEMENT_INFO) {
@@ -96,7 +96,7 @@ public class NutsRdfExtractor {
 	/**
 	 * Resource to container.
 	 */
-	NutsContainer createContainer(Resource resource) throws Exception {
+	NutsContainer createContainer(Resource resource, Integer nutsLevel) throws Exception {
 		NutsContainer container = new NutsContainer();
 		String uri = resource.getURI().toString();
 
@@ -111,6 +111,12 @@ public class NutsRdfExtractor {
 		nodeIterator = model.listObjectsOfProperty(resource, Vocabularies.PROP_PREFLABEL);
 		while (nodeIterator.hasNext()) {
 			container.prefLabel.add(nodeIterator.next().asLiteral().toString());
+		}
+
+		if (nutsLevel == null) {
+			throw new RuntimeException("No NUTS level: " + uri);
+		} else {
+			container.nutsLevel = nutsLevel;
 		}
 
 		// Replaced NUTS
@@ -132,12 +138,12 @@ public class NutsRdfExtractor {
 
 		// Merged NUTS
 
-		nodeIterator = model.listObjectsOfProperty(resource, Vocabularies.PROP_MERGEDFROM);
+		nodeIterator = model.listObjectsOfProperty(resource, Vocabularies.PROP_EU_MERGEDFROM);
 		while (nodeIterator.hasNext()) {
 			container.mergedFrom.add(NutsContainer.uriToNutsCode(nodeIterator.next().toString()));
 		}
 
-		resIterator = model.listSubjectsWithProperty(Vocabularies.PROP_MERGEDFROM, resource);
+		resIterator = model.listSubjectsWithProperty(Vocabularies.PROP_EU_MERGEDFROM, resource);
 		if (resIterator.hasNext()) {
 			String mergedIntoCode = NutsContainer.uriToNutsCode(resIterator.next().asResource().toString());
 			container.mergedInto = mergedIntoCode;
