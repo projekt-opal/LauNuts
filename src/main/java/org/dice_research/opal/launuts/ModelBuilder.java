@@ -35,6 +35,7 @@ public class ModelBuilder {
 		model.setNsPrefix("skos", Vocabularies.NS_SKOS);
 		model.setNsPrefix("xsd", Vocabularies.NS_XSD);
 		model.setNsPrefix("ogc", Vocabularies.NS_OGC);
+		model.setNsPrefix("geo", Vocabularies.NS_GEO);
 
 		// Additional prefixes to reduce model size
 		model.setNsPrefix("laude", Vocabularies.NS_LAU_DE);
@@ -81,6 +82,8 @@ public class ModelBuilder {
 				Literal wkt = ResourceFactory.createTypedLiteral("POINT(" + dbpediaIndex.get(nuts2dbp.getValue()).lat
 						+ " " + dbpediaIndex.get(nuts2dbp.getValue()).lon + ")", WKTDatatype.INSTANCE);
 				getModel().addLiteral(res, Geo.HAS_GEOMETRY_PROP, wkt);
+				getModel().addLiteral(res, Vocabularies.PROP_LAT, dbpediaIndex.get(nuts2dbp.getValue()).lat);
+				getModel().addLiteral(res, Vocabularies.PROP_LONG, dbpediaIndex.get(nuts2dbp.getValue()).lon);
 			}
 		}
 
@@ -90,6 +93,9 @@ public class ModelBuilder {
 				Literal wkt = ResourceFactory.createTypedLiteral("POINT(" + dbpediaIndex.get(lau2dbp.getValue()).lat
 						+ " " + dbpediaIndex.get(lau2dbp.getValue()).lon + ")", WKTDatatype.INSTANCE);
 				getModel().addLiteral(res, Geo.HAS_GEOMETRY_PROP, wkt);
+				getModel().addLiteral(res, Vocabularies.PROP_LAT, dbpediaIndex.get(lau2dbp.getValue()).lat);
+				getModel().addLiteral(res, Vocabularies.PROP_LONG, dbpediaIndex.get(lau2dbp.getValue()).lon);
+
 			}
 		}
 

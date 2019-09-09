@@ -30,6 +30,10 @@ public abstract class Vocabularies {
 
 	public static final String NS_LAU = "http://projekt-opal.de/lau/";
 	public static final String NS_LAU_DE = "http://projekt-opal.de/lau/DE/";
+	
+	public static final String NS_GEO = "http://www.w3.org/2003/01/geo/wgs84_pos#";
+	public static final Property PROP_LAT = ResourceFactory.createProperty(NS_GEO, "lat");
+	public static final Property PROP_LONG = ResourceFactory.createProperty(NS_GEO, "long");
 
 	public static final String NS_XSD = "http://www.w3.org/2001/XMLSchema#";
 	
