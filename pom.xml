@@ -9,6 +9,13 @@
 
 	<dependencies>
 
+		<!-- Resolving: Missing artifact com.github.jsonld-java.jsonld-java:jsonld-java:bundle:0.12.3 -->
+		<dependency>
+			<groupId>com.github.jsonld-java</groupId>
+			<artifactId>jsonld-java</artifactId>
+			<version>0.12.5</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-csv -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>

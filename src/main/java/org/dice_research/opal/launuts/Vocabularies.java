@@ -25,6 +25,7 @@ public abstract class Vocabularies {
 	public static final Resource RES_CONCEPT = org.apache.jena.vocabulary.SKOS.Concept;
 	public static final Property PROP_ALTLABEL = org.apache.jena.vocabulary.SKOS.altLabel;
 	public static final Property PROP_BROADER = org.apache.jena.vocabulary.SKOS.broader;
+	public static final Property PROP_RELATEDMATCH = org.apache.jena.vocabulary.SKOS.relatedMatch;
 	public static final Property PROP_NARROWER = org.apache.jena.vocabulary.SKOS.narrower;
 	public static final Property PROP_PREFLABEL = org.apache.jena.vocabulary.SKOS.prefLabel;
 	public static final Property PROP_NOTATION = org.apache.jena.vocabulary.SKOS.notation;
@@ -40,6 +41,8 @@ public abstract class Vocabularies {
 	public static final Property PROP_EU_MERGEDFROM = ResourceFactory.createProperty(NS_EU_NUTS, "mergedFrom");
 	public static final Property PROP_EU_MERGEDINTO = ResourceFactory.createProperty(NS_EU_NUTS, "mergedInto");
 	public static final Resource RES_EU_DE = ResourceFactory.createResource(NS_EU_NUTS_CODE + "DE");
+
+	public static final String NS_DBR = "http://dbpedia.org/resource/";
 
 	public static final String NS_LAUNUTS = "http://projekt-opal.de/launuts/";
 	public static final String NS_NUTS = NS_LAUNUTS + "nuts/";

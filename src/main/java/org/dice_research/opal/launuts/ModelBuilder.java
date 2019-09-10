@@ -37,6 +37,7 @@ public class ModelBuilder {
 		model.setNsPrefix("xsd", Vocabularies.NS_XSD);
 		model.setNsPrefix("ogc", Vocabularies.NS_OGC);
 		model.setNsPrefix("geo", Vocabularies.NS_GEO);
+		model.setNsPrefix("dbr", Vocabularies.NS_DBR);
 
 		// Additional prefixes to reduce model size
 		model.setNsPrefix("laude", Vocabularies.NS_LAU_DE);
@@ -127,27 +128,34 @@ public class ModelBuilder {
 		for (Entry<String, String> nuts2dbp : nutsToDbpedia.entrySet()) {
 			Resource res = ResourceFactory.createResource(nuts2dbp.getKey());
 			if (getModel().containsResource(res) && dbpediaIndex.containsKey(nuts2dbp.getValue())) {
-				Literal wkt = ResourceFactory.createTypedLiteral("POINT(" + dbpediaIndex.get(nuts2dbp.getValue()).lat
-						+ " " + dbpediaIndex.get(nuts2dbp.getValue()).lon + ")", WKTDatatype.INSTANCE);
-				getModel().addLiteral(res, Geo.HAS_GEOMETRY_PROP, wkt);
-				getModel().addLiteral(res, Vocabularies.PROP_LAT, dbpediaIndex.get(nuts2dbp.getValue()).lat);
-				getModel().addLiteral(res, Vocabularies.PROP_LONG, dbpediaIndex.get(nuts2dbp.getValue()).lon);
+				Resource dbpediaRes = getDbpediaResource(dbpediaIndex.get(nuts2dbp.getValue()));
+				getModel().add(res, Vocabularies.PROP_RELATEDMATCH, dbpediaRes);
 			}
 		}
 
 		for (Entry<String, String> lau2dbp : lauToDbpedia.entrySet()) {
 			Resource res = ResourceFactory.createResource(lau2dbp.getKey());
 			if (getModel().containsResource(res) && dbpediaIndex.containsKey(lau2dbp.getValue())) {
-				Literal wkt = ResourceFactory.createTypedLiteral("POINT(" + dbpediaIndex.get(lau2dbp.getValue()).lat
-						+ " " + dbpediaIndex.get(lau2dbp.getValue()).lon + ")", WKTDatatype.INSTANCE);
-				getModel().addLiteral(res, Geo.HAS_GEOMETRY_PROP, wkt);
-				getModel().addLiteral(res, Vocabularies.PROP_LAT, dbpediaIndex.get(lau2dbp.getValue()).lat);
-				getModel().addLiteral(res, Vocabularies.PROP_LONG, dbpediaIndex.get(lau2dbp.getValue()).lon);
-
+				Resource dbpediaRes = getDbpediaResource(dbpediaIndex.get(lau2dbp.getValue()));
+				getModel().add(res, Vocabularies.PROP_RELATEDMATCH, dbpediaRes);
 			}
 		}
 
 		return this;
+	}
+
+	Resource getDbpediaResource(DbpediaPlaceContainer dbpediaPlaceContainer) {
+		Resource res = ResourceFactory.createResource(dbpediaPlaceContainer.uri);
+		if (getModel().containsResource(res)) {
+			return res;
+		} else {
+			Literal wkt = ResourceFactory.createTypedLiteral(
+					"POINT(" + dbpediaPlaceContainer.lat + " " + dbpediaPlaceContainer.lon + ")", WKTDatatype.INSTANCE);
+			getModel().addLiteral(res, Geo.HAS_GEOMETRY_PROP, wkt);
+			getModel().addLiteral(res, Vocabularies.PROP_LAT, dbpediaPlaceContainer.lat);
+			getModel().addLiteral(res, Vocabularies.PROP_LONG, dbpediaPlaceContainer.lon);
+			return res;
+		}
 	}
 
 	public Model getModel() {
@@ -162,13 +170,13 @@ public class ModelBuilder {
 		stringBuilder.append("# Nomenclature of Territorial Units for Statistics (NUTS)\n");
 		stringBuilder.append("# https://ec.europa.eu/eurostat/web/nuts/overview\n");
 		stringBuilder.append("# \n");
+		stringBuilder.append("# Data:\n");
+		stringBuilder.append("# https://hobbitdata.informatik.uni-leipzig.de/OPAL/\n");
+		stringBuilder.append("# \n");
 		stringBuilder.append("# Generator software: \n");
 		stringBuilder.append("# Data Science Group (DICE) at Paderborn University\n");
 		stringBuilder.append("# Open Data Portal Germany (OPAL), Adrian Wilke\n");
 		stringBuilder.append("# https://github.com/projekt-opal/LauNuts\n");
-		stringBuilder.append("# \n");
-		stringBuilder.append("# Data:\n");
-		stringBuilder.append("# https://hobbitdata.informatik.uni-leipzig.de/OPAL/\n");
 		stringBuilder.append("# \n");
 
 		return stringBuilder.toString();

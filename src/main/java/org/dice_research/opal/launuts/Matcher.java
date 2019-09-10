@@ -1,11 +1,15 @@
 package org.dice_research.opal.launuts;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.commons.io.FileUtils;
 
 /**
  * Matches labels (region names) of different datasets.
@@ -27,6 +31,11 @@ public class Matcher {
 	private HashMap<String, String> lauToDbpediaMap = new HashMap<String, String>();
 	private HashMap<String, String> nutsToDbpediaMap = new HashMap<String, String>();
 
+	// Files
+	File fileMultipleUris = new File(Cfg.getInstance().get(Cfg.OUT_DIRECTORY), "multiple-uris.htm");
+	File fileNoMatch = new File(Cfg.getInstance().get(Cfg.OUT_DIRECTORY), "no-match.txt");
+	File fileNoMatchLabels = new File(Cfg.getInstance().get(Cfg.OUT_DIRECTORY), "no-match-labels.txt");
+
 	public Map<String, String> getLauToDbpedia() {
 		return lauToDbpediaMap;
 	}
@@ -42,13 +51,13 @@ public class Matcher {
 		getLau();
 		getNuts();
 
-		// TODO Check difficult candidates. Currently, below the first candidate
-		// 'get(0)' is used.
-		if (Boolean.FALSE) {
-			printMultipleUris(dbpedia, "DBpedia");
-			printMultipleUris(lau, "LAU");
-			printMultipleUris(nuts, "NUTS");
-		}
+		// TODO Check difficult candidates. Currently, the first candidates of
+		// DBpedia is used below 'get(0)'.
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(multipleUrisToStringBuilder(dbpedia, "DBpedia"));
+		stringBuilder.append(multipleUrisToStringBuilder(lau, "LAU"));
+		stringBuilder.append(multipleUrisToStringBuilder(nuts, "NUTS"));
+		FileUtils.write(fileMultipleUris, stringBuilder, StandardCharsets.UTF_8);
 
 		// Exact matches
 		System.out.println();
@@ -122,15 +131,16 @@ public class Matcher {
 		// --
 
 		// TODO Check candidates without matches
-		if (Boolean.FALSE) {
-			printMap(simplifiedDbpedia, "DBpedia");
-			printMap(simplifiedLau, "LAU");
-			printMap(simplifiedNuts, "NUTS");
-		}
-		if (Boolean.FALSE) {
-			printCollection(labelsLau, "LAU");
-			printCollection(labelsNuts, "NUTS");
-		}
+		stringBuilder = new StringBuilder();
+		stringBuilder.append(mapToStringBuilder(simplifiedDbpedia, "DBpedia"));
+		stringBuilder.append(mapToStringBuilder(simplifiedLau, "LAU"));
+		stringBuilder.append(mapToStringBuilder(simplifiedNuts, "NUTS"));
+		FileUtils.write(fileNoMatch, stringBuilder, StandardCharsets.UTF_8);
+
+		stringBuilder = new StringBuilder();
+		stringBuilder.append(collectionToStringBuilder(labelsLau, "LAU"));
+		stringBuilder.append(collectionToStringBuilder(labelsNuts, "NUTS"));
+		FileUtils.write(fileNoMatchLabels, stringBuilder, StandardCharsets.UTF_8);
 
 		return this;
 	}
@@ -169,37 +179,68 @@ public class Matcher {
 				simplified = true;
 			}
 			if (simplified || !addOnlySimplified) {
-				addListItemsToMap(simplifiedMap, newKey, map.get(key));
+				addListItemsToMap(simplifiedMap, newKey, map.get(key), false);
 			}
 		}
 		return simplifiedMap;
 	}
 
-	void printMultipleUris(Map<String, List<String>> map, String heading) {
+	StringBuilder multipleUrisToStringBuilder(Map<String, List<String>> map, String type) {
+		StringBuilder stringBuilder = new StringBuilder();
 		for (Entry<String, List<String>> entry : map.entrySet()) {
 			if (entry.getValue().size() > 1 || entry.getValue().isEmpty()) {
-				System.out.println(heading + "  " + entry.getKey() + "  " + entry.getValue());
+				if (type.equals("DBpedia")) {
+					stringBuilder.append(type + "  " + entry.getKey() + " ");
+					for (String uri : entry.getValue()) {
+						stringBuilder.append("<a href=\"" + uri + "\">" + uri + "</a> &nbsp; ");
+					}
+					stringBuilder.append("<br />\n");
+				} else if (type.equals("LAU") || type.equals("NUTS")) {
+					stringBuilder.append(type + "  " + entry.getKey() + "  ");
+					for (String uri : entry.getValue()) {
+						stringBuilder.append(uri.substring(uri.lastIndexOf("/")) + " &nbsp; ");
+					}
+					stringBuilder.append("<br />\n");
+				} else {
+					System.err.println("Warning: Unknown type " + type + " in " + Matcher.class.getSimpleName());
+					stringBuilder.append("<br />\n");
+				}
 			}
 		}
+		return stringBuilder;
 	}
 
-	void printMap(Map<String, List<String>> map, String heading) {
+	StringBuilder mapToStringBuilder(Map<String, List<String>> map, String heading) {
+		StringBuilder stringBuilder = new StringBuilder();
 		for (Entry<String, List<String>> entry : map.entrySet()) {
-			System.out.println(heading + "  " + entry.getKey() + "  " + entry.getValue());
+			stringBuilder.append(heading + "  " + entry.getKey() + "  " + entry.getValue() + "\n");
 		}
+		return stringBuilder;
 	}
 
-	void printCollection(Collection<String> collection, String heading) {
+	StringBuilder collectionToStringBuilder(Collection<String> collection, String heading) {
+		StringBuilder stringBuilder = new StringBuilder();
 		for (String string : collection) {
-			System.out.println(heading + "  " + string);
+			stringBuilder.append(heading + "  " + string + "\n");
 		}
+		return stringBuilder;
 	}
 
-	private void addListItemsToMap(Map<String, List<String>> map, String key, List<String> list) {
+	private void addListItemsToMap(Map<String, List<String>> map, String key, List<String> list,
+			boolean checkDuplicates) {
 		if (!map.containsKey(key)) {
 			map.put(key, new LinkedList<String>());
 		}
-		map.get(key).addAll(list);
+		if (checkDuplicates) {
+			List<String> mapList = map.get(key);
+			for (String listItem : list) {
+				if (!mapList.contains(listItem)) {
+					mapList.add(listItem);
+				}
+			}
+		} else {
+			map.get(key).addAll(list);
+		}
 	}
 
 	private void getDbpedia() throws Exception {
@@ -210,11 +251,11 @@ public class Matcher {
 			List<String> list = new LinkedList<String>();
 			list.add(container.uri);
 			if (container.labelDe != null) {
-				addListItemsToMap(dbpedia, container.labelDe, list);
+				addListItemsToMap(dbpedia, container.labelDe, list, true);
 				added = true;
 			}
 			if (container.labelEn != null && !container.labelDe.equals(container.labelDe)) {
-				addListItemsToMap(dbpedia, container.labelEn, list);
+				addListItemsToMap(dbpedia, container.labelEn, list, true);
 				added = true;
 			}
 			if (added) {
@@ -231,7 +272,7 @@ public class Matcher {
 			counter++;
 			List<String> list = new LinkedList<String>();
 			list.add(container.getUri());
-			addListItemsToMap(lau, container.lauNameLatin, list);
+			addListItemsToMap(lau, container.lauNameLatin, list, true);
 		}
 		System.out.println("Loaded LAU. Labels: " + lau.size() + ", URIs: " + counter);
 	}
@@ -244,7 +285,7 @@ public class Matcher {
 			List<String> list = new LinkedList<String>();
 			list.add(container.getUri());
 			for (String prefLabel : container.prefLabel) {
-				addListItemsToMap(nuts, prefLabel, list);
+				addListItemsToMap(nuts, prefLabel, list, true);
 			}
 		}
 		System.out.println("Loaded NUTS. Labels: " + nuts.size() + ", URIs: " + counter);
