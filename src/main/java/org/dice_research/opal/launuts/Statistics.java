@@ -7,8 +7,6 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 
-import io.github.galbiston.geosparql_jena.implementation.vocabulary.Geo;
-
 public class Statistics {
 
 	private Model model;
@@ -44,7 +42,7 @@ public class Statistics {
 	private void count(Resource resource, int level) {
 		counterNodes++;
 
-		if (resource.hasProperty(Geo.HAS_GEOMETRY_PROP)) {
+		if (resource.hasProperty(Vocabularies.PROP_RELATEDMATCH)) {
 			counterGeo++;
 		} else {
 			counterNoGeo++;
@@ -58,25 +56,25 @@ public class Statistics {
 
 	public String getString() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("Geo-Level:  " + counterLevel.get(0));
+		stringBuilder.append("Countries: " + counterLevel.get(0) + " (Germany)");
 		stringBuilder.append(System.lineSeparator());
-		stringBuilder.append("NUTS-1:     " + counterLevel.get(1));
+		stringBuilder.append("NUTS-1:    " + counterLevel.get(1) + " (Federal states)");
 		stringBuilder.append(System.lineSeparator());
-		stringBuilder.append("NUTS-2:     " + counterLevel.get(2));
+		stringBuilder.append("NUTS-2:    " + counterLevel.get(2) + " (Government regions)");
 		stringBuilder.append(System.lineSeparator());
-		stringBuilder.append("NUTS-3:     " + counterLevel.get(3));
+		stringBuilder.append("NUTS-3:    " + counterLevel.get(3) + " (Districts)");
 		stringBuilder.append(System.lineSeparator());
-		stringBuilder.append("LAU:        " + counterLevel.get(4));
+		stringBuilder.append("LAU:       " + counterLevel.get(4) + " (Municipalities)");
 		stringBuilder.append(System.lineSeparator());
-		stringBuilder.append("Total:      " + counterNodes);
-		stringBuilder.append(System.lineSeparator());
-		stringBuilder.append(System.lineSeparator());
-		stringBuilder.append("GeoData:    " + counterGeo);
-		stringBuilder.append(System.lineSeparator());
-		stringBuilder.append("No GeoData: " + counterNoGeo);
+		stringBuilder.append("Total:     " + counterNodes);
 		stringBuilder.append(System.lineSeparator());
 		stringBuilder.append(System.lineSeparator());
-		stringBuilder.append("Triples:    " + model.size());
+		stringBuilder.append("DBpedia GeoData:    " + counterGeo);
+		stringBuilder.append(System.lineSeparator());
+		stringBuilder.append("No DBpedia GeoData: " + counterNoGeo);
+		stringBuilder.append(System.lineSeparator());
+		stringBuilder.append(System.lineSeparator());
+		stringBuilder.append("Triples: " + model.size());
 		return stringBuilder.toString();
 	}
 }
