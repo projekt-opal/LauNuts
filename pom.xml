@@ -9,6 +9,14 @@
 
 	<dependencies>
 
+		<!-- geo distances -->
+		<!-- https://mvnrepository.com/artifact/net.sf.geographiclib/GeographicLib-Java -->
+		<dependency>
+			<groupId>net.sf.geographiclib</groupId>
+			<artifactId>GeographicLib-Java</artifactId>
+			<version>1.49</version>
+		</dependency>
+
 		<!-- Resolving: Missing artifact com.github.jsonld-java.jsonld-java:jsonld-java:bundle:0.12.3 -->
 		<dependency>
 			<groupId>com.github.jsonld-java</groupId>

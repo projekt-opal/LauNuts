@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
+import org.dice_research.opal.launuts.utils.GeoUtil;
 
 /**
  * Matches labels (region names) of different datasets.
@@ -18,50 +19,83 @@ import org.apache.commons.io.FileUtils;
  */
 public class Matcher {
 
+	/**
+	 * Runs matcher.
+	 */
 	public static void main(String[] args) throws Exception {
 		new Matcher().run();
 	}
 
-	// Labels to URIs
-	private Map<String, List<String>> dbpedia;
-	private Map<String, List<String>> lau;
-	private Map<String, List<String>> nuts;
+	// Results: URIs to URIs
+	private HashMap<String, String> lauToDbpediaUris = new HashMap<String, String>();
+	private HashMap<String, String> nutsToDbpediaUris = new HashMap<String, String>();
 
-	// Results
-	private HashMap<String, String> lauToDbpediaMap = new HashMap<String, String>();
-	private HashMap<String, String> nutsToDbpediaMap = new HashMap<String, String>();
+	// URIs to containers
+	Map<String, DbpediaPlaceContainer> dbpediaUriIndex;
+	Map<String, LauContainer> lauCodeIndex;
+	Map<String, NutsContainer> nutsNotationIndex;
+
+	// Labels to lists of URIs
+	private Map<String, List<String>> dbpediaLabelToUris;
+	private Map<String, List<String>> lauNameToUris;
+	private Map<String, List<String>> nutsLabelToUris;
 
 	// Files
 	File fileMultipleUris = new File(Cfg.getInstance().get(Cfg.OUT_DIRECTORY), "multiple-uris.htm");
-	File fileNoMatch = new File(Cfg.getInstance().get(Cfg.OUT_DIRECTORY), "no-match.txt");
+	File fileNoMatchSimplified = new File(Cfg.getInstance().get(Cfg.OUT_DIRECTORY), "no-match-simplified.txt");
 	File fileNoMatchLabels = new File(Cfg.getInstance().get(Cfg.OUT_DIRECTORY), "no-match-labels.txt");
 
+	/**
+	 * LAU URIs to DBpedia URIs.
+	 */
 	public Map<String, String> getLauToDbpedia() {
-		return lauToDbpediaMap;
+		return lauToDbpediaUris;
 	}
 
+	/**
+	 * NUTS URIs to DBpedia URIs.
+	 */
 	public Map<String, String> getNutsToDbpedia() {
-		return nutsToDbpediaMap;
+		return nutsToDbpediaUris;
 	}
 
 	public Matcher run() throws Exception {
 
 		// Get data
-		getDbpedia();
-		getLau();
-		getNuts();
+		createDbpediaLabelsToUris();
+		createLauNameToUris();
+		createNutsLabelsToUris();
 
-		// TODO Check difficult candidates. Currently, the first candidates of
-		// DBpedia is used below 'get(0)'.
+		dbpediaUriIndex = DbpediaRemote.createPlacesIndex(Cache.getDbpedia(true));
+		lauCodeIndex = LauCsvParser.createLauCodeToContainer(Cache.getLau(true));
+		nutsNotationIndex = Cache.getNuts(true);
+
+		// Labels
+		List<String> labelsDbpedia = new LinkedList<String>(dbpediaLabelToUris.keySet());
+		List<String> labelsLau = new LinkedList<String>(lauNameToUris.keySet());
+		List<String> labelsNuts = new LinkedList<String>(nutsLabelToUris.keySet());
+
+		System.out.println();
+		System.out.println("LAU: " + lauToDbpediaUris.size());
+		System.out.println("NUTS: " + nutsToDbpediaUris.size());
+		System.out.println("Remaining LAU labels: " + labelsLau.size());
+		System.out.println("Remaining NUTS labels: " + labelsNuts.size());
+
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(multipleUrisToStringBuilder(dbpedia, "DBpedia"));
-		stringBuilder.append(multipleUrisToStringBuilder(lau, "LAU"));
-		stringBuilder.append(multipleUrisToStringBuilder(nuts, "NUTS"));
+		stringBuilder.append(multipleUrisToStringBuilder(dbpediaLabelToUris, "DBpedia"));
+		stringBuilder.append(multipleUrisToStringBuilder(lauNameToUris, "LAU"));
+		stringBuilder.append(multipleUrisToStringBuilder(nutsLabelToUris, "NUTS"));
 		FileUtils.write(fileMultipleUris, stringBuilder, StandardCharsets.UTF_8);
 
 		// ---
 
+		System.out.println();
+		System.out.println("Static matches");
 		staticMatching();
+		System.out.println("LAU: " + lauToDbpediaUris.size());
+		System.out.println("NUTS: " + nutsToDbpediaUris.size());
+		System.out.println("Remaining LAU labels: " + labelsLau.size());
+		System.out.println("Remaining NUTS labels: " + labelsNuts.size());
 
 		// ---
 
@@ -69,17 +103,16 @@ public class Matcher {
 		System.out.println();
 		System.out.println("Exact matches");
 
-		// Labels
-		List<String> labelsDbpedia = new LinkedList<String>(dbpedia.keySet());
-		List<String> labelsLau = new LinkedList<String>(lau.keySet());
-		List<String> labelsNuts = new LinkedList<String>(nuts.keySet());
-
 		String label;
 		for (int i = labelsLau.size() - 1; i >= 0; i--) {
 			label = labelsLau.get(i);
 			if (labelsDbpedia.contains(label)) {
-				for (String lauUri : lau.get(label)) {
-					lauToDbpediaMap.put(lauUri, dbpedia.get(label).get(0));
+				for (String lauUri : lauNameToUris.get(label)) {
+					if (dbpediaLabelToUris.get(label).size() > 1) {
+						lauToDbpediaUris.put(lauUri, getNearestMatchForLau(lauUri, dbpediaLabelToUris.get(label)));
+					} else {
+						lauToDbpediaUris.put(lauUri, dbpediaLabelToUris.get(label).get(0));
+					}
 				}
 				labelsLau.remove(i);
 			}
@@ -87,26 +120,35 @@ public class Matcher {
 		for (int i = labelsNuts.size() - 1; i >= 0; i--) {
 			label = labelsNuts.get(i);
 			if (labelsDbpedia.contains(label)) {
-				for (String nutsUri : nuts.get(label)) {
-					nutsToDbpediaMap.put(nutsUri, dbpedia.get(label).get(0));
+				for (String nutsUri : nutsLabelToUris.get(label)) {
+					if (dbpediaLabelToUris.get(label).size() > 1) {
+						nutsToDbpediaUris.put(nutsUri, getNearestMatchForNuts(nutsUri, dbpediaLabelToUris.get(label)));
+					} else {
+						nutsToDbpediaUris.put(nutsUri, dbpediaLabelToUris.get(label).get(0));
+					}
+
 				}
 				labelsNuts.remove(i);
 			}
 		}
-		System.out.println("LAU: " + lauToDbpediaMap.size());
-		System.out.println("NUTS: " + nutsToDbpediaMap.size());
+
+		System.out.println("LAU: " + lauToDbpediaUris.size());
+		System.out.println("NUTS: " + nutsToDbpediaUris.size());
 		System.out.println("Remaining LAU labels: " + labelsLau.size());
 		System.out.println("Remaining NUTS labels: " + labelsNuts.size());
 
 		// ---
 
+		// Simplified matches
 		System.out.println();
 		System.out.println("Simplified matches");
 
-		Map<String, List<String>> simplifiedDbpedia = simplify(dbpedia, false);
-		Map<String, List<String>> simplifiedLau = simplify(lau, false);
-		Map<String, List<String>> simplifiedNuts = simplify(nuts, false);
+		// Simplified labels to lists of URIs
+		Map<String, List<String>> simplifiedDbpedia = simplify(dbpediaLabelToUris, false);
+		Map<String, List<String>> simplifiedLau = simplify(lauNameToUris, false);
+		Map<String, List<String>> simplifiedNuts = simplify(nutsLabelToUris, false);
 
+		// Simplified labels
 		labelsDbpedia = new LinkedList<String>(simplifiedDbpedia.keySet());
 		labelsLau = new LinkedList<String>(simplifiedLau.keySet());
 		labelsNuts = new LinkedList<String>(simplifiedNuts.keySet());
@@ -115,7 +157,11 @@ public class Matcher {
 			label = labelsLau.get(i);
 			if (labelsDbpedia.contains(label)) {
 				for (String lauUri : simplifiedLau.get(label)) {
-					lauToDbpediaMap.put(lauUri, simplifiedDbpedia.get(label).get(0));
+					if (simplifiedDbpedia.get(label).size() > 1) {
+						lauToDbpediaUris.put(lauUri, getNearestMatchForLau(lauUri, simplifiedDbpedia.get(label)));
+					} else {
+						lauToDbpediaUris.put(lauUri, simplifiedDbpedia.get(label).get(0));
+					}
 				}
 				labelsLau.remove(i);
 			}
@@ -124,26 +170,31 @@ public class Matcher {
 			label = labelsNuts.get(i);
 			if (labelsDbpedia.contains(label)) {
 				for (String nutsUri : simplifiedNuts.get(label)) {
-					nutsToDbpediaMap.put(nutsUri, simplifiedDbpedia.get(label).get(0));
+					if (simplifiedDbpedia.get(label).size() > 1) {
+						nutsToDbpediaUris.put(nutsUri, getNearestMatchForNuts(nutsUri, simplifiedDbpedia.get(label)));
+					} else {
+						nutsToDbpediaUris.put(nutsUri, simplifiedDbpedia.get(label).get(0));
+					}
+
 				}
 				labelsNuts.remove(i);
 			}
 		}
-		System.out.println("LAU: " + lauToDbpediaMap.size());
-		System.out.println("NUTS: " + nutsToDbpediaMap.size());
+		System.out.println("LAU: " + lauToDbpediaUris.size());
+		System.out.println("NUTS: " + nutsToDbpediaUris.size());
 		System.out.println("Remaining LAU labels: " + labelsLau.size());
 		System.out.println("Remaining NUTS labels: " + labelsNuts.size());
 
 		// --
 
-		// TODO Check candidates without matches
 		stringBuilder = new StringBuilder();
 		stringBuilder.append(mapToStringBuilder(simplifiedDbpedia, "DBpedia"));
 		stringBuilder.append(mapToStringBuilder(simplifiedLau, "LAU"));
 		stringBuilder.append(mapToStringBuilder(simplifiedNuts, "NUTS"));
-		FileUtils.write(fileNoMatch, stringBuilder, StandardCharsets.UTF_8);
+		FileUtils.write(fileNoMatchSimplified, stringBuilder, StandardCharsets.UTF_8);
 
 		stringBuilder = new StringBuilder();
+		stringBuilder.append(collectionToStringBuilder(labelsDbpedia, "DBpedia"));
 		stringBuilder.append(collectionToStringBuilder(labelsLau, "LAU"));
 		stringBuilder.append(collectionToStringBuilder(labelsNuts, "NUTS"));
 		FileUtils.write(fileNoMatchLabels, stringBuilder, StandardCharsets.UTF_8);
@@ -151,23 +202,64 @@ public class Matcher {
 		return this;
 	}
 
+	NutsContainer getNutsLevel1(String nutsCode) {
+		return nutsNotationIndex.get(nutsCode.substring(0, 3));
+	}
+
+	DbpediaPlaceContainer getDbpedia(String nutsCode) {
+		return dbpediaUriIndex.get(nutsToDbpediaUris.get(Vocabularies.NS_EU_NUTS_CODE + nutsCode));
+	}
+
 	/**
-	 * Inserts static NUTS-1/DBpedia URIs to {@link #nutsToDbpediaMap}.
+	 * Gets nearest DBpedia URI for given LAU URI.
+	 */
+	private String getNearestMatchForLau(String lauUri, List<String> dbpediaUris) {
+		String lauCode = lauUri.substring(lauUri.lastIndexOf('/') + 1);
+		LauContainer lauContainer = lauCodeIndex.get(lauCode);
+		DbpediaPlaceContainer parentDbpedia = getDbpedia(getNutsLevel1(lauContainer.nuts3code).notation);
+		return getNearestMatch(parentDbpedia, dbpediaUris);
+	}
+
+	/**
+	 * Gets nearest DBpedia URI for given NUTS URI.
+	 */
+	private String getNearestMatchForNuts(String nutsUri, List<String> dbpediaUris) {
+		String nutsCode = nutsUri.substring(nutsUri.lastIndexOf('/') + 1);
+		DbpediaPlaceContainer parentDbpedia = getDbpedia(getNutsLevel1(nutsCode).notation);
+		return getNearestMatch(parentDbpedia, dbpediaUris);
+	}
+
+	/**
+	 * Gets nearest DBpedia URI for source DBpedia URI.
+	 */
+	private String getNearestMatch(DbpediaPlaceContainer sourceDbpedia, List<String> dbpediaUris) {
+		double minDistance = Double.MAX_VALUE;
+		String minDbpediaUri = null;
+		for (String dbpediaUri : dbpediaUris) {
+			DbpediaPlaceContainer dbpedia = dbpediaUriIndex.get(dbpediaUri);
+			double distance = GeoUtil.getDistance(sourceDbpedia.lat, sourceDbpedia.lon, dbpedia.lat, dbpedia.lon);
+			if (distance < minDistance) {
+				minDistance = distance;
+				minDbpediaUri = dbpedia.uri;
+			}
+		}
+		return minDbpediaUri;
+	}
+
+	/**
+	 * Inserts static NUTS-1/DBpedia URIs to {@link #nutsToDbpediaUris}.
 	 * 
-	 * Removes NUTS entries from {@link #nuts}.
+	 * Removes NUTS entries from {@link #nutsLabelToUris}.
 	 */
 	private void staticMatching() {
-		System.out.println();
-		System.out.println("Static matches");
-
 		List<String> nutsLabelsToRemove = new LinkedList<String>();
 		for (Entry<String, String> n2d : new Mapping().getNutsToDbPediaFederalStates().entrySet()) {
 
 			// Insert static URIs
-			nutsToDbpediaMap.put(n2d.getKey(), n2d.getValue());
+			nutsToDbpediaUris.put(n2d.getKey(), n2d.getValue());
 
 			// Remember label to remove
-			for (Entry<String, List<String>> nutsEntry : nuts.entrySet()) {
+			for (Entry<String, List<String>> nutsEntry : nutsLabelToUris.entrySet()) {
 				if (nutsEntry.getValue().contains(n2d.getKey())) {
 					nutsLabelsToRemove.add(nutsEntry.getKey());
 					break;
@@ -179,19 +271,21 @@ public class Matcher {
 		}
 
 		// Remove NUTS label
-		int nutsSize = nuts.size();
+		int nutsSize = nutsLabelToUris.size();
 		for (String nutsLabel : nutsLabelsToRemove) {
-			nuts.remove(nutsLabel);
+			nutsLabelToUris.remove(nutsLabel);
 		}
 		if (nutsLabelsToRemove.size() != 16) {
 			System.err.println("Warning: NUTS-1 static URIs not complete. " + Matcher.class.getSimpleName());
 		}
-		if (nutsSize != nuts.size() + 16) {
+		if (nutsSize != nutsLabelToUris.size() + 16) {
 			System.err.println("Warning: NUTS-1 labels not complete. " + Matcher.class.getSimpleName());
 		}
 
 	}
 
+	// Checks keys of given map. If the key contains characters like ',' or '(', the
+	// key is shortened. Key and related values are added to a new map.
 	private Map<String, List<String>> simplify(Map<String, List<String>> map, boolean addOnlySimplified) {
 		Map<String, List<String>> simplifiedMap = new HashMap<String, List<String>>();
 		for (String key : map.keySet()) {
@@ -290,51 +384,60 @@ public class Matcher {
 		}
 	}
 
-	private void getDbpedia() throws Exception {
-		dbpedia = new HashMap<String, List<String>>();
+	/**
+	 * Creates {@link #dbpediaLabelToUris}.
+	 */
+	private void createDbpediaLabelsToUris() throws Exception {
+		dbpediaLabelToUris = new HashMap<String, List<String>>();
 		int counter = 0;
 		for (DbpediaPlaceContainer container : Cache.getDbpedia(true)) {
 			boolean added = false;
 			List<String> list = new LinkedList<String>();
 			list.add(container.uri);
 			if (container.labelDe != null) {
-				addListItemsToMap(dbpedia, container.labelDe, list, true);
+				addListItemsToMap(dbpediaLabelToUris, container.labelDe, list, true);
 				added = true;
 			}
 			if (container.labelEn != null && !container.labelDe.equals(container.labelDe)) {
-				addListItemsToMap(dbpedia, container.labelEn, list, true);
+				addListItemsToMap(dbpediaLabelToUris, container.labelEn, list, true);
 				added = true;
 			}
 			if (added) {
 				counter++;
 			}
 		}
-		System.out.println("Loaded DBPedia. Labels: " + dbpedia.size() + ", URIs: " + counter);
+		System.out.println("Loaded DBPedia. Labels: " + dbpediaLabelToUris.size() + ", URIs: " + counter);
 	}
 
-	private void getLau() throws Exception {
+	/**
+	 * Creates {@link #lauNameToUris}.
+	 */
+	private void createLauNameToUris() throws Exception {
 		int counter = 0;
-		lau = new HashMap<String, List<String>>();
+		lauNameToUris = new HashMap<String, List<String>>();
 		for (LauContainer container : Cache.getLau(true)) {
 			counter++;
 			List<String> list = new LinkedList<String>();
 			list.add(container.getUri());
-			addListItemsToMap(lau, container.lauNameLatin, list, true);
+			addListItemsToMap(lauNameToUris, container.lauNameLatin, list, true);
 		}
-		System.out.println("Loaded LAU. Labels: " + lau.size() + ", URIs: " + counter);
+		System.out.println("Loaded LAU. Labels: " + lauNameToUris.size() + ", URIs: " + counter);
 	}
 
-	private void getNuts() throws Exception {
+	/**
+	 * Creates {@link #nutsLabelToUris}.
+	 */
+	private void createNutsLabelsToUris() throws Exception {
 		int counter = 0;
-		nuts = new HashMap<String, List<String>>();
+		nutsLabelToUris = new HashMap<String, List<String>>();
 		for (NutsContainer container : Cache.getNuts(true).values()) {
 			counter++;
 			List<String> list = new LinkedList<String>();
 			list.add(container.getUri());
 			for (String prefLabel : container.prefLabel) {
-				addListItemsToMap(nuts, prefLabel, list, true);
+				addListItemsToMap(nutsLabelToUris, prefLabel, list, true);
 			}
 		}
-		System.out.println("Loaded NUTS. Labels: " + nuts.size() + ", URIs: " + counter);
+		System.out.println("Loaded NUTS. Labels: " + nutsLabelToUris.size() + ", URIs: " + counter);
 	}
 }

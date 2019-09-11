@@ -18,6 +18,12 @@ public class Mapping {
 	public Map<String, String> getNutsToDbPediaFederalStates() {
 		// http://dbpedia.org/class/yago/WikicatStatesOfGermany
 		Map<String, String> map = new HashMap<String, String>();
+
+		// Not contained in ?place <http://dbpedia.org/ontology/country>
+		// <http://dbpedia.org/resource/Germany>
+		// map.put("http://data.europa.eu/nuts/code/DE",
+		// "http://dbpedia.org/resource/Germany");
+
 		map.put("http://data.europa.eu/nuts/code/DE1", "http://dbpedia.org/resource/Baden-Württemberg");
 		map.put("http://data.europa.eu/nuts/code/DE2", "http://dbpedia.org/resource/Bavaria");
 		map.put("http://data.europa.eu/nuts/code/DE3", "http://dbpedia.org/resource/Berlin");
@@ -42,6 +48,7 @@ public class Mapping {
 	 */
 	public Map<String, String> getNutsCodeToPrefLabel() {
 		Map<String, String> map = new HashMap<String, String>();
+		map.put("DE", "Deutschland");
 		map.put("DE1", "Baden-Württemberg");
 		map.put("DE2", "Bayern");
 		map.put("DE3", "Berlin");

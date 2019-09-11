@@ -51,6 +51,7 @@ public class Main {
 
 		// Statistics
 		String statistics = new Statistics(modelBuilder.getModel()).compute().getString();
+		System.out.println();
 		System.out.println(statistics);
 		FileUtils.write(new File(Cfg.getInstance().get(Cfg.OUT_DIRECTORY), "statistics.txt"), statistics,
 				StandardCharsets.UTF_8);

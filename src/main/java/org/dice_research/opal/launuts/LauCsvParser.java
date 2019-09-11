@@ -3,8 +3,11 @@ package org.dice_research.opal.launuts;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
@@ -43,5 +46,13 @@ public class LauCsvParser {
 
 	public List<LauContainer> getLauList() {
 		return lauList;
+	}
+
+	public static Map<String, LauContainer> createLauCodeToContainer(Collection<LauContainer> lauContainerList) {
+		Map<String, LauContainer> map = new HashMap<String, LauContainer>();
+		for (LauContainer container : lauContainerList) {
+			map.put(container.lauCode, container);
+		}
+		return map;
 	}
 }

@@ -184,6 +184,9 @@ public class NutsRdfExtractor {
 		return nutsIndex.get(key);
 	}
 
+	/**
+	 * NUTS notation to container.
+	 */
 	public Map<String, NutsContainer> getNutsIndex() {
 		return nutsIndex;
 	}
