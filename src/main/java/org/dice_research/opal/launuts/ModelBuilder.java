@@ -38,6 +38,7 @@ public class ModelBuilder {
 		model.setNsPrefix("ogc", Vocabularies.NS_OGC);
 		model.setNsPrefix("geo", Vocabularies.NS_GEO);
 		model.setNsPrefix("dbr", Vocabularies.NS_DBR);
+		model.setNsPrefix("dbo", Vocabularies.NS_DBO);
 
 		// Additional prefixes to reduce model size
 		model.setNsPrefix("laude", Vocabularies.NS_LAU_DE);
@@ -172,6 +173,8 @@ public class ModelBuilder {
 		if (getModel().containsResource(res)) {
 			return res;
 		} else {
+			getModel().add(res, Vocabularies.PROP_TYPE, Vocabularies.RES_PLACE);
+
 			Literal wkt = ResourceFactory.createTypedLiteral(
 					"POINT(" + dbpediaPlaceContainer.lat + " " + dbpediaPlaceContainer.lon + ")", WKTDatatype.INSTANCE);
 			getModel().addLiteral(res, Geo.HAS_GEOMETRY_PROP, wkt);

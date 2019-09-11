@@ -43,6 +43,8 @@ public abstract class Vocabularies {
 	public static final Resource RES_EU_DE = ResourceFactory.createResource(NS_EU_NUTS_CODE + "DE");
 
 	public static final String NS_DBR = "http://dbpedia.org/resource/";
+	public static final String NS_DBO = "http://dbpedia.org/ontology/";
+	public static final Resource RES_PLACE = ResourceFactory.createResource(NS_DBO + "Place");
 
 	public static final String NS_LAUNUTS = "http://projekt-opal.de/launuts/";
 	public static final String NS_NUTS = NS_LAUNUTS + "nuts/";
