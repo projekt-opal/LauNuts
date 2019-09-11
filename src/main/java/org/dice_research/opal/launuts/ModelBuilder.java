@@ -84,8 +84,31 @@ public class ModelBuilder {
 
 			getModel().add(nuts, Vocabularies.PROP_NOTATION, getModel().createLiteral(container.notation));
 
-			for (String prefLabel : container.prefLabel) {
-				getModel().add(nuts, Vocabularies.PROP_PREFLABEL, getModel().createLiteral(prefLabel));
+			if (container.prefLabel.size() == 1) {
+				// Add only label
+				String prefLabel = container.prefLabel.iterator().next();
+				String simpleName = NutsContainer.toSimpleName(prefLabel);
+				getModel().add(nuts, Vocabularies.PROP_PREFLABEL, getModel().createLiteral(simpleName));
+				if (!simpleName.equals(prefLabel)) {
+					getModel().add(nuts, Vocabularies.PROP_ALTLABEL, getModel().createLiteral(prefLabel));
+				}
+			} else {
+				// Get shortest label
+				String shortestLabel = NutsContainer.toSimpleName(container.prefLabel.iterator().next());
+				for (String prefLabel : container.prefLabel) {
+					prefLabel = NutsContainer.toSimpleName(prefLabel);
+					if (prefLabel.length() < shortestLabel.length()) {
+						shortestLabel = prefLabel;
+					}
+				}
+				// Use short form of label as preferred label
+				getModel().add(nuts, Vocabularies.PROP_PREFLABEL, getModel().createLiteral(shortestLabel));
+				// Add other variants
+				for (String prefLabel : container.prefLabel) {
+					if (!shortestLabel.equals(prefLabel)) {
+						getModel().add(nuts, Vocabularies.PROP_ALTLABEL, getModel().createLiteral(prefLabel));
+					}
+				}
 			}
 
 			nuts3map.put(container.notation, nuts);

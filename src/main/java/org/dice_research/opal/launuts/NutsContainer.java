@@ -47,4 +47,14 @@ public class NutsContainer implements Serializable {
 		stringBuilder.append(getUri());
 		return stringBuilder.toString();
 	}
+
+	public static String toSimpleName(String label) {
+		if (label.contains(",")) {
+			label = label.substring(0, label.indexOf(","));
+		}
+		if (label.contains("(")) {
+			label = label.substring(0, label.indexOf("("));
+		}
+		return label.trim();
+	}
 }
