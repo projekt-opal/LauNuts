@@ -1,7 +1,9 @@
 package org.dice_research.opal.launuts;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Static mappings.
@@ -36,7 +38,7 @@ public class Mapping {
 	}
 
 	/**
-	 * Returns map Nuts-Code to german label.
+	 * Returns map Nuts-code to german label.
 	 */
 	public Map<String, String> getNutsCodeToPrefLabel() {
 		Map<String, String> map = new HashMap<String, String>();
@@ -57,5 +59,16 @@ public class Mapping {
 		map.put("DEF", "Schleswig-Holstein");
 		map.put("DEG", "Thüringen");
 		return map;
+	}
+
+	/**
+	 * Returns unused Nuts-codes.
+	 */
+	public Set<String> getUnusedNutsCodes() {
+		Set<String> set = new HashSet<String>();
+		set.add("DEZ");
+		set.add("DEZZ");
+		set.add("DEZZZ");
+		return set;
 	}
 }

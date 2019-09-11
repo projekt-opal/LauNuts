@@ -27,6 +27,7 @@ public class Main {
 
 		// NUTS-1 prefLabel
 		enhancePrefLabel(nutsIndex);
+		removeUnusedNuts(nutsIndex);
 
 		// Parse LAU CSV
 		List<LauContainer> lauList = Cache.getLau(true);
@@ -61,6 +62,11 @@ public class Main {
 			nutsContainer.prefLabel = new HashSet<String>();
 			nutsContainer.prefLabel.add(nutsUri2prefLabel.getValue());
 		}
+	}
 
+	void removeUnusedNuts(Map<String, NutsContainer> nutsIndex) {
+		for (String nutsCode : new Mapping().getUnusedNutsCodes()) {
+			nutsIndex.remove(nutsCode);
+		}
 	}
 }
