@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.dice-research.opal</groupId>
 	<artifactId>launuts</artifactId>
-	<version>0.2.1</version>
+	<version>0.2.2-SNAPSHOT</version>
 	<name>LauNuts</name>
 
 	<dependencies>
