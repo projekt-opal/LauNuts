@@ -59,6 +59,12 @@ public class Matcher {
 		stringBuilder.append(multipleUrisToStringBuilder(nuts, "NUTS"));
 		FileUtils.write(fileMultipleUris, stringBuilder, StandardCharsets.UTF_8);
 
+		// ---
+
+		staticMatching();
+
+		// ---
+
 		// Exact matches
 		System.out.println();
 		System.out.println("Exact matches");
@@ -143,6 +149,47 @@ public class Matcher {
 		FileUtils.write(fileNoMatchLabels, stringBuilder, StandardCharsets.UTF_8);
 
 		return this;
+	}
+
+	/**
+	 * Inserts static NUTS-1/DBpedia URIs to {@link #nutsToDbpediaMap}.
+	 * 
+	 * Removes NUTS entries from {@link #nuts}.
+	 */
+	private void staticMatching() {
+		System.out.println();
+		System.out.println("Static matches");
+
+		List<String> nutsLabelsToRemove = new LinkedList<String>();
+		for (Entry<String, String> n2d : new Mapping().getNutsToDbPediaFederalStates().entrySet()) {
+
+			// Insert static URIs
+			nutsToDbpediaMap.put(n2d.getKey(), n2d.getValue());
+
+			// Remember label to remove
+			for (Entry<String, List<String>> nutsEntry : nuts.entrySet()) {
+				if (nutsEntry.getValue().contains(n2d.getKey())) {
+					nutsLabelsToRemove.add(nutsEntry.getKey());
+					break;
+				}
+			}
+			if (nutsLabelsToRemove.size() == 16) {
+				break;
+			}
+		}
+
+		// Remove NUTS label
+		int nutsSize = nuts.size();
+		for (String nutsLabel : nutsLabelsToRemove) {
+			nuts.remove(nutsLabel);
+		}
+		if (nutsLabelsToRemove.size() != 16) {
+			System.err.println("Warning: NUTS-1 static URIs not complete. " + Matcher.class.getSimpleName());
+		}
+		if (nutsSize != nuts.size() + 16) {
+			System.err.println("Warning: NUTS-1 labels not complete. " + Matcher.class.getSimpleName());
+		}
+
 	}
 
 	private Map<String, List<String>> simplify(Map<String, List<String>> map, boolean addOnlySimplified) {

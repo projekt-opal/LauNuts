@@ -110,7 +110,7 @@ public class NutsRdfExtractor {
 
 		nodeIterator = model.listObjectsOfProperty(resource, Vocabularies.PROP_PREFLABEL);
 		while (nodeIterator.hasNext()) {
-			container.prefLabel.add(nodeIterator.next().asLiteral().toString());
+			container.prefLabel.add(nodeIterator.next().asLiteral().toString().trim());
 		}
 
 		if (nutsLevel == null) {

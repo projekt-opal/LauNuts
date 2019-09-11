@@ -2,8 +2,10 @@ package org.dice_research.opal.launuts;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
 
@@ -22,6 +24,9 @@ public class Main {
 
 		// Extract NUTS RDF
 		Map<String, NutsContainer> nutsIndex = Cache.getNuts(true);
+
+		// NUTS-1 prefLabel
+		enhancePrefLabel(nutsIndex);
 
 		// Parse LAU CSV
 		List<LauContainer> lauList = Cache.getLau(true);
@@ -50,4 +55,12 @@ public class Main {
 				StandardCharsets.UTF_8);
 	}
 
+	private void enhancePrefLabel(Map<String, NutsContainer> nutsIndex) {
+		for (Entry<String, String> nutsUri2prefLabel : new Mapping().getNutsCodeToPrefLabel().entrySet()) {
+			NutsContainer nutsContainer = nutsIndex.get(nutsUri2prefLabel.getKey());
+			nutsContainer.prefLabel = new HashSet<String>();
+			nutsContainer.prefLabel.add(nutsUri2prefLabel.getValue());
+		}
+
+	}
 }
