@@ -13,17 +13,17 @@ The knowledge graph data is available at the [Hobbit server](https://hobbitdata.
 ## Statistics
 
 ```
-Geo-Level:       1
-NUTS-1:         17
-NUTS-2:         39
-NUTS-3:        402
-LAU:        11,087
-Total:      11,546
+Countries:       1 (Germany)
+NUTS-1:         16 (Federal states)
+NUTS-2:         38 (Government regions)
+NUTS-3:        401 (Districts)
+LAU:        11,087 (Municipalities)
+Total:      11,543
 
 GeoData:    11,258
-No GeoData:    288
+No GeoData:    285
 
-Triples:    59,684
+Triples:   103,031
 ```
 
 ## Contact
