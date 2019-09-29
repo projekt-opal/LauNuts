@@ -19,13 +19,6 @@ import org.dice_research.opal.launuts.utils.GeoUtil;
  */
 public class Matcher {
 
-	/**
-	 * Runs matcher.
-	 */
-	public static void main(String[] args) throws Exception {
-		new Matcher().run();
-	}
-
 	// Results: URIs to URIs
 	private HashMap<String, String> lauToDbpediaUris = new HashMap<String, String>();
 	private HashMap<String, String> nutsToDbpediaUris = new HashMap<String, String>();
