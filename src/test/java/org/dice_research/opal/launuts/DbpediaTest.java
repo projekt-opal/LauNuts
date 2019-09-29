@@ -8,7 +8,7 @@ import java.util.List;
  * 
  * @author Adrian Wilke
  */
-public class Dbpedia {
+public class DbpediaTest {
 
 	public static void main(String[] args) throws Exception {
 
@@ -18,7 +18,7 @@ public class Dbpedia {
 		boolean requestDbpediaData = true;
 		boolean useCache = true;
 
-		Dbpedia dbpedia = new Dbpedia();
+		DbpediaTest dbpedia = new DbpediaTest();
 
 		// Delete cache
 		if (deleteCache) {
@@ -57,4 +57,5 @@ public class Dbpedia {
 			System.out.println("DBpedia cache file does not exist.");
 		}
 	}
+	
 }

@@ -1,5 +1,5 @@
 /**
- * Manual tests.
+ * Manual runs of single components.
  * 
  * @author Adrian Wilke
  */
