@@ -9,5 +9,6 @@ OPTIONAL { ?place <http://dbpedia.org/property/nuts> ?nuts } .
 FILTER (lang(?labelde) = 'de') .
 FILTER (lang(?labelen) = 'en')
 }
+ORDER BY ?place
 LIMIT 10000
 OFFSET 0
