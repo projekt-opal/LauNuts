@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
+import org.dice_research.opal.launuts.matcher.StaticMappings;
+import org.dice_research.opal.launuts.matcher.MatcherVersion1;
 
 /**
  * Main entry point.
@@ -36,7 +38,7 @@ public class Main {
 		Map<String, DbpediaPlaceContainer> dbpediaIndex = DbpediaRemote.createPlacesIndex(Cache.getDbpedia(true));
 
 		// Match datasets
-		Matcher matcher = new Matcher().run();
+		MatcherVersion1 matcher = new MatcherVersion1().run();
 
 		// Create new model
 		ModelBuilder modelBuilder = new ModelBuilder()
@@ -58,7 +60,7 @@ public class Main {
 	}
 
 	private void enhancePrefLabel(Map<String, NutsContainer> nutsIndex) {
-		for (Entry<String, String> nutsUri2prefLabel : new Mapping().getNutsCodeToPrefLabel().entrySet()) {
+		for (Entry<String, String> nutsUri2prefLabel : new StaticMappings().getNutsCodeToPrefLabel().entrySet()) {
 			NutsContainer nutsContainer = nutsIndex.get(nutsUri2prefLabel.getKey());
 			nutsContainer.prefLabel = new HashSet<String>();
 			nutsContainer.prefLabel.add(nutsUri2prefLabel.getValue());
@@ -66,7 +68,7 @@ public class Main {
 	}
 
 	void removeUnusedNuts(Map<String, NutsContainer> nutsIndex) {
-		for (String nutsCode : new Mapping().getUnusedNutsCodes()) {
+		for (String nutsCode : new StaticMappings().getUnusedNutsCodes()) {
 			nutsIndex.remove(nutsCode);
 		}
 	}
