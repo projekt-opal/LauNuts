@@ -1,4 +1,4 @@
-package org.dice_research.opal.launuts;
+package org.dice_research.opal.launuts.matcher;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -10,6 +10,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
+import org.dice_research.opal.launuts.Cache;
+import org.dice_research.opal.launuts.Cfg;
+import org.dice_research.opal.launuts.DbpediaPlaceContainer;
+import org.dice_research.opal.launuts.DbpediaRemote;
+import org.dice_research.opal.launuts.LauContainer;
+import org.dice_research.opal.launuts.LauCsvParser;
+import org.dice_research.opal.launuts.NutsContainer;
+import org.dice_research.opal.launuts.Vocabularies;
 import org.dice_research.opal.launuts.utils.GeoUtil;
 
 /**
@@ -17,14 +25,7 @@ import org.dice_research.opal.launuts.utils.GeoUtil;
  * 
  * @author Adrian Wilke
  */
-public class Matcher {
-
-	/**
-	 * Runs matcher.
-	 */
-	public static void main(String[] args) throws Exception {
-		new Matcher().run();
-	}
+public class MatcherVersion1 {
 
 	// Results: URIs to URIs
 	private HashMap<String, String> lauToDbpediaUris = new HashMap<String, String>();
@@ -59,7 +60,7 @@ public class Matcher {
 		return nutsToDbpediaUris;
 	}
 
-	public Matcher run() throws Exception {
+	public MatcherVersion1 run() throws Exception {
 
 		// Get data
 		createDbpediaLabelsToUris();
@@ -253,7 +254,7 @@ public class Matcher {
 	 */
 	private void staticMatching() {
 		List<String> nutsLabelsToRemove = new LinkedList<String>();
-		for (Entry<String, String> n2d : new Mapping().getNutsToDbPediaFederalStates().entrySet()) {
+		for (Entry<String, String> n2d : new StaticMappings().getNutsToDbPediaFederalStates().entrySet()) {
 
 			// Insert static URIs
 			nutsToDbpediaUris.put(n2d.getKey(), n2d.getValue());
@@ -276,10 +277,10 @@ public class Matcher {
 			nutsLabelToUris.remove(nutsLabel);
 		}
 		if (nutsLabelsToRemove.size() != 16) {
-			System.err.println("Warning: NUTS-1 static URIs not complete. " + Matcher.class.getSimpleName());
+			System.err.println("Warning: NUTS-1 static URIs not complete. " + MatcherVersion1.class.getSimpleName());
 		}
 		if (nutsSize != nutsLabelToUris.size() + 16) {
-			System.err.println("Warning: NUTS-1 labels not complete. " + Matcher.class.getSimpleName());
+			System.err.println("Warning: NUTS-1 labels not complete. " + MatcherVersion1.class.getSimpleName());
 		}
 
 	}
@@ -343,7 +344,8 @@ public class Matcher {
 					}
 					stringBuilder.append("<br />\n");
 				} else {
-					System.err.println("Warning: Unknown type " + type + " in " + Matcher.class.getSimpleName());
+					System.err
+							.println("Warning: Unknown type " + type + " in " + MatcherVersion1.class.getSimpleName());
 					stringBuilder.append("<br />\n");
 				}
 			}

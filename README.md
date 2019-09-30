@@ -20,10 +20,10 @@ NUTS-3:        401 (Districts)
 LAU:        11,087 (Municipalities)
 Total:      11,543
 
-GeoData:    11,258
-No GeoData:    285
+GeoData:    10,695
+No GeoData:    848
 
-Triples:   103,031
+Triples:   100,360
 ```
 
 ## Contact

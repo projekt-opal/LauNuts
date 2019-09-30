@@ -55,6 +55,8 @@ public class DbpediaRemote {
 				container.lat = querySolution.getLiteral("lat").getFloat();
 			if (querySolution.getLiteral("long") != null)
 				container.lon = querySolution.getLiteral("long").getFloat();
+			if (querySolution.getLiteral("nuts") != null)
+				container.nuts = querySolution.getLiteral("nuts").getLexicalForm();
 			places.add(container);
 		}
 		return counter;

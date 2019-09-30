@@ -1,4 +1,4 @@
-package org.dice_research.opal.launuts;
+package org.dice_research.opal.launuts.matcher;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,7 +10,7 @@ import java.util.Set;
  * 
  * @author Adrian Wilke
  */
-public class Mapping {
+public class StaticMappings {
 
 	/**
 	 * Returns map Nuts-URI to DBpedia-URI for NUTS-1.
