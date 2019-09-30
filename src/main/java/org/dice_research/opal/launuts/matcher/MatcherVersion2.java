@@ -1,5 +1,8 @@
 package org.dice_research.opal.launuts.matcher;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -7,7 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.FileUtils;
 import org.dice_research.opal.launuts.Cache;
+import org.dice_research.opal.launuts.Cfg;
 import org.dice_research.opal.launuts.DbpediaPlaceContainer;
 import org.dice_research.opal.launuts.LauContainer;
 import org.dice_research.opal.launuts.NutsContainer;
@@ -23,6 +28,8 @@ public class MatcherVersion2 {
 
 	// Containers for results (URI to URI)
 	private HashMap<String, String> lauToDbpediaUris = new HashMap<String, String>();
+	private HashMap<String, String> nutsToDbpediaUrisFuzzy = new HashMap<String, String>();
+	private HashMap<String, String> nutsToDbpediaUrisStatic = new HashMap<String, String>();
 	private HashMap<String, String> nutsToDbpediaUris = new HashMap<String, String>();
 
 	// Results of previous steps (URI to container)
@@ -35,68 +42,89 @@ public class MatcherVersion2 {
 	private Map<String, List<String>> lauNameToUris = new HashMap<String, List<String>>();
 	private Map<String, List<String>> nutsLabelToUris = new HashMap<String, List<String>>();
 
+	// Files
+	File fileNoMatchSimplified = new File(Cfg.getInstance().get(Cfg.OUT_DIRECTORY), "no-match-simplified.txt");
+	File fileNoMatchExact = new File(Cfg.getInstance().get(Cfg.OUT_DIRECTORY), "no-match-labels.txt");
+
+	// Configuration
 	private static final int PRINT_MAX_LENGTH = 5;
+	public int timeoutAfterLoadingData = 0;
 
-	public void run() throws Exception {
+	public MatcherVersion2 run() throws Exception {
 
-		// Run components and generate indexes
-		prepareData();
+		if (timeoutAfterLoadingData > 0) {
+			Cache.getDbpedia(true);
+			Cache.getLau(true);
+			Cache.getNuts(true);
+			Thread.sleep(timeoutAfterLoadingData);
+		}
 
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(System.lineSeparator());
-		printAdd(stringBuilder, "dbpediaUriIndex", dbpediaUriIndex.size(), PRINT_MAX_LENGTH);
-		printAdd(stringBuilder, "lauCodeIndex", lauCodeIndex.size(), PRINT_MAX_LENGTH);
-		printAdd(stringBuilder, "nutsNotationIndex", nutsNotationIndex.size(), PRINT_MAX_LENGTH);
-		stringBuilder.append(System.lineSeparator());
-		printAdd(stringBuilder, "dbpediaLabelToUris", dbpediaLabelToUris.size(), PRINT_MAX_LENGTH);
-		printAdd(stringBuilder, "lauNameToUris", lauNameToUris.size(), PRINT_MAX_LENGTH);
-		printAdd(stringBuilder, "nutsLabelToUris", nutsLabelToUris.size(), PRINT_MAX_LENGTH);
-		System.out.println(stringBuilder.toString());
+		print("0 Initial");
 
-		print("Prepared data");
+		// Get data containers and prepare indexes
+		getData();
+		print("1 Got data");
 
 		// Add 16 federal states as static matches
-		extractFederalStates();
-		print("Extracted federal states");
+		setFederalStates();
+		print("2 Extracted federal states");
+
+		// Add DBpedia NUTS information
+		setStaticNuts();
+		print("3 Static");
+
+		// Prepare labels
+		prepareDbpediaLabels(Cache.getDbpedia(true));
+		prepareLauLabels(Cache.getLau(true));
+		prepareNutsLabels(Cache.getNuts(true).values());
+		print("4 Prepared labels");
 
 		// Compare labels without modifying them
 		exactMatching();
-		print("Exact matching finished");
+		print("5 Exact matching finished");
 
-		// TODO
-		// Compare labels without modifying them
-//		simplifiedMatching();
-//		print("Simplified matching finished");
+		// Simplify labels
+		simplifiedMatching();
+		print("6 Simplified matching finished");
+
+		// Combine results
+		nutsToDbpediaUris.putAll(nutsToDbpediaUrisFuzzy);
+		nutsToDbpediaUris.putAll(nutsToDbpediaUrisStatic);
+		StringBuilder stringBuilder = new StringBuilder();
+		printAdd(stringBuilder, "nutsToDbpediaUris", nutsToDbpediaUris.size());
+		System.out.println(stringBuilder);
+
+		return this;
 	}
 
-	private void prepareData() throws Exception {
+	/**
+	 * LAU URIs to DBpedia URIs.
+	 */
+	public Map<String, String> getLauToDbpedia() {
+		return lauToDbpediaUris;
+	}
+
+	/**
+	 * NUTS URIs to DBpedia URIs.
+	 */
+	public Map<String, String> getNutsToDbpedia() {
+		return nutsToDbpediaUris;
+	}
+
+	private void getData() throws Exception {
 
 		// DBpedia
-
 		for (DbpediaPlaceContainer container : Cache.getDbpedia(true)) {
-			// TODO: Why do duplicates exist?
-			// if (dbpediaUriIndex.containsKey(container.uri)) {
-			// System.err.println(container.uri);
-			// System.err.println(container.labelDe);
-			// }
 			dbpediaUriIndex.put(container.uri, container);
 		}
 
-		prepareDbpediaLabels(Cache.getDbpedia(true));
-
 		// LAU
-
 		for (LauContainer container : Cache.getLau(true)) {
 			lauCodeIndex.put(container.lauCode, container);
 		}
 
-		prepareLauLabels(Cache.getLau(true));
-
 		// NUTS
-
 		nutsNotationIndex = Cache.getNuts(true);
-
-		prepareNutsLabels(Cache.getNuts(true).values());
 	}
 
 	private void prepareDbpediaLabels(List<DbpediaPlaceContainer> containers) {
@@ -133,55 +161,51 @@ public class MatcherVersion2 {
 	}
 
 	/**
-	 * Adds 16 federal states as static matches.
+	 * Sets 16 federal states.
 	 * 
-	 * Updates {@link #nutsToDbpediaUris}.
+	 * Updates {@link #nutsToDbpediaUrisStatic}.
 	 */
-	private void extractFederalStates() {
-		List<String> nutsLabelsToRemove = new LinkedList<String>();
+	private void setFederalStates() {
+		int resultsSize = nutsToDbpediaUrisFuzzy.size();
 
-		// Go through federal states and add to NUTS
-
+		// Go through federal states
 		for (Entry<String, String> nutsToDbpedia : new StaticMappings().getNutsToDbPediaFederalStates().entrySet()) {
 
 			// Insert NUTS results
-			nutsToDbpediaUris.put(nutsToDbpedia.getKey(), nutsToDbpedia.getValue());
-
-			// Remember label to remove. Should not be matched again
-			for (Entry<String, List<String>> nutsEntry : nutsLabelToUris.entrySet()) {
-				if (nutsEntry.getValue().contains(nutsToDbpedia.getKey())) {
-					nutsLabelsToRemove.add(nutsEntry.getKey());
-					break;
-				}
-			}
-			if (nutsLabelsToRemove.size() == 16) {
-				break;
-			}
-		}
-
-		// Remove NUTS label
-
-		int nutsSize = nutsLabelToUris.size();
-		for (String nutsLabel : nutsLabelsToRemove) {
-			nutsLabelToUris.remove(nutsLabel);
+			nutsToDbpediaUrisStatic.put(nutsToDbpedia.getKey(), nutsToDbpedia.getValue());
 		}
 
 		// Check
-
-		if (nutsLabelsToRemove.size() != 16) {
-			System.err.println("Warning: NUTS-1 static URIs not complete. " + MatcherVersion2.class.getSimpleName());
+		if (resultsSize + 16 != nutsToDbpediaUrisStatic.size()) {
+			System.err.println("Warning: Federal state results. " + MatcherVersion2.class.getSimpleName());
 		}
-		if (nutsSize != nutsLabelToUris.size() + 16) {
-			System.err.println("Warning: NUTS-1 labels not complete. " + MatcherVersion2.class.getSimpleName());
+	}
+
+	/**
+	 * Sets 16 federal states.
+	 * 
+	 * Updates {@link #nutsToDbpediaUrisStatic}.
+	 */
+	private void setStaticNuts() {
+		for (Entry<String, DbpediaPlaceContainer> dbpediaElement : dbpediaUriIndex.entrySet()) {
+			String nutsCode = dbpediaElement.getValue().nuts;
+			if (nutsCode != null) {
+				if (nutsNotationIndex.containsKey(nutsCode)) {
+					nutsToDbpediaUrisStatic.put(nutsNotationIndex.get(nutsCode).getUri(), dbpediaElement.getKey());
+				} else {
+					System.err.println("Warning: Unknown static NUTS. " + nutsCode + " " + dbpediaElement.getKey() + " "
+							+ MatcherVersion2.class.getSimpleName());
+				}
+			}
 		}
 	}
 
 	/**
 	 * Compares labels without modifying them.
 	 * 
-	 * Updates {@link #lauToDbpediaUris} and {@link #nutsToDbpediaUris}.
+	 * Updates {@link #lauToDbpediaUris} and {@link #nutsToDbpediaUrisFuzzy}.
 	 */
-	private void exactMatching() {
+	private void exactMatching() throws IOException {
 
 		// Create lists of labels
 		List<String> labelsDbpedia = new LinkedList<String>(dbpediaLabelToUris.keySet());
@@ -216,16 +240,21 @@ public class MatcherVersion2 {
 				for (String nutsUri : nutsLabelToUris.get(nutsLabel)) {
 					String nearestMatch = getNearestMatchForNuts(nutsUri, dbpediaLabelToUris.get(nutsLabel));
 					if (nearestMatch != null) {
-						nutsToDbpediaUris.put(nutsUri, nearestMatch);
+						nutsToDbpediaUrisFuzzy.put(nutsUri, nearestMatch);
 						labelsNuts.remove(i);
 					}
 				}
 
 			}
 		}
+
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(collectionToStringBuilder(labelsLau, "LAU"));
+		stringBuilder.append(collectionToStringBuilder(labelsNuts, "NUTS"));
+		FileUtils.write(fileNoMatchExact, stringBuilder, StandardCharsets.UTF_8);
 	}
 
-	private void simplifiedMatching() {
+	private void simplifiedMatching() throws IOException {
 
 		// Create lists of simplified labels
 		Map<String, List<String>> simplifiedDbpedia = simplify(dbpediaLabelToUris, false);
@@ -246,10 +275,9 @@ public class MatcherVersion2 {
 					String nearestMatch = getNearestMatchForLau(lauUri, simplifiedDbpedia.get(lauLabel));
 					if (nearestMatch != null) {
 						lauToDbpediaUris.put(lauUri, nearestMatch);
-						labelsLau.remove(i);
 					}
 				}
-
+				labelsLau.remove(i);
 			}
 		}
 
@@ -263,13 +291,17 @@ public class MatcherVersion2 {
 				for (String nutsUri : simplifiedNuts.get(nutsLabel)) {
 					String nearestMatch = getNearestMatchForNuts(nutsUri, simplifiedDbpedia.get(nutsLabel));
 					if (nearestMatch != null) {
-						nutsToDbpediaUris.put(nutsUri, nearestMatch);
-						labelsNuts.remove(i);
+						nutsToDbpediaUrisFuzzy.put(nutsUri, nearestMatch);
 					}
 				}
-
+				labelsNuts.remove(i);
 			}
 		}
+
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(collectionToStringBuilder(labelsLau, "LAU"));
+		stringBuilder.append(collectionToStringBuilder(labelsNuts, "NUTS"));
+		FileUtils.write(fileNoMatchSimplified, stringBuilder, StandardCharsets.UTF_8);
 	}
 
 	// Checks keys of given map. If the key contains characters like ',' or '(', the
@@ -374,26 +406,55 @@ public class MatcherVersion2 {
 		}
 	}
 
+	StringBuilder mapToStringBuilder(Map<String, List<String>> map, String heading) {
+		StringBuilder stringBuilder = new StringBuilder();
+		for (Entry<String, List<String>> entry : map.entrySet()) {
+			stringBuilder.append(heading + "  " + entry.getKey() + "  " + entry.getValue() + "\n");
+		}
+		return stringBuilder;
+	}
+
+	StringBuilder collectionToStringBuilder(Collection<String> collection, String heading) {
+		StringBuilder stringBuilder = new StringBuilder();
+		for (String string : collection) {
+			stringBuilder.append(heading + "  " + string + "\n");
+		}
+		return stringBuilder;
+	}
+
 	private NutsContainer getNutsLevel1(String nutsCode) {
 		return nutsNotationIndex.get(nutsCode.substring(0, 3));
 	}
 
 	private DbpediaPlaceContainer getDbpedia(String nutsCode) {
-		return dbpediaUriIndex.get(nutsToDbpediaUris.get(Vocabularies.NS_EU_NUTS_CODE + nutsCode));
+		return dbpediaUriIndex.get(nutsToDbpediaUrisStatic.get(Vocabularies.NS_EU_NUTS_CODE + nutsCode));
 	}
 
 	void print(String headline) {
 		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(System.lineSeparator());
 		stringBuilder.append("> ");
 		stringBuilder.append(headline);
 		stringBuilder.append(System.lineSeparator());
-		printAdd(stringBuilder, "lauToDbpediaUris", lauToDbpediaUris.size(), PRINT_MAX_LENGTH);
-		printAdd(stringBuilder, "nutsToDbpediaUris", nutsToDbpediaUris.size(), PRINT_MAX_LENGTH);
+		// Results of previous steps (URI to container)
+		printAdd(stringBuilder, "dbpediaUriIndex", dbpediaUriIndex.size());
+		printAdd(stringBuilder, "lauCodeIndex", lauCodeIndex.size());
+		printAdd(stringBuilder, "nutsNotationIndex", nutsNotationIndex.size());
+		stringBuilder.append(System.lineSeparator());
+		// For computation: Labels to lists of URIs
+		printAdd(stringBuilder, "dbpediaLabelToUris", dbpediaLabelToUris.size());
+		printAdd(stringBuilder, "lauNameToUris", lauNameToUris.size());
+		printAdd(stringBuilder, "nutsLabelToUris", nutsLabelToUris.size());
+		stringBuilder.append(System.lineSeparator());
+		// Containers for results (URI to URI)
+		printAdd(stringBuilder, "lauToDbpediaUris", lauToDbpediaUris.size());
+		printAdd(stringBuilder, "nutsToDbpediaUris", nutsToDbpediaUrisFuzzy.size());
+		printAdd(stringBuilder, "nutsToDbpediaUrisStatic", nutsToDbpediaUrisStatic.size());
 		System.out.println(stringBuilder.toString());
 	}
 
-	void printAdd(StringBuilder stringBuilder, String label, int size, int maxLength) {
-		for (int i = String.valueOf(size).length(); i < maxLength; i++) {
+	void printAdd(StringBuilder stringBuilder, String label, int size) {
+		for (int i = String.valueOf(size).length(); i < PRINT_MAX_LENGTH; i++) {
 			stringBuilder.append(" ");
 		}
 		stringBuilder.append(size);

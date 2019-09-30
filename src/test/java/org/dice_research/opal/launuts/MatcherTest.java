@@ -11,14 +11,16 @@ import org.dice_research.opal.launuts.matcher.MatcherVersion2;
 public class MatcherTest {
 
 	public static void main(String[] args) throws Exception {
-		
+
 		new MatcherVersion1().run();
 
 		System.out.println();
 		System.out.println("---");
 		System.out.println();
-		
-		new MatcherVersion2().run();
+
+		MatcherVersion2 matcher = new MatcherVersion2();
+		matcher.timeoutAfterLoadingData = 50;
+		matcher.run();
 	}
 
 }
