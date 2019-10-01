@@ -50,6 +50,9 @@ public class MatcherVersion2 {
 	private static final int PRINT_MAX_LENGTH = 5;
 	public int timeoutAfterLoadingData = 0;
 
+	// Deactivated, as DBpedia sometimes contains wrong data.
+	private static final boolean USE_DBPEDIA_NUTS = false;
+
 	public MatcherVersion2 run() throws Exception {
 
 		if (timeoutAfterLoadingData > 0) {
@@ -59,33 +62,35 @@ public class MatcherVersion2 {
 			Thread.sleep(timeoutAfterLoadingData);
 		}
 
-		print("0 Initial");
+		print("Initial");
 
 		// Get data containers and prepare indexes
 		getData();
-		print("1 Got data");
+		print("Got data");
 
 		// Add 16 federal states as static matches
 		setFederalStates();
-		print("2 Extracted federal states");
+		print("Extracted federal states");
 
 		// Add DBpedia NUTS information
-		setStaticNuts();
-		print("3 Static");
+		if (USE_DBPEDIA_NUTS) {
+			setStaticNuts();
+			print("Static");
+		}
 
 		// Prepare labels
 		prepareDbpediaLabels(Cache.getDbpedia(true));
 		prepareLauLabels(Cache.getLau(true));
 		prepareNutsLabels(Cache.getNuts(true).values());
-		print("4 Prepared labels");
+		print("Prepared labels");
 
 		// Compare labels without modifying them
 		exactMatching();
-		print("5 Exact matching finished");
+		print("Exact matching finished");
 
 		// Simplify labels
 		simplifiedMatching();
-		print("6 Simplified matching finished");
+		print("Simplified matching finished");
 
 		// Combine results
 		nutsToDbpediaUris.putAll(nutsToDbpediaUrisFuzzy);
@@ -182,7 +187,9 @@ public class MatcherVersion2 {
 	}
 
 	/**
-	 * Sets 16 federal states.
+	 * Uses NUTS information extracted from DBpedia.
+	 * 
+	 * There is sometimes wrong information in DBpedia (state: 2019-10-01).
 	 * 
 	 * Updates {@link #nutsToDbpediaUrisStatic}.
 	 */

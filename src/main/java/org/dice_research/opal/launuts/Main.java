@@ -57,6 +57,10 @@ public class Main {
 		System.out.println(statistics);
 		FileUtils.write(new File(Cfg.getInstance().get(Cfg.OUT_DIRECTORY), "statistics.txt"), statistics,
 				StandardCharsets.UTF_8);
+
+		Analysis.writeLauMappings(matcher.getLauToDbpedia());
+		Analysis.writeNutsMappings(matcher.getNutsToDbpedia());
+		Analysis.writeMultipleUsage(matcher.getNutsToDbpedia(), matcher.getLauToDbpedia());
 	}
 
 	private void enhancePrefLabel(Map<String, NutsContainer> nutsIndex) {
