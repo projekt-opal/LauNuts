@@ -1,11 +1,13 @@
-package org.dice_research.opal.launuts;
+package org.dice_research.opal.launuts.nuts;
 
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.dice_research.opal.launuts.Vocabularies;
+
 /**
- * Container for NUTS data.
+ * Container for NUTS data. Used in {@link NutsRdfExtractor}.
  * 
  * @author Adrian Wilke
  */

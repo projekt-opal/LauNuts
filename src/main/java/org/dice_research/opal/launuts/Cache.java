@@ -5,6 +5,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.dice_research.opal.launuts.dbpedia.DbpediaPlaceContainer;
+import org.dice_research.opal.launuts.dbpedia.DbpediaRemote;
+import org.dice_research.opal.launuts.lau.LauContainer;
+import org.dice_research.opal.launuts.lau.LauCsvParser;
+import org.dice_research.opal.launuts.nuts.NutsContainer;
+import org.dice_research.opal.launuts.nuts.NutsRdfExtractor;
 import org.dice_research.opal.launuts.utils.Serialization;
 
 /**
@@ -18,6 +24,11 @@ public abstract class Cache extends Serialization {
 	public static final File FILE_LAU = new File(Cfg.getInstance().get(Cfg.CACHE_DIRECTORY), "lau");
 	public static final File FILE_NUTS = new File(Cfg.getInstance().get(Cfg.CACHE_DIRECTORY), "nuts");
 
+	/**
+	 * Reads data from cache, if {@code useCache} is set and cache-file exists.
+	 * 
+	 * If no cache available, {@link DbpediaRemote#getPlaces()} is used.
+	 */
 	public static List<DbpediaPlaceContainer> getDbpedia(boolean useCache) throws Exception {
 		if (useCache && Cache.FILE_DBPEDIA.exists()) {
 			List<DbpediaPlaceContainer> dbpedia = Cache.readDbpedia();
@@ -33,6 +44,11 @@ public abstract class Cache extends Serialization {
 		}
 	}
 
+	/**
+	 * Reads data from cache, if {@code useCache} is set and cache-file exists.
+	 * 
+	 * If no cache available, {@link LauCsvParser} is used.
+	 */
 	public static List<LauContainer> getLau(boolean useCache) throws Exception {
 		if (useCache && Cache.FILE_LAU.exists()) {
 			List<LauContainer> lau = Cache.readLau();
@@ -48,6 +64,11 @@ public abstract class Cache extends Serialization {
 		}
 	}
 
+	/**
+	 * Reads data from cache, if {@code useCache} is set and cache-file exists.
+	 * 
+	 * If no cache available, {@link NutsRdfExtractor} is used.
+	 */
 	public static Map<String, NutsContainer> getNuts(boolean useCache) throws Exception {
 		if (useCache && Cache.FILE_NUTS.exists()) {
 			Map<String, NutsContainer> nuts = Cache.readNuts();
@@ -64,32 +85,47 @@ public abstract class Cache extends Serialization {
 		}
 	}
 
+	/**
+	 * Reads data from cache file.
+	 */
 	@SuppressWarnings("unchecked")
-	public static List<DbpediaPlaceContainer> readDbpedia() throws ClassNotFoundException, IOException {
+	protected static List<DbpediaPlaceContainer> readDbpedia() throws ClassNotFoundException, IOException {
 		return (List<DbpediaPlaceContainer>) Serialization.read(FILE_DBPEDIA);
 	}
 
+	/**
+	 * Reads data from cache file.
+	 */
 	@SuppressWarnings("unchecked")
-	public static List<LauContainer> readLau() throws ClassNotFoundException, IOException {
+	protected static List<LauContainer> readLau() throws ClassNotFoundException, IOException {
 		return (List<LauContainer>) Serialization.read(FILE_LAU);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static Map<String, NutsContainer> readNuts() throws ClassNotFoundException, IOException {
+	protected static Map<String, NutsContainer> readNuts() throws ClassNotFoundException, IOException {
 		return (Map<String, NutsContainer>) Serialization.read(FILE_NUTS);
 	}
 
-	public static void writeDbpedia(List<DbpediaPlaceContainer> dbpedia) throws IOException {
+	/**
+	 * Writes data to cache file.
+	 */
+	protected static void writeDbpedia(List<DbpediaPlaceContainer> dbpedia) throws IOException {
 		FILE_DBPEDIA.getParentFile().mkdirs();
 		write(dbpedia, FILE_DBPEDIA);
 	}
 
-	public static void writeLau(List<LauContainer> lau) throws IOException {
+	/**
+	 * Writes data to cache file.
+	 */
+	protected static void writeLau(List<LauContainer> lau) throws IOException {
 		FILE_LAU.getParentFile().mkdirs();
 		write(lau, FILE_LAU);
 	}
 
-	public static void writeNuts(Map<String, NutsContainer> nuts) throws IOException {
+	/**
+	 * Writes data to cache file.
+	 */
+	protected static void writeNuts(Map<String, NutsContainer> nuts) throws IOException {
 		FILE_NUTS.getParentFile().mkdirs();
 		write(nuts, FILE_NUTS);
 	}

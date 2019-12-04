@@ -1,4 +1,4 @@
-package org.dice_research.opal.launuts;
+package org.dice_research.opal.launuts.nuts;
 
 import java.io.File;
 import java.util.HashMap;
@@ -12,6 +12,7 @@ import org.apache.jena.rdf.model.NodeIterator;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.RDFDataMgr;
+import org.dice_research.opal.launuts.Vocabularies;
 
 /**
  * Extracts data from NUTS RDF.

@@ -1,7 +1,12 @@
-package org.dice_research.opal.launuts;
+package org.dice_research.opal.launuts.dbpedia;
 
 import java.io.Serializable;
 
+/**
+ * Data container used in {@link DbpediaRemote}.
+ *
+ * @author Adrian Wilke
+ */
 public class DbpediaPlaceContainer implements Serializable {
 
 	private static final long serialVersionUID = 1L;

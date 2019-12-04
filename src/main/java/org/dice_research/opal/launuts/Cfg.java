@@ -5,6 +5,13 @@ import java.util.Properties;
 
 import org.dice_research.opal.launuts.utils.Configuration;
 
+/**
+ * Configuration.
+ * 
+ * If no configuration file is found, a new one is created.
+ *
+ * @author Adrian Wilke
+ */
 public class Cfg extends Configuration {
 
 	public static final String CACHE_DIRECTORY = "directory.cache";
