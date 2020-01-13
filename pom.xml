@@ -22,6 +22,13 @@
 			<artifactId>GeographicLib-Java</artifactId>
 			<version>1.49</version>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
+		</dependency>
 
 		<!-- Resolving: Missing artifact com.github.jsonld-java.jsonld-java:jsonld-java:bundle:0.12.3 -->
 		<dependency>

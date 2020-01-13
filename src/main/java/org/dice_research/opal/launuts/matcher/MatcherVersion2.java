@@ -51,7 +51,7 @@ public class MatcherVersion2 {
 	public int timeoutAfterLoadingData = 0;
 
 	// Deactivated, as DBpedia sometimes contains wrong data.
-	private static final boolean USE_DBPEDIA_NUTS = false;
+	private static final boolean USE_DBPEDIA_NUTS = true;
 
 	public MatcherVersion2 run() throws Exception {
 
