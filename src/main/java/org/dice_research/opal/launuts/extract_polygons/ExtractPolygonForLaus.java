@@ -1,6 +1,5 @@
 package org.dice_research.opal.launuts.extract_polygons;
 
-
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.locationtech.jts.geom.Coordinate;
@@ -214,28 +213,30 @@ public class ExtractPolygonForLaus {
 							 */
 							geometry.add(existing_polygon);
 						}
-						
-					
-							GeometryCollection geometryCollection = (GeometryCollection) geometryFactory
-									.buildGeometry(geometry);
-							MultiPolygon final_polygon = (MultiPolygon) geometryCollection.union();
 
-							for (int index = 0; index < final_polygon.getCoordinates().length; index++) {
-								// This array will store coordinates in correct format
-								JSONArray Coordinates_Lat_Long = new JSONArray();
-								// Lattitude
-								Coordinates_Lat_Long.add(final_polygon.getCoordinates()[index].getX());
-								// Longitude
-								Coordinates_Lat_Long.add(final_polygon.getCoordinates()[index].getY());
-								PolygonCoordinates.add(Coordinates_Lat_Long);
-							}
-						
+						GeometryCollection geometryCollection = (GeometryCollection) geometryFactory
+								.buildGeometry(geometry);
+						MultiPolygon final_polygon = (MultiPolygon) geometryCollection.union();
 
-						
+						for (int index = 0; index < final_polygon.getCoordinates().length; index++) {
+							// This array will store coordinates in correct format
+							JSONArray Coordinates_Lat_Long = new JSONArray();
+							// Lattitude
+							Coordinates_Lat_Long.add(final_polygon.getCoordinates()[index].getX());
+							// Longitude
+							Coordinates_Lat_Long.add(final_polygon.getCoordinates()[index].getY());
+							PolygonCoordinates.add(Coordinates_Lat_Long);
+						}
+
+						// Check for validity of polygon
+						if (PolygonCoordinates.get(0).equals(PolygonCoordinates.get(PolygonCoordinates.size() - 1)))
+							lau_with_polygon.put("Valid_Polygon", "true");
+						else
+							lau_with_polygon.put("Valid_Polygon", "false");
+
 						lau_with_polygon.put("Coordinates", PolygonCoordinates);
 						lau_with_polygon.put("Polygon_Points", PolygonCoordinates.size());
 						all_laus_with_polygons.add(lau_with_polygon);
-
 					}
 
 					// If the geometry type is "Polygon"
@@ -320,7 +321,11 @@ public class ExtractPolygonForLaus {
 							Coordinates_Lat_Long.add(existing_polygon.getCoordinates()[index].getY());
 							PolygonCoordinates.add(Coordinates_Lat_Long);
 						}
-
+						// Check for validity of polygon
+						if (PolygonCoordinates.get(0).equals(PolygonCoordinates.get(PolygonCoordinates.size() - 1)))
+							lau_with_polygon.put("Valid_Polygon", "true");
+						else
+							lau_with_polygon.put("Valid_Polygon", "false");
 						lau_with_polygon.put("Coordinates", PolygonCoordinates);
 						lau_with_polygon.put("Polygon_Points", PolygonCoordinates.size());
 						all_laus_with_polygons.add(lau_with_polygon);

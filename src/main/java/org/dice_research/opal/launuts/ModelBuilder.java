@@ -217,14 +217,13 @@ public class ModelBuilder {
 	}
 
 	public ModelBuilder addGeoData(Map<String, DbpediaPlaceContainer> dbpediaIndex, Map<String, String> nutsToDbpedia,
-			Map<String, String> lauToDbpedia, JSONArray nuts_polygons, JSONArray laus_polygons) {
+			Map<String, String> lauToDbpedia) {
 
 		for (Entry<String, String> nuts2dbp : nutsToDbpedia.entrySet()) {
 			Resource res = ResourceFactory.createResource(nuts2dbp.getKey());
 			if (getModel().containsResource(res) && dbpediaIndex.containsKey(nuts2dbp.getValue())) {
 				Resource dbpediaRes = getDbpediaResource(dbpediaIndex.get(nuts2dbp.getValue()));
 				getModel().add(res, Vocabularies.PROP_RELATEDMATCH, dbpediaRes);
-                //addPolygons(res, dbpediaRes, nuts_polygons,"NUTS_ID");
 			}
 		}
 
@@ -233,7 +232,6 @@ public class ModelBuilder {
 			if (getModel().containsResource(res) && dbpediaIndex.containsKey(lau2dbp.getValue())) {
 				Resource dbpediaRes = getDbpediaResource(dbpediaIndex.get(lau2dbp.getValue()));
 				getModel().add(res, Vocabularies.PROP_RELATEDMATCH, dbpediaRes);
-				addPolygons(res, dbpediaRes, laus_polygons,"LAU_CODE");
 			}
 		}
 

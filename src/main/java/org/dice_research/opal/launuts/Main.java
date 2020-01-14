@@ -73,8 +73,7 @@ public class Main {
 
 				.addLau(lauList)
 
-				.addGeoData(dbpediaIndex, matcher.getNutsToDbpedia(), matcher.getLauToDbpedia(),
-						array_polygons_nuts_json,array_polygons_laus_json)
+				.addGeoData(dbpediaIndex, matcher.getNutsToDbpedia(), matcher.getLauToDbpedia())
 
 				.writeModel(new File(Cfg.getInstance().get(Cfg.OUT_DIRECTORY)));
 
