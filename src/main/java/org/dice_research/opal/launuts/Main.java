@@ -69,9 +69,9 @@ public class Main {
 		// Create new model
 		ModelBuilder modelBuilder = new ModelBuilder()
 
-				.addNuts(nutsIndex.values())
+				.addNuts(nutsIndex.values(),array_polygons_nuts_json)
 
-				.addLau(lauList)
+				.addLau(lauList,array_polygons_laus_json)
 
 				.addGeoData(dbpediaIndex, matcher.getNutsToDbpedia(), matcher.getLauToDbpedia())
 

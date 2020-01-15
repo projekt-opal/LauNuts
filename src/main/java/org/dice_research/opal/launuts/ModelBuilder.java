@@ -61,15 +61,12 @@ public class ModelBuilder {
 		model.setNsPrefix("sf", "http://www.opengis.net/ont/sf#");
 	}
 
-	public void addPolygons(Resource res, Resource dbpediaRes, JSONArray nuts_or_lau_polygons, String type) {
-
+	public void addPolygons(Resource res, String resource_id, JSONArray nuts_or_lau_polygons, String resource_id_type) {
 		/*
 		 * To extract polygon coordinates check if for the given resource's
-		 * nutcode/laucode there is a matching NUTS_ID in nuts_polygons array and then
-		 * extract the polygon Coordinates.
+		 * nutcode/laucode there is a matching NUTS_ID/LAU_CODE in nuts_polygons array and then
+		 * extract the polygon coordinates.
 		 */
-		String resource = (type=="NUTS_ID")? res.toString().replace("http://data.europa.eu/nuts/code/", "")
-				                            :res.toString().replace("http://projekt-opal.de/launuts/lau/DE/", "");
 		Iterator<JSONObject> polygon_parser_ojects_iterator = nuts_or_lau_polygons.iterator();
 
 		while (polygon_parser_ojects_iterator.hasNext()) {
@@ -83,7 +80,8 @@ public class ModelBuilder {
 			 * laus and nuts respectively.
 			 */
 			
-			if (next_json_object.get(type).toString().equals(resource)) {
+			if (next_json_object.get(resource_id_type).toString().equals(resource_id)
+					&& next_json_object.get("Valid_Polygon").equals("true")) {
 
 				Property polygon = getModel().createProperty("http://www.opengis.net/ont/sf#Polygon");
 				Property asWKT = getModel().createProperty("http://www.opengis.net/ont/geosparql#asWKT");
@@ -91,6 +89,7 @@ public class ModelBuilder {
 				JSONArray polygon_coordinates = (JSONArray) next_json_object.get("Coordinates");
 				String all_coordinates_in_lat_long_form = "";
 				JSONArray coordinate_points = (JSONArray) polygon_coordinates.get(0);
+				
 				// Initialize with first coordinate's lat and long
 				all_coordinates_in_lat_long_form = coordinate_points.get(0) + " " + coordinate_points.get(1) + ",";
 
@@ -109,13 +108,15 @@ public class ModelBuilder {
 						WKTDatatype.INSTANCE);
 				Resource polygon_resource = getModel().createResource().addProperty(RDF.type, polygon)
 						.addProperty(asWKT, polygon_wkt);
-				getModel().add(dbpediaRes, Geo.HAS_GEOMETRY_PROP, polygon_resource);
+				Property dcterms_location = getModel().createProperty("http://purl.org/dc/terms/Location");
+				//getModel().add(res, Geo.HAS_GEOMETRY_PROP, polygon_resource);
+				getModel().add(res, (Property) dcterms_location, polygon_resource);
 
 			}
 		}
 	}
 
-	public ModelBuilder addNuts(Collection<NutsContainer> nutsCollection) {
+	public ModelBuilder addNuts(Collection<NutsContainer> nutsCollection,JSONArray nuts_polygons_container) {
 		for (NutsContainer container : nutsCollection) {
 
 			Resource nuts = getModel().createResource(container.getUri());
@@ -181,13 +182,14 @@ public class ModelBuilder {
 					}
 				}
 			}
+			addPolygons(nuts,container.notation, nuts_polygons_container, "NUTS_ID");
 
 			nuts3map.put(container.notation, nuts);
 		}
 		return this;
 	}
 
-	public ModelBuilder addLau(List<LauContainer> lauList) {
+	public ModelBuilder addLau(List<LauContainer> lauList, JSONArray lau_polygons_container) {
 		for (LauContainer container : lauList) {
 			Resource lau = getModel().createResource(container.getUri());
 			if (nuts3map.containsKey(container.nuts3code)) {
@@ -212,6 +214,7 @@ public class ModelBuilder {
 				System.err.println("Unknown NUTS3 code: " + container.nuts3code + " for " + container.lauCode);
 				continue;
 			}
+			addPolygons(lau,container.lauCode, lau_polygons_container, "LAU_CODE");
 		}
 		return this;
 	}
