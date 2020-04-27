@@ -60,18 +60,18 @@ public class Main {
 		JSONParser parser = new JSONParser();
 		Reader nuts_reader,laus_reader;
 		
-		nuts_reader = new FileReader("NUTS_Polygons.json");
-		JSONArray array_polygons_nuts_json = (JSONArray) parser.parse(nuts_reader);
+		nuts_reader = new FileReader("NUT_Polygons.json");
+		JSONArray nut_polygons = (JSONArray) parser.parse(nuts_reader);
 		
-		laus_reader = new FileReader("LAUs_Polygons.json");
-		JSONArray array_polygons_laus_json = (JSONArray) parser.parse(laus_reader);
+		laus_reader = new FileReader("LAU_Polygons.json");
+		JSONArray lau_polygons = (JSONArray) parser.parse(laus_reader);
 
 		// Create new model
 		ModelBuilder modelBuilder = new ModelBuilder()
 
-				.addNuts(nutsIndex.values(),array_polygons_nuts_json)
+				.addNuts(nutsIndex.values(),nut_polygons)
 
-				.addLau(lauList,array_polygons_laus_json)
+				.addLau(lauList,lau_polygons)
 
 				.addGeoData(dbpediaIndex, matcher.getNutsToDbpedia(), matcher.getLauToDbpedia())
 

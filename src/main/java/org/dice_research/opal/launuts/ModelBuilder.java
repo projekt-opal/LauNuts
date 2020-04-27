@@ -64,14 +64,14 @@ public class ModelBuilder {
 	public void addPolygons(Resource res, String resource_id, JSONArray nuts_or_lau_polygons, String resource_id_type) {
 		/*
 		 * To extract polygon coordinates check if for the given resource's
-		 * nutcode/laucode there is a matching NUTS_ID/LAU_CODE in nuts_polygons array and then
-		 * extract the polygon coordinates.
+		 * nutcode/laucode there is a matching NUTS_ID/LAU_CODE in nuts_or_lau_polygons array 
+		 * and then extract the polygon coordinates.
 		 */
-		Iterator<JSONObject> polygon_parser_ojects_iterator = nuts_or_lau_polygons.iterator();
+		Iterator<JSONObject> polygons_iterator = nuts_or_lau_polygons.iterator();
 
-		while (polygon_parser_ojects_iterator.hasNext()) {
+		while (polygons_iterator.hasNext()) {
 
-			JSONObject next_json_object = polygon_parser_ojects_iterator.next();
+			JSONObject next_json_object = polygons_iterator.next();
 
 			/*
 			 * if nutscode's skos:notation matches a json object's nuts_id...
@@ -84,27 +84,28 @@ public class ModelBuilder {
 					&& next_json_object.get("Valid_Polygon").equals("true")) {
 
 				Property polygon = getModel().createProperty("http://www.opengis.net/ont/sf#Polygon");
+				Property point = getModel().createProperty("http://www.opengis.net/ont/sf#Point");
 				Property asWKT = getModel().createProperty("http://www.opengis.net/ont/geosparql#asWKT");
 
-				JSONArray polygon_coordinates = (JSONArray) next_json_object.get("Coordinates");
-				String all_coordinates_in_lat_long_form = "";
-				JSONArray coordinate_points = (JSONArray) polygon_coordinates.get(0);
+				JSONArray outer_ring = (JSONArray) next_json_object.get("Outer_ring");
+				String outer_ring_coordinates = "";
+				JSONArray coordinate = (JSONArray) outer_ring.get(0); //The 1st coordinate
 				
-				// Initialize with first coordinate's lat and long
-				all_coordinates_in_lat_long_form = coordinate_points.get(0) + " " + coordinate_points.get(1) + ",";
+				// Initialize with first coordinate's latitude and longitude
+				outer_ring_coordinates = coordinate.get(0) + " " + coordinate.get(1) + ",";
 
-				for (int counter = 1; counter < polygon_coordinates.size(); counter++) {
-					coordinate_points = (JSONArray) polygon_coordinates.get(counter);
-					if (counter == polygon_coordinates.size() - 1)
-						all_coordinates_in_lat_long_form = "POLYGON(" + all_coordinates_in_lat_long_form
-								+ coordinate_points.get(0) + " " + coordinate_points.get(1) + ")";
+				for (int nth_coordinate = 1; nth_coordinate < outer_ring.size(); nth_coordinate++) {
+					coordinate = (JSONArray) outer_ring.get(nth_coordinate);
+					if (nth_coordinate == outer_ring.size() - 1)
+						outer_ring_coordinates = "POLYGON(" + outer_ring_coordinates
+								+ coordinate.get(0) + " " + coordinate.get(1) + ")";
 					else
-						all_coordinates_in_lat_long_form = all_coordinates_in_lat_long_form + coordinate_points.get(0)
-								+ " " + coordinate_points.get(1) + ",";
+						outer_ring_coordinates = outer_ring_coordinates + coordinate.get(0)
+								+ " " + coordinate.get(1) + ",";
 
 				}
 
-				Literal polygon_wkt = ResourceFactory.createTypedLiteral(all_coordinates_in_lat_long_form,
+				Literal polygon_wkt = ResourceFactory.createTypedLiteral(outer_ring_coordinates,
 						WKTDatatype.INSTANCE);
 				Resource polygon_resource = getModel().createResource().addProperty(RDF.type, polygon)
 						.addProperty(asWKT, polygon_wkt);
