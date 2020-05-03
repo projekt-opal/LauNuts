@@ -87,11 +87,12 @@ public class ModelBuilder {
 				Property point = getModel().createProperty("http://www.opengis.net/ont/sf#Point");
 				Property asWKT = getModel().createProperty("http://www.opengis.net/ont/geosparql#asWKT");
 
-				JSONArray outer_ring = (JSONArray) next_json_object.get("Outer_ring");
+				//*************************Outer_ring********************************
+				JSONArray outer_ring = (JSONArray) next_json_object.get("Outer_ring");				
 				String outer_ring_coordinates = "";
 				JSONArray coordinate = (JSONArray) outer_ring.get(0); //The 1st coordinate
 				
-				// Initialize with first coordinate's latitude and longitude
+				// Initialize with 1st coordinate's latitude and longitude
 				outer_ring_coordinates = coordinate.get(0) + " " + coordinate.get(1) + ",";
 
 				for (int nth_coordinate = 1; nth_coordinate < outer_ring.size(); nth_coordinate++) {
@@ -104,15 +105,45 @@ public class ModelBuilder {
 								+ " " + coordinate.get(1) + ",";
 
 				}
+				
+				//****************Inner_rings(Part of an outer_ring)*******************************			
+				JSONArray inner_rings = (JSONArray) next_json_object.get("Inner_ring");
+				if(!(inner_rings.size()==0)) {
+					
+					String all_inner_rings_coordinates=","+" ";
+					
+					for(int number_of_inner_rings=0; number_of_inner_rings <inner_rings.size(); number_of_inner_rings++) {
+						JSONArray next_inner_ring = (JSONArray) inner_rings.get(number_of_inner_rings);
+						String next_inner_ring_coordinates = "";
+						for(int nth_coordinate = 0; nth_coordinate < next_inner_ring.size(); nth_coordinate++) {
+							coordinate = (JSONArray) next_inner_ring.get(nth_coordinate);
+							if (nth_coordinate == next_inner_ring.size() - 1)
+								next_inner_ring_coordinates = "(" + next_inner_ring_coordinates
+										+ coordinate.get(0) + " " + coordinate.get(1) + ")";
+							else
+								next_inner_ring_coordinates = next_inner_ring_coordinates + coordinate.get(0)
+										+ " " + coordinate.get(1) + ",";
+						}
+						all_inner_rings_coordinates= all_inner_rings_coordinates + next_inner_ring_coordinates;
+					}
+					outer_ring_coordinates = outer_ring_coordinates + all_inner_rings_coordinates;
+				}
+				
+				//******************Center of a polygon(A point)*********************************
+				JSONArray centroid = (JSONArray) next_json_object.get("Center");
+				String center = "POINT("+ centroid.get(0) + " " + centroid.get(1) + ")";
 
 				Literal polygon_wkt = ResourceFactory.createTypedLiteral(outer_ring_coordinates,
 						WKTDatatype.INSTANCE);
-				Resource polygon_resource = getModel().createResource().addProperty(RDF.type, polygon)
+				
+				//This is a blank object for adding a polygon
+				Resource polygon_resource = getModel().createResource()
+						.addProperty(RDF.type, polygon)
 						.addProperty(asWKT, polygon_wkt);
+				
 				Property dcterms_location = getModel().createProperty("http://purl.org/dc/terms/Location");
 				//getModel().add(res, Geo.HAS_GEOMETRY_PROP, polygon_resource);
 				getModel().add(res, (Property) dcterms_location, polygon_resource);
-
 			}
 		}
 	}
