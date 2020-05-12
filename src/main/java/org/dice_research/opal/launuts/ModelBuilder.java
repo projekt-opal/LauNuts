@@ -84,7 +84,6 @@ public class ModelBuilder {
 					&& next_json_object.get("Valid_Polygon").equals("true")) {
 
 				Property polygon = getModel().createProperty("http://www.opengis.net/ont/sf#Polygon");
-				Property point = getModel().createProperty("http://www.opengis.net/ont/sf#Point");
 				Property asWKT = getModel().createProperty("http://www.opengis.net/ont/geosparql#asWKT");
 
 				//*************************Outer_ring********************************
@@ -128,10 +127,6 @@ public class ModelBuilder {
 					}
 					outer_ring_coordinates = outer_ring_coordinates + all_inner_rings_coordinates;
 				}
-				
-				//******************Center of a polygon(A point)*********************************
-				JSONArray centroid = (JSONArray) next_json_object.get("Center");
-				String center = "POINT("+ centroid.get(0) + " " + centroid.get(1) + ")";
 
 				Literal polygon_wkt = ResourceFactory.createTypedLiteral(outer_ring_coordinates,
 						WKTDatatype.INSTANCE);
@@ -142,7 +137,6 @@ public class ModelBuilder {
 						.addProperty(asWKT, polygon_wkt);
 				
 				Property dcterms_location = getModel().createProperty("http://purl.org/dc/terms/Location");
-				//getModel().add(res, Geo.HAS_GEOMETRY_PROP, polygon_resource);
 				getModel().add(res, (Property) dcterms_location, polygon_resource);
 			}
 		}
