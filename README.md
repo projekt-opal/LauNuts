@@ -1,3 +1,5 @@
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/15ae3d9904fb4323b682ae48f96275d3)](https://www.codacy.com/gh/pg-dp/LauNuts?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=pg-dp/LauNuts&amp;utm_campaign=Badge_Grade)
+
 # LauNuts
 
 Download the LauNuts knowledge graph at the [Hobbit server](https://hobbitdata.informatik.uni-leipzig.de/OPAL/).
