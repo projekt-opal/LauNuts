@@ -1,4 +1,4 @@
-package org.dice_research.opal.launuts.extract_polygons;
+package org.dice_research.opal.launuts.polygons.parser;
 
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;

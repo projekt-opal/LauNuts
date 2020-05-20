@@ -13,10 +13,12 @@ public class MultiPolygon {
 
 	public List<Polygon> polygons;
 
+	//If Multipolygon has only 1 polygon
 	public MultiPolygon() {
 		polygons = new LinkedList<>();
 	}
 
+	//If Multipolygon has several polygons
 	public MultiPolygon(int size) {
 		polygons = new ArrayList<>(size);
 	}
