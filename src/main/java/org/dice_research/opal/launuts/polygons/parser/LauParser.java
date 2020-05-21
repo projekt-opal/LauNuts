@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.json.simple.parser.JSONParser;
 import org.apache.commons.io.IOUtils;
@@ -39,6 +40,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class LauParser implements PolygonParserInterface{
 
 	public static void main(String[] args) throws IOException, Exception {
+		
+		System.out.println("Before running this code, please ensure that Launuts data in the folder \"resources/launuts_geojson_and_shape_files\" folder has been extracted!!");
+		System.out.println(" ");
+		try {
+			TimeUnit.SECONDS.sleep(3);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		File file = new File(new LauParser().getClass().getClassLoader()
 				.getResource("launuts_geojson_and_shape_files/lau_1_1_million/LAU_2018.shp").getFile());
