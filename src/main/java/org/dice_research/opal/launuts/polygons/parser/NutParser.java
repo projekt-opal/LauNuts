@@ -27,27 +27,28 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 import java.io.File;
 import java.io.FileNotFoundException;
 
 public class NutParser implements PolygonParserInterface {
 
-	private String nut_resolutions[] = { "nut_1_1_million", "nut_1_3_million", "nut_1_10_million", "nut_1_20_million",
+	private static String nut_resolutions[] = { "nut_1_1_million", "nut_1_3_million", "nut_1_10_million", "nut_1_20_million",
 			"nut_1_60_million" };
 
-	private File source_directory_for_geojson = new File(new NutParser().getClass().getClassLoader()
+	private static File source_directory_for_geojson = new File(new NutParser().getClass().getClassLoader()
 			.getResource("launuts_geojson_and_shape_files").getFile());
 
-	private String nuts_level[] = { "LEVL_3", "LEVL_2", "LEVL_1", "LEVL_0" };
+	private static String nuts_level[] = { "LEVL_3", "LEVL_2", "LEVL_1", "LEVL_0" };
 
-	private JSONParser parser = new JSONParser();
-	private Reader geojson_reader;
-	private JSONArray all_nuts_with_polygons = new JSONArray();
+	private static JSONParser parser = new JSONParser();
+	private static Reader geojson_reader;
+	private static JSONArray all_nuts_with_polygons = new JSONArray();
 
 	// Nut-id and Nut-name for all nuts.
-	private HashMap<String, String> nutId_nutName = new HashMap<String, String>();
+	private static HashMap<String, String> nutId_nutName = new HashMap<String, String>();
 
-	private JSONArray get_inner_rings(JSONArray child_polygon_coordinates_arrays) {
+	private static JSONArray get_inner_rings(JSONArray child_polygon_coordinates_arrays) {
 
 		JSONArray inner_rings = new JSONArray();
 
@@ -89,7 +90,7 @@ public class NutParser implements PolygonParserInterface {
 	 * else if a particular nuts does not exist then simply add that nuts
 	 * "all_nuts_with_polygons".
 	 */
-	private void hasThisNutLeastNumberOfCoordinatesIfTrueThenAdd(JSONArray all_nuts_with_polygons,
+	private static void hasThisNutLeastNumberOfCoordinatesIfTrueThenAdd(JSONArray all_nuts_with_polygons,
 			JSONObject a_nut_polygon) {
 
 		String temp_nut_id = a_nut_polygon.get("NUT_id").toString();
@@ -142,7 +143,7 @@ public class NutParser implements PolygonParserInterface {
 
 	}
 
-	private void extractNutIdAndNutnameFromCsvForAllNuts() throws FileNotFoundException {
+	private static void extractNutIdAndNutnameFromCsvForAllNuts() throws FileNotFoundException {
 		File resource_folder = source_directory_for_geojson;
 
 		File[] listOfFolders = resource_folder.listFiles();
@@ -176,7 +177,7 @@ public class NutParser implements PolygonParserInterface {
 		}
 	}
 
-	public LinearRing getOuterRing(JSONObject feature, JSONArray child_polygon_coordinates,
+	public static LinearRing getOuterRing(JSONObject feature, JSONArray child_polygon_coordinates,
 			GeometryFactory geometryFactory) {
 
 		LinearRing outer_ring = null;
@@ -286,8 +287,16 @@ public class NutParser implements PolygonParserInterface {
 		return are_valid_polygons;
 	}
 
-	public void createNutParser() throws ClassCastException, FileNotFoundException {
+	public static void createNutPolygons() throws ClassCastException, FileNotFoundException {
 
+		System.out.println("Please ensure that Launuts data in the Resource folder has been extracted!!");
+		System.out.println(" ");
+		try {
+			TimeUnit.SECONDS.sleep(3);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		extractNutIdAndNutnameFromCsvForAllNuts();
 
 		/*
