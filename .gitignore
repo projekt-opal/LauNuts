@@ -112,3 +112,5 @@ node_modules
 .src/main/resources/launuts_geojson_and_shape_files
 launuts_geojson_and_shape_files
 /NUT_Polygons.json
+/LAU_Polygons.json
+/NUT_Polygons.json

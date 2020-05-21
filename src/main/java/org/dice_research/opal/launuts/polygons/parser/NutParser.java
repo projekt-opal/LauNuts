@@ -35,7 +35,7 @@ public class NutParser implements PolygonParserInterface {
 	private String nut_resolutions[] = { "nut_1_1_million", "nut_1_3_million", "nut_1_10_million", "nut_1_20_million",
 			"nut_1_60_million" };
 
-	private File source_directory_for_geojson = new File(new ExtractPolygonForLaus().getClass().getClassLoader()
+	private File source_directory_for_geojson = new File(new NutParser().getClass().getClassLoader()
 			.getResource("launuts_geojson_and_shape_files").getFile());
 
 	private String nuts_level[] = { "LEVL_3", "LEVL_2", "LEVL_1", "LEVL_0" };
