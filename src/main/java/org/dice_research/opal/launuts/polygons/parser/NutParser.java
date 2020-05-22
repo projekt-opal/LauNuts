@@ -289,7 +289,9 @@ public class NutParser implements PolygonParserInterface {
 
 	public static void createNutPolygons() throws ClassCastException, FileNotFoundException {
 
-		System.out.println("Please ensure that Launuts data in the folder \"resources/launuts_geojson_and_shape_files\" folder has been extracted!!");
+		System.out.println("1. Please ensure that Launuts data in the folder \"resources/launuts_geojson_and_shape_files\" folder has been extracted!!");
+		System.out.println(" ");
+		System.out.println("2. After extraction, do not forget to refresh the project by pressing Alt+F5");
 		System.out.println(" ");
 		try {
 			TimeUnit.SECONDS.sleep(3);
