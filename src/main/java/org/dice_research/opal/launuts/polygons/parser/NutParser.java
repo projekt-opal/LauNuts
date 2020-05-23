@@ -41,14 +41,16 @@ public class NutParser implements PolygonParserInterface {
 
 	private static String nuts_level[] = { "LEVL_3", "LEVL_2", "LEVL_1", "LEVL_0" };
 
-	private static JSONParser parser = new JSONParser();
+	private static JSONParser json_parser = new JSONParser();
 	private static Reader geojson_reader;
 	private static JSONArray all_nuts_with_polygons = new JSONArray();
+	protected static String name_of_parser_after_final_processing = "NUT_Polygons.json";
+	protected static String feature_id_type = "nut_id";
 
 	// Nut-id and Nut-name for all nuts.
 	private static HashMap<String, String> nutId_nutName = new HashMap<String, String>();
 
-	private static JSONArray get_inner_rings(JSONArray child_polygon_coordinates_arrays) {
+	public static JSONArray get_inner_rings(JSONArray child_polygon_coordinates_arrays) {
 
 		JSONArray inner_rings = new JSONArray();
 
@@ -93,8 +95,8 @@ public class NutParser implements PolygonParserInterface {
 	private static void hasThisNutLeastNumberOfCoordinatesIfTrueThenAdd(JSONArray all_nuts_with_polygons,
 			JSONObject a_nut_polygon) {
 
-		String temp_nut_id = a_nut_polygon.get("NUT_id").toString();
-		int temp_nut_polygon_points = Integer.parseInt(a_nut_polygon.get("Polygon_Points").toString());
+		String temp_nut_id = a_nut_polygon.get("nut_id").toString();
+		int temp_nut_polygon_points = Integer.parseInt(a_nut_polygon.get("polygon_points").toString());
 
 		// Does a similar old nut has least number of points?
 		boolean old_existing_nut_has_least_resolution = true;
@@ -112,12 +114,12 @@ public class NutParser implements PolygonParserInterface {
 		while (nut_iterator.hasNext()) {
 
 			JSONObject existing_old_nut = nut_iterator.next();
-			if (existing_old_nut.get("NUT_id").toString().equals(temp_nut_id)) {
+			if (existing_old_nut.get("nut_id").toString().equals(temp_nut_id)) {
 
 				is_tempNut_a_newly_discovered_nut = false;
 				// check if new_nuts has least polygon points
 				int existing_old_nut_polygon_points = Integer
-						.parseInt(existing_old_nut.get("Polygon_Points").toString());
+						.parseInt(existing_old_nut.get("polygon_points").toString());
 				System.out.println(
 						"NUTS:" + temp_nut_id + " " + " " + "existing_polygon_points=" + existing_old_nut_polygon_points
 								+ " " + " " + " " + "new_poly_points=" + temp_nut_polygon_points);
@@ -177,7 +179,7 @@ public class NutParser implements PolygonParserInterface {
 		}
 	}
 
-	public static LinearRing getOuterRing(JSONObject feature, JSONArray child_polygon_coordinates,
+	public static LinearRing getOuterRing(JSONArray child_polygon_coordinates,
 			GeometryFactory geometryFactory) {
 
 		LinearRing outer_ring = null;
@@ -302,7 +304,7 @@ public class NutParser implements PolygonParserInterface {
 		extractNutIdAndNutnameFromCsvForAllNuts();
 
 		/*
-		 * First start with checking polygons for Level3 nut. For that we first start
+		 * First start with checking polygons for level3 nut. For that we first start
 		 * with the directory 1_1_million and store the polygons with least number of
 		 * points. We then check other folders as well because in lower scale
 		 * resolution(such as 1_1_mil) some NUTS might be represented as points which
@@ -330,7 +332,7 @@ public class NutParser implements PolygonParserInterface {
 									source_directory_for_geojson + "\\/" + nut_resolutions[dir_counter] + "\\/"
 											+ current_dir.listFiles()[file_counter].getName().toString());
 
-							JSONObject root_object = (JSONObject) parser.parse(geojson_reader);
+							JSONObject root_object = (JSONObject) json_parser.parse(geojson_reader);
 
 							JSONArray features = (JSONArray) root_object.get("features");
 
@@ -383,7 +385,7 @@ public class NutParser implements PolygonParserInterface {
 													.get(array_index);
 
 											// Create a linear-ring/outer-ring using the points coordinates array
-											LinearRing a_outer_ring = getOuterRing(feature, child_polygon_coordinates,
+											LinearRing a_outer_ring = getOuterRing(child_polygon_coordinates,
 													geometryFactory);
 
 											// This will store polygon's inner rings for current polygon
@@ -421,23 +423,23 @@ public class NutParser implements PolygonParserInterface {
 
 										// Check for validity of polygon
 										if (areValidPolygons(coordinates, "polygon_type"))
-											a_nut_polygon.put("Valid_Polygon", "true");
+											a_nut_polygon.put("valid_polygon", "true");
 										else
-											a_nut_polygon.put("Valid_Polygon", "false");
+											a_nut_polygon.put("valid_polygon", "false");
 
-										a_nut_polygon.put("NUT_name", nutId_nutName.get(feature.get("id").toString()));
-										a_nut_polygon.put("Level", nuts_level[levl_counter]);
+										a_nut_polygon.put("nut_name", nutId_nutName.get(feature.get("id").toString()));
+										a_nut_polygon.put("level", nuts_level[levl_counter]);
 
 										// From which shape(LineString,MultiPolygon) polygon was extracted
-										a_nut_polygon.put("Geometry_type",
+										a_nut_polygon.put("geometry_type",
 												json_geometry.get("type").toString());
-										a_nut_polygon.put("NUT_id", feature.get("id").toString());
+										a_nut_polygon.put("nut_id", feature.get("id").toString());
 										a_nut_polygon.put("File",
 												current_dir.listFiles()[file_counter].getName().toString());
-										a_nut_polygon.put("Outer_ring", coordinates);
-										a_nut_polygon.put("Inner_rings", holes);
+										a_nut_polygon.put("outer_ring", coordinates);
+										a_nut_polygon.put("inner_rings", holes);
 										a_nut_polygon.put("Number_of_inner_rings", number_of_inner_rings);
-										a_nut_polygon.put("Polygon_Points", outer_ring_coordinates.size());
+										a_nut_polygon.put("polygon_points", outer_ring_coordinates.size());
 										hasThisNutLeastNumberOfCoordinatesIfTrueThenAdd(all_nuts_with_polygons,
 												a_nut_polygon);
 
@@ -447,7 +449,7 @@ public class NutParser implements PolygonParserInterface {
 									if (json_geometry.get("type").toString().equals("Polygon")) {
 
 										// Create a linear-ring/outer-ring using the points coordinates array
-										LinearRing a_outer_ring = getOuterRing(feature, coordinates, geometryFactory);
+										LinearRing a_outer_ring = getOuterRing(coordinates, geometryFactory);
 
 										/**
 										 * If sub_array size > 1 then there are inner rings. Then add the inner rings to
@@ -471,23 +473,23 @@ public class NutParser implements PolygonParserInterface {
 
 										// Check for validity of polygon
 										if (areValidPolygons(coordinates, "polygon_type"))
-											a_nut_polygon.put("Valid_Polygon", "true");
+											a_nut_polygon.put("valid_polygon", "true");
 										else
-											a_nut_polygon.put("Valid_Polygon", "false");
+											a_nut_polygon.put("valid_polygon", "false");
 
-										a_nut_polygon.put("NUT_name", nutId_nutName.get(feature.get("id").toString()));
-										a_nut_polygon.put("Level", nuts_level[levl_counter]);
+										a_nut_polygon.put("nut_name", nutId_nutName.get(feature.get("id").toString()));
+										a_nut_polygon.put("level", nuts_level[levl_counter]);
 
 										// From which shape(LineString,MultiPolygon) polygon was extracted
-										a_nut_polygon.put("Geometry_type",
+										a_nut_polygon.put("geometry_type",
 												json_geometry.get("type").toString());
-										a_nut_polygon.put("NUT_id", feature.get("id").toString());
+										a_nut_polygon.put("nut_id", feature.get("id").toString());
 										a_nut_polygon.put("File",
 												current_dir.listFiles()[file_counter].getName().toString());
-										a_nut_polygon.put("Outer_ring", coordinates);
-										a_nut_polygon.put("Inner_rings", holes);
+										a_nut_polygon.put("outer_ring", coordinates);
+										a_nut_polygon.put("inner_rings", holes);
 										a_nut_polygon.put("Number_of_inner_rings", number_of_inner_rings);
-										a_nut_polygon.put("Polygon_Points", outer_ring_coordinates.size());
+										a_nut_polygon.put("polygon_points", outer_ring_coordinates.size());
 										hasThisNutLeastNumberOfCoordinatesIfTrueThenAdd(all_nuts_with_polygons,
 												a_nut_polygon);
 									}
@@ -548,15 +550,15 @@ public class NutParser implements PolygonParserInterface {
 		try {
 			org.dice_research.opal.launuts.polygons.MultiPolygon multi_polygon = null;
 			
-			geojson_reader = new FileReader("NUT_Polygons.json");
-			JSONArray nuts = (JSONArray) parser.parse(geojson_reader);
+			geojson_reader = new FileReader(name_of_parser_after_final_processing);
+			JSONArray nuts = (JSONArray) json_parser.parse(geojson_reader);
 			
 			Iterator<JSONObject> nutsIterator = nuts.iterator();
 			while (nutsIterator.hasNext()) {
 				JSONObject nut = nutsIterator.next();
-				if(nut.get("NUT_id").toString().equals(nutsCode)) {
-					String geometry_type = nut.get("Geometry_type").toString();
-					JSONArray outer_ring =  (JSONArray) nut.get("Outer_ring");
+				if(nut.get(feature_id_type).toString().equals(nutsCode)) {
+					String geometry_type = nut.get("geometry_type").toString();
+					JSONArray outer_ring =  (JSONArray) nut.get("outer_ring");
 					if(geometry_type.equals("Polygon")) {	
 						multi_polygon = new org.dice_research.opal.launuts.polygons.MultiPolygon();
 						for(int index=0; index<outer_ring.size();index++) {
@@ -608,7 +610,7 @@ public class NutParser implements PolygonParserInterface {
 	@Override
 	public LauReaderInterface setSourceDirectory(File directory) throws PolygonParserException {
 		// TODO Auto-generated method stub
-
+		source_directory_for_geojson = directory;
 		return null;
 	}
 
