@@ -43,7 +43,7 @@ import org.opengis.filter.Filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class LauParser extends NutParser{
+public class LauParser extends NutsParser{
 	
 	static {
 		name_of_parser_after_final_processing = "LAU_Polygons.json";
@@ -137,7 +137,7 @@ public class LauParser extends NutParser{
 				JSONObject json_coordinates = wktToJSON(wkt_parameter, total_number_of_laus);
 				
 				JSONArray holes = new JSONArray(); //inner_rings
-				NutParser lau_parser = new NutParser(); //To reuse some code
+				NutsParser lau_parser = new NutsParser(); //To reuse some code
 				
 				//A list for storing polygons
 				ArrayList<Geometry> geometryList = new ArrayList<Geometry>();
