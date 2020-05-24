@@ -314,8 +314,8 @@ public class NutsParser implements PolygonParserInterface {
 		for (int levl_counter = 0; levl_counter < nuts_level.length; levl_counter++) {
 
 			for (int dir_counter = 0; dir_counter < nut_resolutions.length; dir_counter++) {
-				System.out.println(source_directory_for_geojson + "\\/" + nut_resolutions[dir_counter]);
-				File current_dir = new File(source_directory_for_geojson + "\\/" + nut_resolutions[dir_counter]);
+				System.out.println(source_directory_for_geojson + "/" + nut_resolutions[dir_counter]);
+				File current_dir = new File(source_directory_for_geojson + "/" + nut_resolutions[dir_counter]);
 				for (int file_counter = 0; file_counter < current_dir.listFiles().length; file_counter++) {
 					String geojson_file = current_dir.listFiles()[file_counter].getName();
 
@@ -329,7 +329,7 @@ public class NutsParser implements PolygonParserInterface {
 
 						try {
 							geojson_reader = new FileReader(
-									source_directory_for_geojson + "\\/" + nut_resolutions[dir_counter] + "\\/"
+									source_directory_for_geojson + "/" + nut_resolutions[dir_counter] + "/"
 											+ current_dir.listFiles()[file_counter].getName().toString());
 
 							JSONObject root_object = (JSONObject) json_parser.parse(geojson_reader);
