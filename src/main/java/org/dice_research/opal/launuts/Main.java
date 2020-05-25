@@ -8,8 +8,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
+import org.dice_research.opal.launuts.dbpedia.DbpediaPlaceContainer;
+import org.dice_research.opal.launuts.dbpedia.DbpediaRemote;
+import org.dice_research.opal.launuts.lau.LauContainer;
 import org.dice_research.opal.launuts.matcher.MatcherVersion2;
 import org.dice_research.opal.launuts.matcher.StaticMappings;
+import org.dice_research.opal.launuts.nuts.NutsContainer;
 
 /**
  * Main entry point.
@@ -38,6 +42,7 @@ public class Main {
 		Map<String, DbpediaPlaceContainer> dbpediaIndex = DbpediaRemote.createPlacesIndex(Cache.getDbpedia(true));
 
 		// Match datasets
+		// Writes files for analysis
 		MatcherVersion2 matcher = new MatcherVersion2().run();
 
 		// Create new model
@@ -52,12 +57,15 @@ public class Main {
 				.writeModel(new File(Cfg.getInstance().get(Cfg.OUT_DIRECTORY)));
 
 		// Statistics
+		// Writes statistics about data types
 		String statistics = new Statistics(modelBuilder.getModel()).compute().getString();
 		System.out.println();
 		System.out.println(statistics);
 		FileUtils.write(new File(Cfg.getInstance().get(Cfg.OUT_DIRECTORY), "statistics.txt"), statistics,
 				StandardCharsets.UTF_8);
 
+		// Analysis
+		// Writes files for analysis of DBpedia mappings
 		Analysis.writeLauMappings(matcher.getLauToDbpedia());
 		Analysis.writeNutsMappings(matcher.getNutsToDbpedia());
 		Analysis.writeMultipleUsage(matcher.getNutsToDbpedia(), matcher.getLauToDbpedia());

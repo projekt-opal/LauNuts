@@ -12,12 +12,12 @@ import java.util.Map.Entry;
 import org.apache.commons.io.FileUtils;
 import org.dice_research.opal.launuts.Cache;
 import org.dice_research.opal.launuts.Cfg;
-import org.dice_research.opal.launuts.DbpediaPlaceContainer;
-import org.dice_research.opal.launuts.DbpediaRemote;
-import org.dice_research.opal.launuts.LauContainer;
-import org.dice_research.opal.launuts.LauCsvParser;
-import org.dice_research.opal.launuts.NutsContainer;
 import org.dice_research.opal.launuts.Vocabularies;
+import org.dice_research.opal.launuts.dbpedia.DbpediaPlaceContainer;
+import org.dice_research.opal.launuts.dbpedia.DbpediaRemote;
+import org.dice_research.opal.launuts.lau.LauContainer;
+import org.dice_research.opal.launuts.lau.LauCsvParser;
+import org.dice_research.opal.launuts.nuts.NutsContainer;
 import org.dice_research.opal.launuts.utils.GeoUtil;
 
 /**

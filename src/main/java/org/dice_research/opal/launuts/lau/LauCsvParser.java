@@ -1,4 +1,4 @@
-package org.dice_research.opal.launuts;
+package org.dice_research.opal.launuts.lau;
 
 import java.io.FileReader;
 import java.io.IOException;

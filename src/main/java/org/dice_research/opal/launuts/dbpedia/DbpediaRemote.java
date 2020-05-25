@@ -1,4 +1,4 @@
-package org.dice_research.opal.launuts;
+package org.dice_research.opal.launuts.dbpedia;
 
 import java.io.File;
 import java.io.IOException;
