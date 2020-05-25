@@ -293,7 +293,9 @@ public class NutsParser implements PolygonParserInterface {
 
 		System.out.println("1. Please ensure that Launuts data in the folder \"resources/launuts_geojson_and_shape_files\" folder has been extracted!!");
 		System.out.println(" ");
-		System.out.println("2. After extraction, do not forget to refresh the project by pressing Alt+F5");
+		System.out.println("2. Please make sure that we have nut_1_1_million, nut_1_3_million,....,nut_1_60_million folders inside the folder \"launuts_geojson_and_shape_files\".");
+		System.out.println(" ");
+		System.out.println("3. After extraction, do not forget to refresh the project by pressing Alt+F5");
 		System.out.println(" ");
 		try {
 			TimeUnit.SECONDS.sleep(3);
