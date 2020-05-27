@@ -153,7 +153,7 @@ public class LauParser extends NutsParser{
 
 				if (children_of_coordinates > 1) {
 					a_lau_polygon.put("geometry_type", "MultiPolygon");
-					a_lau_polygon.put("outer_ring", coordinates);
+					a_lau_polygon.put("coordinates", coordinates);
 					for (int array_index = 0; array_index < coordinates.size(); array_index++) 
 					{
 						
@@ -187,7 +187,7 @@ public class LauParser extends NutsParser{
 					geometryList.add(polygon_from_a_outer_ring);
 					lau_parser.fillOuterRingCoordinates(geometryFactory,geometryList,outer_ring_coordinates);
 					a_lau_polygon.put("geometry_type", "Polygon");
-					a_lau_polygon.put("outer_ring", first_child_of_coordinates);
+					a_lau_polygon.put("coordinates", first_child_of_coordinates);
 					
 					if(coordinates.size()>1)
 						holes = lau_parser.get_inner_rings(coordinates);

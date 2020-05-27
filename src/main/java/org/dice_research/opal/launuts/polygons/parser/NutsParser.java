@@ -438,7 +438,7 @@ public class NutsParser implements PolygonParserInterface {
 										a_nuts_polygon.put("nut_id", feature.get("id").toString());
 										a_nuts_polygon.put("File",
 												current_dir.listFiles()[file_counter].getName().toString());
-										a_nuts_polygon.put("outer_ring", coordinates);
+										a_nuts_polygon.put("coordinates", coordinates);
 										a_nuts_polygon.put("inner_rings", holes);
 										a_nuts_polygon.put("Number_of_inner_rings", number_of_inner_rings);
 										a_nuts_polygon.put("polygon_points", outer_ring_coordinates.size());
@@ -488,7 +488,7 @@ public class NutsParser implements PolygonParserInterface {
 										a_nuts_polygon.put("nut_id", feature.get("id").toString());
 										a_nuts_polygon.put("File",
 												current_dir.listFiles()[file_counter].getName().toString());
-										a_nuts_polygon.put("outer_ring", coordinates);
+										a_nuts_polygon.put("coordinates", coordinates);
 										a_nuts_polygon.put("inner_rings", holes);
 										a_nuts_polygon.put("Number_of_inner_rings", number_of_inner_rings);
 										a_nuts_polygon.put("polygon_points", outer_ring_coordinates.size());
@@ -560,12 +560,12 @@ public class NutsParser implements PolygonParserInterface {
 				JSONObject nuts = nutsIterator.next();
 				if(nuts.get(feature_id_type).toString().equals(nutsCode)) {
 					String geometry_type = nuts.get("geometry_type").toString();
-					JSONArray outer_ring =  (JSONArray) nuts.get("outer_ring");
+					JSONArray coordinates =  (JSONArray) nuts.get("coordinates");
 					if(geometry_type.equals("Polygon")) {	
 						multi_polygon = new org.dice_research.opal.launuts.polygons.MultiPolygon();
-						for(int index=0; index<outer_ring.size();index++) {
+						for(int index=0; index<coordinates.size();index++) {
 							
-							JSONArray ring = (JSONArray) outer_ring.get(index); //Could be an inner or outer ring
+							JSONArray ring = (JSONArray) coordinates.get(index); //Could be an inner or outer ring
 							org.dice_research.opal.launuts.polygons.Polygon ring_polygon= new org.dice_research.opal.launuts.polygons.Polygon();
 							
 							for(int coordinate_index = 0;coordinate_index<ring.size();coordinate_index++)
@@ -580,12 +580,12 @@ public class NutsParser implements PolygonParserInterface {
 						}
 					}
 					else {						
-						multi_polygon = new org.dice_research.opal.launuts.polygons.MultiPolygon(outer_ring.size());
-						for(int index=0; index<outer_ring.size();index++) {
-							JSONArray child_polygon = (JSONArray) outer_ring.get(index); //child_polygon, may have a hole(inner_ring)
+						multi_polygon = new org.dice_research.opal.launuts.polygons.MultiPolygon(coordinates.size());
+						for(int index=0; index<coordinates.size();index++) {
+							JSONArray child_polygon = (JSONArray) coordinates.get(index); //child_polygon, may have a hole(inner_ring)
 							for (int ring_index=0; ring_index<child_polygon.size();ring_index++) {
 								
-								JSONArray ring = (JSONArray) outer_ring.get(index); //ring can be an inner_ring or outer_ring
+								JSONArray ring = (JSONArray) coordinates.get(index); //ring can be an inner_ring or outer_ring
 								org.dice_research.opal.launuts.polygons.Polygon ring_polygon= new org.dice_research.opal.launuts.polygons.Polygon();
 								
 								for(int coordinate_index = 0;coordinate_index<ring.size();coordinate_index++)

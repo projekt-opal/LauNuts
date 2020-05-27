@@ -10,8 +10,8 @@ public class NutParserTest {
 	public static void main(String[] args) throws PolygonParserException, ClassCastException, FileNotFoundException {
 		NutsParser nut_parser = new NutsParser();
 
-		nut_parser.createNutPolygons();
+		//nut_parser.createNutPolygons();
 
-		// System.out.println(nut_parser.getNutsPolygon("DEF04").toString());
+		 System.out.println(nut_parser.getNutsPolygon("DEF04").toString());
 	}
 }
