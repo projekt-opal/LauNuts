@@ -111,7 +111,7 @@ public class LauParser extends NutsParser{
 				 * rings to the hole array.
 				 */
 				if (child_polygon_coordinates.size() > 1) {
-					child_polygon_inner_rings = lau_parser.get_inner_rings(child_polygon_coordinates);
+					child_polygon_inner_rings = lau_parser.getInnerRings(child_polygon_coordinates);
 						holes.add(child_polygon_inner_rings);
 						number_of_inner_rings = number_of_inner_rings + child_polygon_inner_rings.size();
 				}
@@ -132,7 +132,7 @@ public class LauParser extends NutsParser{
 			a_lau_polygon.put("coordinates", first_child_of_coordinates);
 			
 			if(coordinates.size()>1)
-				holes = lau_parser.get_inner_rings(coordinates);
+				holes = lau_parser.getInnerRings(coordinates);
 			a_lau_polygon.put("inner_rings", holes);
 			a_lau_polygon.put("number_of_inner_rings", holes.size());
 		}
