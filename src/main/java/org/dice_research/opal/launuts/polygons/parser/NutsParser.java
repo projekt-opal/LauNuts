@@ -22,7 +22,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -50,7 +49,7 @@ public class NutsParser implements PolygonParserInterface {
 	// Nuts-id and Nuts-name for all nuts.
 	private static HashMap<String, String> nutsId_nutsName = new HashMap<String, String>();
 
-	public static JSONArray get_inner_rings(JSONArray child_polygon_coordinates_arrays) {
+	public static JSONArray getInnerRings(JSONArray child_polygon_coordinates_arrays) {
 
 		JSONArray inner_rings = new JSONArray();
 
@@ -398,7 +397,7 @@ public class NutsParser implements PolygonParserInterface {
 											 * rings to the hole array.
 											 */
 											if (child_polygon_coordinates.size() > 1) {
-												child_polygon_inner_rings = get_inner_rings(child_polygon_coordinates);
+												child_polygon_inner_rings = getInnerRings(child_polygon_coordinates);
 												holes.add(child_polygon_inner_rings);
 												number_of_inner_rings = number_of_inner_rings
 														+ child_polygon_inner_rings.size();
@@ -458,7 +457,7 @@ public class NutsParser implements PolygonParserInterface {
 										 * the hole array.
 										 */
 										if (coordinates.size() > 1) {
-											holes = get_inner_rings(coordinates);
+											holes = getInnerRings(coordinates);
 											number_of_inner_rings = number_of_inner_rings + holes.size();
 										}
 
