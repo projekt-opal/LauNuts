@@ -132,9 +132,7 @@ public class NutsParser implements PolygonParserInterface {
 
 		}
 
-		if (old_existing_nut_has_least_resolution)
-			;
-		else {
+		if (!old_existing_nut_has_least_resolution) {
 			all_nuts_with_polygons.remove(nut_to_remove);
 			all_nuts_with_polygons.add(a_nuts_polygon);
 		}
@@ -377,7 +375,7 @@ public class NutsParser implements PolygonParserInterface {
 									/*
 									 * If the geometry type is "MultiPolygon"
 									 */
-									if (json_geometry.get("type").toString().equals("MultiPolygon")) {
+									if ("MultiPolygon".equalsIgnoreCase(json_geometry.get("type").toString())) {
 
 										for (int array_index = 0; array_index < coordinates.size(); array_index++) {
 
@@ -447,7 +445,7 @@ public class NutsParser implements PolygonParserInterface {
 									}
 
 									// If the geometry type is "Polygon"
-									if (json_geometry.get("type").toString().equals("Polygon")) {
+									if ("Polygon".equalsIgnoreCase(json_geometry.get("type").toString())) {
 
 										// Create a linear-ring/outer-ring using the points coordinates array
 										LinearRing a_outer_ring = getOuterRing(coordinates, geometryFactory);
