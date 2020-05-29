@@ -569,7 +569,7 @@ public class NutsParser implements PolygonParserInterface {
 							
 							for(int coordinate_index = 0;coordinate_index<ring.size();coordinate_index++)
 							{
-								org.dice_research.opal.launuts.polygons.Point point = new org.dice_research.opal.launuts.polygons.Point();
+								Point point = new Point();
 								JSONArray lattitude_longitude = (JSONArray) ring.get(coordinate_index);
 								point.latitude = Float.parseFloat(lattitude_longitude.get(0).toString());
 								point.longitude = Float.parseFloat(lattitude_longitude.get(1).toString());
