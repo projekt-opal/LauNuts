@@ -39,7 +39,7 @@ public class LauParser extends NutsParser{
 	
 	private static GeometryFactory geometryFactory = new GeometryFactory();
 		
-	private static JSONObject wktToJSON(String wkt_parameter, int total_number_of_laus) throws IOException, InterruptedException {
+	private static JSONObject wktToJSON(String wkt_parameter) throws IOException, InterruptedException {
 		/**
 		 * Call to Node.JS library to parse WKT to GeoJSON. The response from Node.Js is
 		 * stored in a temporary file in JSON format.
@@ -49,12 +49,7 @@ public class LauParser extends NutsParser{
 		pb.redirectError(ProcessBuilder.Redirect.INHERIT);
 
 		Process process = pb.start();
-		// String output = IOUtils.toString(process.getInputStream(),
-		// StandardCharsets.UTF_8);
-		if (total_number_of_laus > 10)
-			process.destroy();
-		else
-			process.waitFor();
+		process.waitFor();
 
 		JSONParser node_response_parser = new JSONParser();
 
@@ -178,7 +173,7 @@ public class LauParser extends NutsParser{
 						.read(feature.getAttributes().toArray()[0].toString());
 
 				String wkt_parameter = '"' + multi_polygon.toString() + '"';
-				JSONObject json_coordinates = wktToJSON(wkt_parameter, total_number_of_laus);
+				JSONObject json_coordinates = wktToJSON(wkt_parameter);
 				
 				
 				
