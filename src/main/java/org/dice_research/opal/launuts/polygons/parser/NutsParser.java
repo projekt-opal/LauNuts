@@ -32,11 +32,11 @@ import java.io.FileNotFoundException;
 
 public class NutsParser implements PolygonParserInterface {
 
-	private static String nut_resolutions[] = { "nut_1_1_million", "nut_1_3_million", "nut_1_10_million", "nut_1_20_million",
-			"nut_1_60_million" };
+	private static String nut_resolutions[] = { "nut_1_1_million", "nut_1_3_million", "nut_1_10_million",
+			"nut_1_20_million", "nut_1_60_million" };
 
-	private static File source_directory_for_geojson = new File(new NutsParser().getClass().getClassLoader()
-			.getResource("launuts_geojson_and_shape_files").getFile());
+	private static File source_directory_for_geojson = new File(
+			new NutsParser().getClass().getClassLoader().getResource("launuts_geojson_and_shape_files").getFile());
 
 	private static String nuts_level[] = { "LEVL_3", "LEVL_2", "LEVL_1", "LEVL_0" };
 
@@ -176,89 +176,34 @@ public class NutsParser implements PolygonParserInterface {
 		}
 	}
 
-	public static LinearRing getOuterRing(JSONArray child_polygon_coordinates,
-			GeometryFactory geometryFactory) {
+	public static JSONArray getCoordinatesLatLongFormat(JSONArray coordinates) {
 
-		LinearRing outer_ring = null;
+		// This will store inner ring coordinates for one inner-ring at a time
+		JSONArray coordinates_in_lat_long_format = new JSONArray();
+		
+		for(int i=0; i<coordinates.size();i++) {
+			
+			JSONArray old_child_coordinates = (JSONArray) coordinates.get(i); //Could be outer_ring or inner_ring
+			JSONArray new_child_coordinates = new JSONArray();
+			
+			for (int count = 0; count < old_child_coordinates.size(); count++) {
 
-		// Coordinates in the format: (Latitude, Longitude)
-		ArrayList<Coordinate> outer_ring_coordinates_latlong = new ArrayList<Coordinate>();
+				/*
+				 * This array will be used to change the form of coordinates. It contains same
+				 * coordinates as "points" but in different form.
+				 */
 
-		// Coordinates in the format: (Longitude, Latitude)
-		JSONArray outer_ring_coordinates_longlat = (JSONArray) child_polygon_coordinates.get(0);
+				JSONArray old_coordinates = (JSONArray) old_child_coordinates.get(count);
+				JSONArray new_coordinates = new JSONArray();
+				new_coordinates.add(old_coordinates.toArray()[1]); // Lattitude
+				new_coordinates.add(old_coordinates.toArray()[0]); // Longitude
+				new_child_coordinates.add(new_coordinates);
 
-		for (int count = 0; count < outer_ring_coordinates_longlat.size(); count++) {
-
-			/*
-			 * This array will be used to change the form of coordinates. It contains same
-			 * coordinates as "points" but in different form.
-			 */
-			JSONArray temp_array = (JSONArray) outer_ring_coordinates_longlat.get(count);
-			try {
-				outer_ring_coordinates_latlong.add(new Coordinate((long) temp_array.get(1), (long) temp_array.get(0)));
-			} catch (Exception e) {
-				try {
-					outer_ring_coordinates_latlong
-							.add(new Coordinate((double) temp_array.get(1), (double) temp_array.get(0)));
-				} catch (ClassCastException X_double_Y_long) {
-
-//							System.out.println("Solution1: "+Coordinates_array_Long_Lat.get(1).getClass());
-//							System.out.println("Solution2: "+Coordinates_array_Long_Lat.get(0).getClass());
-					try {
-						Long y_cord = (long) temp_array.get(0);
-						outer_ring_coordinates_latlong
-								.add(new Coordinate((double) temp_array.get(1), y_cord.doubleValue()));
-					} catch (ClassCastException X_long_Y_double) {
-						Long x_cord = (long) temp_array.get(1);
-						outer_ring_coordinates_latlong
-								.add(new Coordinate(x_cord.doubleValue(), (double) temp_array.get(0)));
-					}
-				}
 			}
+			coordinates_in_lat_long_format.add(new_child_coordinates);
 		}
 
-		outer_ring = geometryFactory
-				.createLinearRing((Coordinate[]) outer_ring_coordinates_latlong.toArray(new Coordinate[] {}));
-
-		return outer_ring;
-	}
-
-	public static void fillOuterRingCoordinates(GeometryFactory geometryFactory, ArrayList<Geometry> geometryList,
-			JSONArray outer_ring_coordinates) {
-
-		// Now make a geometrical union out of geometryList
-		try {
-			GeometryCollection geometryCollection = (GeometryCollection) geometryFactory.buildGeometry(geometryList);
-
-			MultiPolygon final_polygon = (MultiPolygon) geometryCollection.union();
-
-			for (int index = 0; index < final_polygon.getCoordinates().length; index++) {
-
-				// An instance of a coordinate
-				JSONArray Coordinates_Lat_Long = new JSONArray();
-				// Lattitude
-				Coordinates_Lat_Long.add(final_polygon.getCoordinates()[index].getX());
-				// Longitude
-				Coordinates_Lat_Long.add(final_polygon.getCoordinates()[index].getY());
-
-				outer_ring_coordinates.add(Coordinates_Lat_Long);
-			}
-		} catch (Exception polygon_to_geometrycollection) {
-
-			Geometry geometryCollection = geometryFactory.buildGeometry(geometryList);
-
-			for (int index = 0; index < geometryCollection.getCoordinates().length; index++) {
-
-				// An instance of a coordinate
-				JSONArray Coordinates_Lat_Long = new JSONArray();
-				// Lattitude
-				Coordinates_Lat_Long.add(geometryCollection.getCoordinates()[index].getX());
-				// Longitude
-				Coordinates_Lat_Long.add(geometryCollection.getCoordinates()[index].getY());
-				outer_ring_coordinates.add(Coordinates_Lat_Long);
-			}
-
-		}
+		return coordinates_in_lat_long_format;
 
 	}
 
@@ -288,9 +233,11 @@ public class NutsParser implements PolygonParserInterface {
 
 	public static void createNutPolygons() throws ClassCastException, FileNotFoundException {
 
-		System.out.println("1. Please ensure that Launuts data in the folder \"resources/launuts_geojson_and_shape_files\" folder has been extracted!!");
+		System.out.println(
+				"1. Please ensure that Launuts data in the folder \"resources/launuts_geojson_and_shape_files\" folder has been extracted!!");
 		System.out.println(" ");
-		System.out.println("2. Please make sure that we have nut_1_1_million, nut_1_3_million,....,nut_1_60_million folders inside the folder \"launuts_geojson_and_shape_files\".");
+		System.out.println(
+				"2. Please make sure that we have nut_1_1_million, nut_1_3_million,....,nut_1_60_million folders inside the folder \"launuts_geojson_and_shape_files\".");
 		System.out.println(" ");
 		System.out.println("3. After extraction, do not forget to refresh the project by pressing Alt+F5");
 		System.out.println(" ");
@@ -348,9 +295,6 @@ public class NutsParser implements PolygonParserInterface {
 									// An object which will store information about individual nut.
 									JSONObject a_nuts_polygon = new JSONObject();
 
-									// Carries outer_ring coordinates of a NUT.
-									JSONArray outer_ring_coordinates = new JSONArray();
-
 									// Geometry of a feature contains coordinates
 									JSONObject json_geometry = (JSONObject) feature.get("geometry");
 
@@ -359,7 +303,9 @@ public class NutsParser implements PolygonParserInterface {
 									 * turn might contain 2 arrays(liner ring, holes). In most cases Coordinates
 									 * array will contain only single array(outer_ring).
 									 */
-									JSONArray coordinates = (JSONArray) json_geometry.get("coordinates");
+									JSONArray coordinates_long_lat_format = (JSONArray) json_geometry
+											.get("coordinates");
+									JSONArray coordinates_in_lat_long_format = new JSONArray();
 
 									// Create an arraylist of geometry for storing all polygons
 									ArrayList<Geometry> geometryList = new ArrayList<Geometry>();
@@ -371,21 +317,19 @@ public class NutsParser implements PolygonParserInterface {
 									JSONArray holes = new JSONArray();
 
 									int number_of_inner_rings = 0;
+									int outer_ring_size = 0;
 
 									/*
 									 * If the geometry type is "MultiPolygon"
 									 */
 									if ("MultiPolygon".equalsIgnoreCase(json_geometry.get("type").toString())) {
 
-										for (int array_index = 0; array_index < coordinates.size(); array_index++) {
+										for (int array_index = 0; array_index < coordinates_long_lat_format
+												.size(); array_index++) {
 
 											// This array might contain 2 sub-arrays(linear ring, holes)
-											JSONArray child_polygon_coordinates = (JSONArray) coordinates
+											JSONArray child_polygon_coordinates = (JSONArray) coordinates_long_lat_format
 													.get(array_index);
-
-											// Create a linear-ring/outer-ring using the points coordinates array
-											LinearRing a_outer_ring = getOuterRing(child_polygon_coordinates,
-													geometryFactory);
 
 											// This will store polygon's inner rings for current polygon
 											JSONArray child_polygon_inner_rings = null;
@@ -401,44 +345,33 @@ public class NutsParser implements PolygonParserInterface {
 														+ child_polygon_inner_rings.size();
 											}
 
-											/**
-											 * Create a polygon from the outer_ring, null= means no hole. There might be
-											 * holes present in a polygon but right now, we are interested only in
-											 * outer_ring. Holes can be extracted from outer_ring using WKTWriter of
-											 * GeoTools.
-											 */
-											Polygon polygon_from_a_outer_ring = geometryFactory
-													.createPolygon(a_outer_ring, null);
-
-											/*
-											 * Add all new polygons into a single geometry for conversion of all
-											 * polygons into a union of polygons.
-											 */
-											geometryList.add(polygon_from_a_outer_ring);
+											JSONArray child_polygon_outer_ring = (JSONArray) child_polygon_coordinates
+													.get(0);
+											outer_ring_size = outer_ring_size + child_polygon_outer_ring.size();
+											JSONArray child_polygon_coordinates_in_lat_long_format = getCoordinatesLatLongFormat(child_polygon_coordinates);
+											coordinates_in_lat_long_format.add(child_polygon_coordinates_in_lat_long_format);
 
 										}
 
-										fillOuterRingCoordinates(geometryFactory, geometryList, outer_ring_coordinates);
-
 										// Check for validity of polygon
-										if (areValidPolygons(coordinates, "polygon_type"))
+										if (areValidPolygons(coordinates_long_lat_format, "polygon_type"))
 											a_nuts_polygon.put("valid_polygon", "true");
 										else
 											a_nuts_polygon.put("valid_polygon", "false");
 
-										a_nuts_polygon.put("nut_name", nutsId_nutsName.get(feature.get("id").toString()));
+										a_nuts_polygon.put("nut_name",
+												nutsId_nutsName.get(feature.get("id").toString()));
 										a_nuts_polygon.put("level", nuts_level[levl_counter]);
 
 										// From which shape(LineString,MultiPolygon) polygon was extracted
-										a_nuts_polygon.put("geometry_type",
-												json_geometry.get("type").toString());
+										a_nuts_polygon.put("geometry_type", json_geometry.get("type").toString());
 										a_nuts_polygon.put("nut_id", feature.get("id").toString());
 										a_nuts_polygon.put("File",
 												current_dir.listFiles()[file_counter].getName().toString());
-										a_nuts_polygon.put("coordinates", coordinates);
+										a_nuts_polygon.put("coordinates", coordinates_in_lat_long_format);
 										a_nuts_polygon.put("inner_rings", holes);
 										a_nuts_polygon.put("Number_of_inner_rings", number_of_inner_rings);
-										a_nuts_polygon.put("polygon_points", outer_ring_coordinates.size());
+										a_nuts_polygon.put("polygon_points", outer_ring_size);
 										hasThisNutsLeastNumberOfCoordinatesIfTrueThenAdd(all_nuts_with_polygons,
 												a_nuts_polygon);
 
@@ -447,48 +380,38 @@ public class NutsParser implements PolygonParserInterface {
 									// If the geometry type is "Polygon"
 									if ("Polygon".equalsIgnoreCase(json_geometry.get("type").toString())) {
 
-										// Create a linear-ring/outer-ring using the points coordinates array
-										LinearRing a_outer_ring = getOuterRing(coordinates, geometryFactory);
-
 										/**
 										 * If sub_array size > 1 then there are inner rings. Then add the inner rings to
 										 * the hole array.
 										 */
-										if (coordinates.size() > 1) {
-											holes = getInnerRings(coordinates);
+										if (coordinates_long_lat_format.size() > 1) {
+											holes = getInnerRings(coordinates_long_lat_format);
 											number_of_inner_rings = number_of_inner_rings + holes.size();
 										}
 
-										/**
-										 * Create a polygon from the outer_ring, null= means no hole. There might be
-										 * holes present in a polygon but right now, we are interested only in
-										 * outer_ring. Holes can be extracted from outer_ring using WKTWriter of
-										 * GeoTools.
-										 */
-										Polygon polygon_from_a_outer_ring = geometryFactory.createPolygon(a_outer_ring,
-												null);
-										geometryList.add(polygon_from_a_outer_ring);
-										fillOuterRingCoordinates(geometryFactory, geometryList, outer_ring_coordinates);
+										JSONArray polygon_outer_ring = (JSONArray) coordinates_long_lat_format.get(0);
+										outer_ring_size = outer_ring_size + polygon_outer_ring.size();
+										coordinates_in_lat_long_format= getCoordinatesLatLongFormat(coordinates_long_lat_format);
 
 										// Check for validity of polygon
-										if (areValidPolygons(coordinates, "polygon_type"))
+										if (areValidPolygons(coordinates_long_lat_format, "polygon_type"))
 											a_nuts_polygon.put("valid_polygon", "true");
 										else
 											a_nuts_polygon.put("valid_polygon", "false");
 
-										a_nuts_polygon.put("nut_name", nutsId_nutsName.get(feature.get("id").toString()));
+										a_nuts_polygon.put("nut_name",
+												nutsId_nutsName.get(feature.get("id").toString()));
 										a_nuts_polygon.put("level", nuts_level[levl_counter]);
 
 										// From which shape(LineString,MultiPolygon) polygon was extracted
-										a_nuts_polygon.put("geometry_type",
-												json_geometry.get("type").toString());
+										a_nuts_polygon.put("geometry_type", json_geometry.get("type").toString());
 										a_nuts_polygon.put("nut_id", feature.get("id").toString());
 										a_nuts_polygon.put("File",
 												current_dir.listFiles()[file_counter].getName().toString());
-										a_nuts_polygon.put("coordinates", coordinates);
+										a_nuts_polygon.put("coordinates", coordinates_in_lat_long_format);
 										a_nuts_polygon.put("inner_rings", holes);
 										a_nuts_polygon.put("Number_of_inner_rings", number_of_inner_rings);
-										a_nuts_polygon.put("polygon_points", outer_ring_coordinates.size());
+										a_nuts_polygon.put("polygon_points", outer_ring_size);
 										hasThisNutsLeastNumberOfCoordinatesIfTrueThenAdd(all_nuts_with_polygons,
 												a_nuts_polygon);
 									}
@@ -548,51 +471,36 @@ public class NutsParser implements PolygonParserInterface {
 
 		try {
 			org.dice_research.opal.launuts.polygons.MultiPolygon multi_polygon = null;
-			
+
 			geojson_reader = new FileReader(name_of_parser_after_final_processing);
 			JSONArray nuts_array = (JSONArray) json_parser.parse(geojson_reader);
-			
+
 			Iterator<JSONObject> nutsIterator = nuts_array.iterator();
 			while (nutsIterator.hasNext()) {
 				JSONObject nuts = nutsIterator.next();
-				if(nuts.get(feature_id_type).toString().equals(nutsCode)) {
+				if (nuts.get(feature_id_type).toString().equals(nutsCode)) {
 					String geometry_type = nuts.get("geometry_type").toString();
-					JSONArray coordinates =  (JSONArray) nuts.get("coordinates");
-					if(geometry_type.equals("Polygon")) {	
+					JSONArray coordinates = (JSONArray) nuts.get("coordinates");
+					if (geometry_type.equals("Polygon")) {
 						multi_polygon = new org.dice_research.opal.launuts.polygons.MultiPolygon();
-						for(int index=0; index<coordinates.size();index++) {
-							
-							JSONArray ring = (JSONArray) coordinates.get(index); //Could be an inner or outer ring
-							org.dice_research.opal.launuts.polygons.Polygon ring_polygon= new org.dice_research.opal.launuts.polygons.Polygon();
-							
-							for(int coordinate_index = 0;coordinate_index<ring.size();coordinate_index++)
-							{
-								Point point = new Point();
-								JSONArray lattitude_longitude = (JSONArray) ring.get(coordinate_index);
-								point.latitude = Float.parseFloat(lattitude_longitude.get(0).toString());
-								point.longitude = Float.parseFloat(lattitude_longitude.get(1).toString());
-								ring_polygon.points.add(point);
-							}
+						for (int index = 0; index < coordinates.size(); index++) {
+
+							JSONArray ring = (JSONArray) coordinates.get(index); // Could be an inner or outer ring
+							org.dice_research.opal.launuts.polygons.Polygon ring_polygon = getDicePolygonFromCoordinates(
+									ring);
 							multi_polygon.polygons.add(ring_polygon);
 						}
-					}
-					else {						
+					} else {
 						multi_polygon = new org.dice_research.opal.launuts.polygons.MultiPolygon(coordinates.size());
-						for(int index=0; index<coordinates.size();index++) {
-							JSONArray child_polygon = (JSONArray) coordinates.get(index); //child_polygon, may have a hole(inner_ring)
-							for (int ring_index=0; ring_index<child_polygon.size();ring_index++) {
-								
-								JSONArray ring = (JSONArray) coordinates.get(index); //ring can be an inner_ring or outer_ring
-								org.dice_research.opal.launuts.polygons.Polygon ring_polygon= new org.dice_research.opal.launuts.polygons.Polygon();
-								
-								for(int coordinate_index = 0;coordinate_index<ring.size();coordinate_index++)
-								{
-									org.dice_research.opal.launuts.polygons.Point point = new org.dice_research.opal.launuts.polygons.Point();
-									JSONArray lattitude_longitude = (JSONArray) ring.get(coordinate_index);
-									point.latitude = (float) lattitude_longitude.get(0);
-									point.longitude = (float) lattitude_longitude.get(1);
-									ring_polygon.points.add(point);
-								}
+						for (int index = 0; index < coordinates.size(); index++) {
+							JSONArray child_polygon = (JSONArray) coordinates.get(index); // child_polygon, may have a
+																							// hole(inner_ring)
+							for (int ring_index = 0; ring_index < child_polygon.size(); ring_index++) {
+
+								JSONArray ring = (JSONArray) coordinates.get(index); // ring can be an inner_ring or
+																						// outer_ring
+								org.dice_research.opal.launuts.polygons.Polygon ring_polygon = getDicePolygonFromCoordinates(
+										ring);
 								multi_polygon.polygons.add(ring_polygon);
 							}
 						}
@@ -601,7 +509,7 @@ public class NutsParser implements PolygonParserInterface {
 			}
 			return multi_polygon;
 		} catch (Exception e) {
-			
+
 		}
 		return null;
 	}
@@ -611,6 +519,49 @@ public class NutsParser implements PolygonParserInterface {
 		// TODO Auto-generated method stub
 		source_directory_for_geojson = directory;
 		return null;
+	}
+
+	public org.dice_research.opal.launuts.polygons.MultiPolygon getMultiPolygonFromHole(String nutscode,
+			int hole_number) throws PolygonParserException {
+
+		org.dice_research.opal.launuts.polygons.MultiPolygon multi_polygon_from_hole = null;
+		try {
+			geojson_reader = new FileReader(name_of_parser_after_final_processing);
+			JSONArray nuts_array = (JSONArray) json_parser.parse(geojson_reader);
+
+			Iterator<JSONObject> nutsIterator = nuts_array.iterator();
+			while (nutsIterator.hasNext()) {
+				JSONObject nuts = nutsIterator.next();
+				if (nutscode.equalsIgnoreCase(nuts.get(feature_id_type).toString())) {
+					JSONArray inner_rings = (JSONArray) nuts.get("inner_rings");
+					JSONArray hole_coordinates = (JSONArray) inner_rings.get(hole_number - 1);
+					org.dice_research.opal.launuts.polygons.Polygon dice_polygon = getDicePolygonFromCoordinates(
+							hole_coordinates);
+					multi_polygon_from_hole = new org.dice_research.opal.launuts.polygons.MultiPolygon();
+					multi_polygon_from_hole.polygons.add(dice_polygon);
+				}
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("Please ensure that the hole_number is correct.");
+
+		}
+		return multi_polygon_from_hole;
+	}
+
+	public org.dice_research.opal.launuts.polygons.Polygon getDicePolygonFromCoordinates(JSONArray ring) {
+
+		org.dice_research.opal.launuts.polygons.Polygon dice_polygon = new org.dice_research.opal.launuts.polygons.Polygon();
+
+		for (int coordinate_index = 0; coordinate_index < ring.size(); coordinate_index++) {
+			Point point = new Point();
+			JSONArray lattitude_longitude = (JSONArray) ring.get(coordinate_index);
+			point.latitude = Float.parseFloat(lattitude_longitude.get(0).toString());
+			point.longitude = Float.parseFloat(lattitude_longitude.get(1).toString());
+			dice_polygon.points.add(point);
+		}
+		return dice_polygon;
 	}
 
 }

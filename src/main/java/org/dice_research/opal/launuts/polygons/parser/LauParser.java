@@ -77,25 +77,19 @@ public class LauParser extends NutsParser{
 		return json_coordinates;
 	}
 	
-	private static JSONObject fill_polygon_metadta_innerRing_geometryType_polygonPoints(JSONArray coordinates, SimpleFeature feature) {
+	private static JSONObject fill_polygon_metadta_innerRing_geometryType_polygonPoints(JSONObject a_lau_polygon,JSONArray coordinates, SimpleFeature feature) {
 		
-		JSONObject a_lau_polygon = new JSONObject();
+
 		int children_of_coordinates = coordinates.size();
 		JSONArray holes = new JSONArray(); //inner_rings
-		NutsParser lau_parser = new NutsParser(); //To reuse some code
-		
-		//A list for storing polygons
-		ArrayList<Geometry> geometryList = new ArrayList<Geometry>();
-		
-		//Stores polygon cooridnates of each LAU.
-		JSONArray outer_ring_coordinates = new JSONArray();
-		
+		NutsParser lau_parser = new NutsParser(); //To reuse some code	
+		JSONArray coordinates_in_lat_long_format = new JSONArray();
 		int number_of_inner_rings = 0;
+		int outer_ring_size = 0;
 		JSONArray first_child_of_coordinates = (JSONArray) coordinates.get(0);
 
 		if (children_of_coordinates > 1) {
-			a_lau_polygon.put("geometry_type", "MultiPolygon");
-			a_lau_polygon.put("coordinates", coordinates);
+			
 			for (int array_index = 0; array_index < coordinates.size(); array_index++) 
 			{
 				
@@ -103,7 +97,6 @@ public class LauParser extends NutsParser{
 				JSONArray child_polygon_coordinates = (JSONArray) coordinates
 						.get(array_index);
 				System.out.println(feature.getAttributes().toArray()[3].toString());
-				LinearRing a_outer_ring = lau_parser.getOuterRing(child_polygon_coordinates, geometryFactory);
 				JSONArray child_polygon_inner_rings = null;
 
 				/**
@@ -115,28 +108,30 @@ public class LauParser extends NutsParser{
 						holes.add(child_polygon_inner_rings);
 						number_of_inner_rings = number_of_inner_rings + child_polygon_inner_rings.size();
 				}
-				Polygon polygon_from_a_outer_ring = geometryFactory.createPolygon(a_outer_ring, null);
-				geometryList.add(polygon_from_a_outer_ring);
-			}
-			lau_parser.fillOuterRingCoordinates(geometryFactory,geometryList,outer_ring_coordinates);	
+				JSONArray child_polygon_outer_ring = (JSONArray) child_polygon_coordinates
+						.get(0);
+				outer_ring_size = outer_ring_size + child_polygon_outer_ring.size();
+				JSONArray child_polygon_coordinates_in_lat_long_format = getCoordinatesLatLongFormat(child_polygon_coordinates);
+				coordinates_in_lat_long_format.add(child_polygon_coordinates_in_lat_long_format);
+			}	
+			a_lau_polygon.put("geometry_type", "MultiPolygon");
+			a_lau_polygon.put("coordinates", coordinates_in_lat_long_format);
 			a_lau_polygon.put("inner_rings", holes);
 			a_lau_polygon.put("number_of_inner_rings", number_of_inner_rings);
-			a_lau_polygon.put("polygon_points", outer_ring_coordinates.size());
+			a_lau_polygon.put("polygon_points", outer_ring_size);
 		} else {
 			System.out.println(feature.getAttributes().toArray()[3].toString());
-			LinearRing a_outer_ring = lau_parser.getOuterRing(first_child_of_coordinates, geometryFactory);
-			Polygon polygon_from_a_outer_ring = geometryFactory.createPolygon(a_outer_ring , null);
-			geometryList.add(polygon_from_a_outer_ring);
-			lau_parser.fillOuterRingCoordinates(geometryFactory,geometryList,outer_ring_coordinates);
 			a_lau_polygon.put("geometry_type", "Polygon");
-			a_lau_polygon.put("coordinates", first_child_of_coordinates);
+			a_lau_polygon.put("coordinates", getCoordinatesLatLongFormat(first_child_of_coordinates));
 			
-			if(coordinates.size()>1)
+			if(first_child_of_coordinates.size()>1)
 				holes = lau_parser.getInnerRings(coordinates);
+			JSONArray polygon_outer_ring = (JSONArray) first_child_of_coordinates.get(0);
 			a_lau_polygon.put("inner_rings", holes);
 			a_lau_polygon.put("number_of_inner_rings", holes.size());
+			a_lau_polygon.put("polygon_points", polygon_outer_ring.size());
 		}
-		a_lau_polygon.put("polygon_points", outer_ring_coordinates.size());
+		
 		return a_lau_polygon;
 	}
 
@@ -193,7 +188,7 @@ public class LauParser extends NutsParser{
 				
 				//This code block is to evaluate whether a geometry is polygon or multipolygon
 				JSONArray coordinates = (JSONArray) json_coordinates.get("coordinates");
-				a_lau_polygon = fill_polygon_metadta_innerRing_geometryType_polygonPoints(coordinates, feature);			
+				a_lau_polygon = fill_polygon_metadta_innerRing_geometryType_polygonPoints(a_lau_polygon,coordinates, feature);			
 				all_polygons.add(a_lau_polygon);
 
 				// Runtime visual response
