@@ -32,40 +32,36 @@ public class NutParserTest {
 
 	
 	@Test
-	public void testCase1() throws PolygonParserException, ClassCastException, FileNotFoundException{
+	public void testCase1ForHoleIntegrityCheck() throws PolygonParserException, ClassCastException, FileNotFoundException{
 		
 		MultiPolygon a = nut_parser.getMultiPolygonFromHole(nuts_code_of_Enzkreis, 1);
 		MultiPolygon b = nut_parser.getNutsPolygon(nuts_code_of_Pforzheim_Stadtkreis);
-		TestMultiPolygons tester = new TestMultiPolygons();
 		Assert.assertEquals(true, tester.AreTwoPolygonsEqual(a, b));
 	
 	}
 	
 	@Test
-	public void testCase2() throws PolygonParserException, ClassCastException, FileNotFoundException{
+	public void testCase2ForHoleIntegrityCheck() throws PolygonParserException, ClassCastException, FileNotFoundException{
 		
 		MultiPolygon a = nut_parser.getMultiPolygonFromHole(nuts_code_of_Wartburgkreis, 1);
 		MultiPolygon b = nut_parser.getNutsPolygon(nuts_code_of_Eisenach_Kreisfreie_Stadt);
-		TestMultiPolygons tester = new TestMultiPolygons();
 		Assert.assertEquals(true, tester.AreTwoPolygonsEqual(a, b));
 	}
 	
 	@Test
-	public void testCase3() throws PolygonParserException, ClassCastException, FileNotFoundException{
+	public void testCase3ForHoleIntegrityCheck() throws PolygonParserException, ClassCastException, FileNotFoundException{
 		
 		MultiPolygon a = nut_parser.getMultiPolygonFromHole(nuts_code_of_Weimarer_Land, 1);
 		MultiPolygon b = nut_parser.getNutsPolygon(nuts_code_of_Weimar_Kreisfreie_Stadt);
-		TestMultiPolygons tester = new TestMultiPolygons();
 		Assert.assertEquals(true, tester.AreTwoPolygonsEqual(a, b));
 	
 	}
 	
 	@Test
-	public void testCase4() throws PolygonParserException, ClassCastException, FileNotFoundException{
+	public void testCase4ForHoleIntegrityCheck() throws PolygonParserException, ClassCastException, FileNotFoundException{
 		
 		MultiPolygon a = nut_parser.getMultiPolygonFromHole(nuts_code_of_Südliche_Weinstraße, 1);
 		MultiPolygon b = nut_parser.getNutsPolygon(nuts_code_of_Landau_in_der_Pfalz_Kreisfreie_Stadt);
-		TestMultiPolygons tester = new TestMultiPolygons();
 		Assert.assertEquals(true, tester.AreTwoPolygonsEqual(a, b));
 	
 	}
