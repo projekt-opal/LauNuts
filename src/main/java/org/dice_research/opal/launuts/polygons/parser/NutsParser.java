@@ -2,13 +2,6 @@ package org.dice_research.opal.launuts.polygons.parser;
 
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Polygon;
 
 import org.json.simple.JSONObject;
 import org.dice_research.opal.launuts.lau.LauReaderInterface;
@@ -21,7 +14,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -307,11 +299,6 @@ public class NutsParser implements PolygonParserInterface {
 											.get("coordinates");
 									JSONArray coordinates_in_lat_long_format = new JSONArray();
 
-									// Create an arraylist of geometry for storing all polygons
-									ArrayList<Geometry> geometryList = new ArrayList<Geometry>();
-
-									// geometryfactory object will be used to perform geometrical operations
-									GeometryFactory geometryFactory = new GeometryFactory();
 
 									// These are inner_rings of each Nut.
 									JSONArray holes = new JSONArray();
