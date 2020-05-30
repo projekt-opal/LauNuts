@@ -9,7 +9,7 @@ import org.junit.Test;
 
 public class NutParserTest {
 	
-	TestMultiPolygons tester = new TestMultiPolygons();
+	public static TestMultiPolygons tester = new TestMultiPolygons();
 	public static NutsParser nut_parser = new NutsParser();
 	//nut_parser.createNutPolygons();
 	
