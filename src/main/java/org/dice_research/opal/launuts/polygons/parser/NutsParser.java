@@ -203,7 +203,7 @@ public class NutsParser implements PolygonParserInterface {
 
 		boolean are_valid_polygons = true;
 
-		if (geometry_type.equals("multipolygon_type")) {
+		if ("multipolygon_type".equals(geometry_type)) {
 			for (int array_index = 0; array_index < coordinates.size(); array_index++) {
 				JSONArray child_polygon_coordinates = (JSONArray) coordinates.get(array_index);
 				JSONArray outer_ring_coordinates_longlat = (JSONArray) child_polygon_coordinates.get(0);
@@ -213,7 +213,7 @@ public class NutsParser implements PolygonParserInterface {
 					break;
 				}
 			}
-		} else if (geometry_type.equals("polygon_type")) {
+		} else if ("polygon_type".equals(geometry_type)) {
 			JSONArray outer_ring_coordinates_longlat = (JSONArray) coordinates.get(0);
 			if (!(outer_ring_coordinates_longlat.get(0)
 					.equals(outer_ring_coordinates_longlat.get(outer_ring_coordinates_longlat.size() - 1))))
@@ -468,7 +468,7 @@ public class NutsParser implements PolygonParserInterface {
 				if (nuts.get(feature_id_type).toString().equals(nutsCode)) {
 					String geometry_type = nuts.get("geometry_type").toString();
 					JSONArray coordinates = (JSONArray) nuts.get("coordinates");
-					if (geometry_type.equals("Polygon")) {
+					if ("Polygon".equalsIgnoreCase(geometry_type)) {
 						multi_polygon = new org.dice_research.opal.launuts.polygons.MultiPolygon();
 						for (int index = 0; index < coordinates.size(); index++) {
 

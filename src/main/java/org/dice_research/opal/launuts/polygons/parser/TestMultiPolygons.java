@@ -1,12 +1,8 @@
 package org.dice_research.opal.launuts.polygons.parser;
 
-import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
-
 import org.dice_research.opal.launuts.polygons.MultiPolygon;
 import org.dice_research.opal.launuts.polygons.Point;
 import org.dice_research.opal.launuts.polygons.Polygon;
-import org.dice_research.opal.launuts.polygons.PolygonParserException;
 
 public class TestMultiPolygons {
 
@@ -20,7 +16,7 @@ public class TestMultiPolygons {
 	 * than 70% then they are equal MutiPolygons.
 	 */
 
-	public boolean AreTwoPolygonsEqual(MultiPolygon a, MultiPolygon b) {
+	public boolean areTwoPolygonsEqual(MultiPolygon a, MultiPolygon b) {
 
 		int total_number_of_coordinates_of_any_polygon = 0;
 		int total_number_of_approximately_equal_coordinates = 0;
@@ -73,19 +69,11 @@ public class TestMultiPolygons {
 				+ total_percentage_of_approximately_equal_coordinates);
 		System.out.println(" ");
 
-		if (total_percentage_of_approximately_equal_coordinates >= 70)
-			return true;
-
-		else
-			return false;
-
+		return total_percentage_of_approximately_equal_coordinates >= 70;
 	}
 
-	static boolean approximatelyEqual(double a, double b, double precision) {
-		if (Math.abs(a - b) < precision)
-			return true;
-		else
-			return false;
+	private static boolean approximatelyEqual(double a, double b, double precision) {
+		return (Math.abs(a - b) < precision);
 	}
 
 }

@@ -37,7 +37,7 @@ public class LauParser extends NutsParser{
 		feature_id_type = "gisco_id";
 	}
 	
-	static GeometryFactory geometryFactory = new GeometryFactory();
+	private static GeometryFactory geometryFactory = new GeometryFactory();
 		
 	private static JSONObject wktToJSON(String wkt_parameter, int total_number_of_laus) throws IOException, InterruptedException {
 		/**
@@ -73,7 +73,7 @@ public class LauParser extends NutsParser{
 		return json_coordinates;
 	}
 	
-	private static JSONObject fill_polygon_metadta_innerRing_geometryType_polygonPoints(JSONObject a_lau_polygon,JSONArray coordinates, SimpleFeature feature) {
+	private static JSONObject fillRemainingPolygonMetadta(JSONObject a_lau_polygon,JSONArray coordinates, SimpleFeature feature) {
 		
 
 		int children_of_coordinates = coordinates.size();
@@ -184,7 +184,7 @@ public class LauParser extends NutsParser{
 				
 				//This code block is to evaluate whether a geometry is polygon or multipolygon
 				JSONArray coordinates = (JSONArray) json_coordinates.get("coordinates");
-				a_lau_polygon = fill_polygon_metadta_innerRing_geometryType_polygonPoints(a_lau_polygon,coordinates, feature);			
+				a_lau_polygon = fillRemainingPolygonMetadta(a_lau_polygon,coordinates, feature);			
 				all_polygons.add(a_lau_polygon);
 
 				// Runtime visual response

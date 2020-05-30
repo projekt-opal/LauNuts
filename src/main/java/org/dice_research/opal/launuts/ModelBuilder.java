@@ -18,8 +18,6 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.vocabulary.DC;
-import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.dice_research.opal.launuts.dbpedia.DbpediaPlaceContainer;
 import org.dice_research.opal.launuts.lau.LauContainer;
@@ -30,8 +28,6 @@ import io.github.galbiston.geosparql_jena.implementation.vocabulary.Geo;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 public class ModelBuilder {
 
@@ -107,7 +103,7 @@ public class ModelBuilder {
 				
 				//****************Inner_rings(Part of an outer_ring)*******************************			
 				JSONArray inner_rings = (JSONArray) next_json_object.get("Inner_ring");
-				if(!(inner_rings.size()==0)) {
+				if(inner_rings.size()!=0) {
 					
 					String all_inner_rings_coordinates=","+" ";
 					

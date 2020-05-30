@@ -1,7 +1,6 @@
 package org.dice_research.opal.launuts.polygons.parser;
 
 import java.io.FileNotFoundException;
-import java.io.Reader;
 import org.junit.Assert; 
 import org.dice_research.opal.launuts.polygons.MultiPolygon;
 import org.dice_research.opal.launuts.polygons.PolygonParserException;
@@ -11,7 +10,7 @@ import org.junit.Test;
 public class NutParserTest {
 	
 	TestMultiPolygons tester = new TestMultiPolygons();
-	NutsParser nut_parser = new NutsParser();
+	public static NutsParser nut_parser = new NutsParser();
 	//nut_parser.createNutPolygons();
 	
 	//Pforzheim_Stadtkreis is a hole inside pforzheim_stadtkreis
@@ -36,7 +35,7 @@ public class NutParserTest {
 		
 		MultiPolygon a = nut_parser.getMultiPolygonFromHole(nuts_code_of_Enzkreis, 1);
 		MultiPolygon b = nut_parser.getNutsPolygon(nuts_code_of_Pforzheim_Stadtkreis);
-		Assert.assertEquals(true, tester.AreTwoPolygonsEqual(a, b));
+		Assert.assertEquals(true, tester.areTwoPolygonsEqual(a, b));
 	
 	}
 	
@@ -45,7 +44,7 @@ public class NutParserTest {
 		
 		MultiPolygon a = nut_parser.getMultiPolygonFromHole(nuts_code_of_Wartburgkreis, 1);
 		MultiPolygon b = nut_parser.getNutsPolygon(nuts_code_of_Eisenach_Kreisfreie_Stadt);
-		Assert.assertEquals(true, tester.AreTwoPolygonsEqual(a, b));
+		Assert.assertEquals(true, tester.areTwoPolygonsEqual(a, b));
 	}
 	
 	@Test
@@ -53,7 +52,7 @@ public class NutParserTest {
 		
 		MultiPolygon a = nut_parser.getMultiPolygonFromHole(nuts_code_of_Weimarer_Land, 1);
 		MultiPolygon b = nut_parser.getNutsPolygon(nuts_code_of_Weimar_Kreisfreie_Stadt);
-		Assert.assertEquals(true, tester.AreTwoPolygonsEqual(a, b));
+		Assert.assertEquals(true, tester.areTwoPolygonsEqual(a, b));
 	
 	}
 	
@@ -62,7 +61,7 @@ public class NutParserTest {
 		
 		MultiPolygon a = nut_parser.getMultiPolygonFromHole(nuts_code_of_Südliche_Weinstraße, 1);
 		MultiPolygon b = nut_parser.getNutsPolygon(nuts_code_of_Landau_in_der_Pfalz_Kreisfreie_Stadt);
-		Assert.assertEquals(true, tester.AreTwoPolygonsEqual(a, b));
+		Assert.assertEquals(true, tester.areTwoPolygonsEqual(a, b));
 	
 	}
 }

@@ -2,8 +2,6 @@ package org.dice_research.opal.launuts.polygons.parser;
 
 import java.io.IOException;
 
-import org.dice_research.opal.launuts.polygons.PolygonParserException;
-
 public class LauParserTest {
 	
 	public static void main(String[] args) throws IOException, Exception {
