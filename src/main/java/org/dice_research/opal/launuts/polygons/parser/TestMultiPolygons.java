@@ -35,13 +35,14 @@ public class TestMultiPolygons {
 				/*
 				 * Go ahead only when the two polygon's coordinates number differ maximum by 1
 				 */
-				if (Math.abs(polygon_A.points.size() - polygon_B.points.size()) > 1)
+				if (Math.abs(polygon_A.points.size() - polygon_B.points.size()) > 2)
 					return false;
 
 				else {
 					int total_number_of_coordinates_to_check = polygon_A.points.size() > polygon_B.points.size()
-							? polygon_A.points.size() - 1
-							: polygon_B.points.size() > polygon_A.points.size() ? polygon_B.points.size() - 1
+							? polygon_A.points.size() - (polygon_A.points.size() - polygon_B.points.size())
+							: polygon_B.points.size() > polygon_A.points.size()
+									? polygon_B.points.size() - (polygon_B.points.size() - polygon_A.points.size())
 									: polygon_B.points.size();
 
 					for (int i = 0; i < total_number_of_coordinates_to_check; i++) {
@@ -49,8 +50,7 @@ public class TestMultiPolygons {
 						Point ith_coordinate_of_A = polygon_A.points.get(i);
 						Point ith_coordinate_of_B = polygon_B.points.get(i);
 						if (approximatelyEqual(ith_coordinate_of_A.latitude, ith_coordinate_of_B.latitude, 0.5)
-								&& approximatelyEqual(ith_coordinate_of_A.longitude, ith_coordinate_of_B.longitude,
-										0.8))
+								&& approximatelyEqual(ith_coordinate_of_A.longitude, ith_coordinate_of_B.longitude, 0.5))
 							total_number_of_approximately_equal_coordinates++;
 
 						total_number_of_coordinates_of_any_polygon++;
