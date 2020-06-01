@@ -28,6 +28,10 @@ public class NutParserTest {
 	//Landau_in_der_Pfalz_Kreisfreie_Stadt is a hole inside Südliche_Weinstraße
 	private static String nuts_code_of_Südliche_Weinstraße = "DEB3H";
 	private static String nuts_code_of_Landau_in_der_Pfalz_Kreisfreie_Stadt = "DEB33";
+	
+	//Baden_baden is a hole inside Rastaat
+	private static String nuts_code_of_Rastaat = "DEB3H";
+	private static String nuts_code_of_Baden_Baden = "DEB33";
 
 	
 	@Test
@@ -61,6 +65,15 @@ public class NutParserTest {
 		
 		MultiPolygon a = nut_parser.getMultiPolygonFromHole(nuts_code_of_Südliche_Weinstraße, 1);
 		MultiPolygon b = nut_parser.getNutsPolygon(nuts_code_of_Landau_in_der_Pfalz_Kreisfreie_Stadt);
+		Assert.assertEquals(true, tester.areTwoPolygonsEqual(a, b));
+	
+	}
+	
+	@Test
+	public void testCase5ForHoleIntegrityCheck() throws PolygonParserException, ClassCastException, FileNotFoundException{
+		
+		MultiPolygon a = nut_parser.getMultiPolygonFromHole(nuts_code_of_Rastaat, 1);
+		MultiPolygon b = nut_parser.getNutsPolygon(nuts_code_of_Baden_Baden);
 		Assert.assertEquals(true, tester.areTwoPolygonsEqual(a, b));
 	
 	}
