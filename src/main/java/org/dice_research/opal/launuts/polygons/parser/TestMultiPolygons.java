@@ -21,6 +21,8 @@ public class TestMultiPolygons {
 		int total_number_of_coordinates_of_any_polygon = 0;
 		int total_number_of_approximately_equal_coordinates = 0;
 		int total_percentage_of_approximately_equal_coordinates = 0;
+		double admissibe_threshold =  0.2;
+		int tolerance_for_polygon_size_difference = 2;
 
 		if (b.polygons.size() != a.polygons.size())
 			return false;
@@ -35,7 +37,7 @@ public class TestMultiPolygons {
 				/*
 				 * Go ahead only when the two polygon's coordinates number differ maximum by 1
 				 */
-				if (Math.abs(polygon_A.points.size() - polygon_B.points.size()) > 2)
+				if (Math.abs(polygon_A.points.size() - polygon_B.points.size()) > tolerance_for_polygon_size_difference)
 					return false;
 
 				else {
@@ -49,8 +51,8 @@ public class TestMultiPolygons {
 
 						Point ith_coordinate_of_A = polygon_A.points.get(i);
 						Point ith_coordinate_of_B = polygon_B.points.get(i);
-						if (approximatelyEqual(ith_coordinate_of_A.latitude, ith_coordinate_of_B.latitude, 0.5)
-								&& approximatelyEqual(ith_coordinate_of_A.longitude, ith_coordinate_of_B.longitude, 0.5))
+						if (approximatelyEqual(ith_coordinate_of_A.latitude, ith_coordinate_of_B.latitude, admissibe_threshold)
+								&& approximatelyEqual(ith_coordinate_of_A.longitude, ith_coordinate_of_B.longitude, admissibe_threshold))
 							total_number_of_approximately_equal_coordinates++;
 
 						total_number_of_coordinates_of_any_polygon++;
