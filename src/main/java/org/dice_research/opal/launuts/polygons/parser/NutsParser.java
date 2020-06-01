@@ -24,8 +24,8 @@ import java.io.FileNotFoundException;
 
 public class NutsParser implements PolygonParserInterface {
 
-	private static String nut_resolutions[] = { "nut_1_1_million", "nut_1_3_million", "nut_1_10_million",
-			"nut_1_20_million", "nut_1_60_million" };
+	private static String nuts_resolutions[] = { "nuts_1_1_million", "nuts_1_3_million", "nuts_1_10_million",
+			"nuts_1_20_million", "nuts_1_60_million" };
 
 	private static File source_directory_for_geojson = new File(
 			new NutsParser().getClass().getClassLoader().getResource("launuts_geojson_and_shape_files").getFile());
@@ -35,8 +35,8 @@ public class NutsParser implements PolygonParserInterface {
 	private static JSONParser json_parser = new JSONParser();
 	private static Reader geojson_reader;
 	private static JSONArray all_nuts_with_polygons = new JSONArray();
-	protected static String name_of_parser_after_final_processing = "NUT_Polygons.json";
-	protected static String feature_id_type = "nut_id";
+	protected static String name_of_parser_after_final_processing = "NUTS_Polygons.json";
+	protected static String feature_id_type = "nuts_id";
 
 	// Nuts-id and Nuts-name for all nuts.
 	private static HashMap<String, String> nutsId_nutsName = new HashMap<String, String>();
@@ -86,7 +86,7 @@ public class NutsParser implements PolygonParserInterface {
 	private static void hasThisNutsLeastNumberOfCoordinatesIfTrueThenAdd(JSONArray all_nuts_with_polygons,
 			JSONObject a_nuts_polygon) {
 
-		String temp_nut_id = a_nuts_polygon.get("nut_id").toString();
+		String temp_nut_id = a_nuts_polygon.get("nuts_id").toString();
 		int temp_nut_polygon_points = Integer.parseInt(a_nuts_polygon.get("polygon_points").toString());
 
 		// Does a similar old nuts has least number of points?
@@ -105,7 +105,7 @@ public class NutsParser implements PolygonParserInterface {
 		while (nut_iterator.hasNext()) {
 
 			JSONObject existing_old_nut = nut_iterator.next();
-			if (existing_old_nut.get("nut_id").toString().equals(temp_nut_id)) {
+			if (existing_old_nut.get("nuts_id").toString().equals(temp_nut_id)) {
 
 				is_tempNut_a_newly_discovered_nut = false;
 				// check if new_nuts has least polygon points
@@ -113,7 +113,7 @@ public class NutsParser implements PolygonParserInterface {
 						.parseInt(existing_old_nut.get("polygon_points").toString());
 				System.out.println(
 						"NUTS:" + temp_nut_id + " " + " " + "existing_polygon_points=" + existing_old_nut_polygon_points
-								+ " " + " " + " " + "new_poly_points=" + temp_nut_polygon_points);
+								+ " " + " " + " " + "new_polygon_points=" + temp_nut_polygon_points);
 				if (temp_nut_polygon_points < existing_old_nut_polygon_points) {
 					old_existing_nut_has_least_resolution = false;
 					nut_to_remove = existing_old_nut;
@@ -145,7 +145,7 @@ public class NutsParser implements PolygonParserInterface {
 		 * hashmap nutsName.
 		 */
 		for (File folder : listOfFolders) {
-			if (folder.getName().equals("nut_1_60_million")) {
+			if (folder.getName().equals("nuts_1_60_million")) {
 				for (File file : folder.listFiles()) {
 					if (file.getName().equals("NUTS_AT_2016.csv")) {
 						Scanner csv_scanner = new Scanner(file);
@@ -251,9 +251,9 @@ public class NutsParser implements PolygonParserInterface {
 		 */
 		for (int levl_counter = 0; levl_counter < nuts_level.length; levl_counter++) {
 
-			for (int dir_counter = 0; dir_counter < nut_resolutions.length; dir_counter++) {
-				System.out.println(source_directory_for_geojson + "/" + nut_resolutions[dir_counter]);
-				File current_dir = new File(source_directory_for_geojson + "/" + nut_resolutions[dir_counter]);
+			for (int dir_counter = 0; dir_counter < nuts_resolutions.length; dir_counter++) {
+				System.out.println(source_directory_for_geojson + "/" + nuts_resolutions[dir_counter]);
+				File current_dir = new File(source_directory_for_geojson + "/" + nuts_resolutions[dir_counter]);
 				for (int file_counter = 0; file_counter < current_dir.listFiles().length; file_counter++) {
 					String geojson_file = current_dir.listFiles()[file_counter].getName();
 
@@ -267,7 +267,7 @@ public class NutsParser implements PolygonParserInterface {
 
 						try {
 							geojson_reader = new FileReader(
-									source_directory_for_geojson + "/" + nut_resolutions[dir_counter] + "/"
+									source_directory_for_geojson + "/" + nuts_resolutions[dir_counter] + "/"
 											+ current_dir.listFiles()[file_counter].getName().toString());
 
 							JSONObject root_object = (JSONObject) json_parser.parse(geojson_reader);
@@ -346,18 +346,18 @@ public class NutsParser implements PolygonParserInterface {
 										else
 											a_nuts_polygon.put("valid_polygon", "false");
 
-										a_nuts_polygon.put("nut_name",
+										a_nuts_polygon.put("nuts_name",
 												nutsId_nutsName.get(feature.get("id").toString()));
 										a_nuts_polygon.put("level", nuts_level[levl_counter]);
 
 										// From which shape(LineString,MultiPolygon) polygon was extracted
 										a_nuts_polygon.put("geometry_type", json_geometry.get("type").toString());
-										a_nuts_polygon.put("nut_id", feature.get("id").toString());
+										a_nuts_polygon.put("nuts_id", feature.get("id").toString());
 										a_nuts_polygon.put("File",
 												current_dir.listFiles()[file_counter].getName().toString());
 										a_nuts_polygon.put("coordinates", coordinates_in_lat_long_format);
 										a_nuts_polygon.put("inner_rings", holes);
-										a_nuts_polygon.put("Number_of_inner_rings", number_of_inner_rings);
+										a_nuts_polygon.put("number_of_inner_rings", number_of_inner_rings);
 										a_nuts_polygon.put("polygon_points", outer_ring_size);
 										hasThisNutsLeastNumberOfCoordinatesIfTrueThenAdd(all_nuts_with_polygons,
 												a_nuts_polygon);
@@ -386,18 +386,18 @@ public class NutsParser implements PolygonParserInterface {
 										else
 											a_nuts_polygon.put("valid_polygon", "false");
 
-										a_nuts_polygon.put("nut_name",
+										a_nuts_polygon.put("nuts_name",
 												nutsId_nutsName.get(feature.get("id").toString()));
 										a_nuts_polygon.put("level", nuts_level[levl_counter]);
 
 										// From which shape(LineString,MultiPolygon) polygon was extracted
 										a_nuts_polygon.put("geometry_type", json_geometry.get("type").toString());
-										a_nuts_polygon.put("nut_id", feature.get("id").toString());
+										a_nuts_polygon.put("nuts_id", feature.get("id").toString());
 										a_nuts_polygon.put("File",
 												current_dir.listFiles()[file_counter].getName().toString());
 										a_nuts_polygon.put("coordinates", coordinates_in_lat_long_format);
 										a_nuts_polygon.put("inner_rings", holes);
-										a_nuts_polygon.put("Number_of_inner_rings", number_of_inner_rings);
+										a_nuts_polygon.put("number_of_inner_rings", number_of_inner_rings);
 										a_nuts_polygon.put("polygon_points", outer_ring_size);
 										hasThisNutsLeastNumberOfCoordinatesIfTrueThenAdd(all_nuts_with_polygons,
 												a_nuts_polygon);
@@ -421,7 +421,7 @@ public class NutsParser implements PolygonParserInterface {
 		// Write JSON file
 		try (
 
-				FileWriter file = new FileWriter("NUT_Polygons.json")) {
+				FileWriter file = new FileWriter("NUTS_Polygons.json")) {
 			if (!(all_nuts_with_polygons.isEmpty())) {
 				file.write(all_nuts_with_polygons.toJSONString());
 				file.flush();
