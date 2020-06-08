@@ -348,7 +348,7 @@ public class NutsParser implements PolygonParserInterface {
 										}
 
 										// Check for validity of polygon
-										if (areValidPolygons(coordinates_long_lat_format, "polygon_type"))
+										if (areValidPolygons(coordinates_long_lat_format, "multipolygon_type"))
 											a_nuts_polygon.put("valid_polygon", "true");
 										else
 											a_nuts_polygon.put("valid_polygon", "false");
