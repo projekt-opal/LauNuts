@@ -187,9 +187,11 @@ public class NutsParser implements PolygonParserInterface {
 
 				JSONArray old_coordinates = (JSONArray) old_child_coordinates.get(count);
 				JSONArray new_coordinates = new JSONArray();
+				if(Double.parseDouble(old_coordinates.toArray()[1].toString()) > Double.parseDouble(old_coordinates.toArray()[0].toString())) {
 				new_coordinates.add(old_coordinates.toArray()[1]); // Lattitude
 				new_coordinates.add(old_coordinates.toArray()[0]); // Longitude
 				new_child_coordinates.add(new_coordinates);
+				}
 
 			}
 			coordinates_in_lat_long_format.add(new_child_coordinates);
