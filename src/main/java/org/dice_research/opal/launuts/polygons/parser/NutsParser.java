@@ -201,7 +201,7 @@ public class NutsParser implements PolygonParserInterface {
 
 	public static boolean areValidPolygons(JSONArray coordinates, String geometry_type) {
 
-		boolean are_valid_polygons = true;
+		boolean are_valid_polygons = false;
 
 		if ("multipolygon_type".equals(geometry_type)) {
 			for (int array_index = 0; array_index < coordinates.size(); array_index++) {
@@ -213,11 +213,14 @@ public class NutsParser implements PolygonParserInterface {
 					break;
 				}
 			}
+			are_valid_polygons = true;
 		} else if ("polygon_type".equals(geometry_type)) {
 			JSONArray outer_ring_coordinates_longlat = (JSONArray) coordinates.get(0);
 			if (!(outer_ring_coordinates_longlat.get(0)
 					.equals(outer_ring_coordinates_longlat.get(outer_ring_coordinates_longlat.size() - 1))))
 				are_valid_polygons = false;
+			else
+				are_valid_polygons = true;
 
 		}
 		return are_valid_polygons;
