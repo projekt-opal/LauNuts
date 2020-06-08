@@ -30,6 +30,24 @@ import org.opengis.filter.Filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+
+/**
+ * LauParser reads the shape file from Eurostat and extract the polygons
+ * for all 11118 laus. Some functionality for this operation has been taken
+ * from NutsParser e.g. some methods such as getCoordinatesLatLongFormat(), 
+ * getInnerRings() have been reused by extending NutsParser. The parsed lau
+ * polygons are stored in the file LAU_Polygons.json.
+ * 
+ * The source/input shape file (from Eurostat) has been compressed and put
+ * inside the folder "launuts_geojson_and_shape_files". Before running this
+ * app the zip file "lau_1_1_million" must be extracted and the project must
+ * be updated.
+ * 
+ * @author Gourab
+ *
+ */
+
+
 public class LauParser extends NutsParser{
 	
 	static {

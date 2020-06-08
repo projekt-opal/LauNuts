@@ -22,6 +22,23 @@ import java.util.concurrent.TimeUnit;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+
+/**
+ * The NutParse reads GeoJson files from Eurostat and extract polygons for 455 
+ * nuts of Germany. The GeoJson files from Eurostat are in different resolution 
+ * e.g. from 1:1 million to 1:60 million. We are considering only those polygons 
+ * which have less number of coordinates in its outer ring. To do this we are 
+ * using a library from GeoTools. The parsed polygons are stored in a file called
+ * NUTS_Polygons.json in the root folder of this application.
+ * 
+ * The source/input GeoJson files (from Eurostat) have been put in 4 zip files in
+ * the folder "launuts_geojson_and_shape_files". Before this program is run all the
+ * zip files with nuts must be extracted.
+ * 
+ * @author Gourab Sahu
+ */
+
+
 public class NutsParser implements PolygonParserInterface {
 
 	private static String nuts_resolutions[] = { "nuts_1_1_million", "nuts_1_3_million", "nuts_1_10_million",
@@ -45,7 +62,7 @@ public class NutsParser implements PolygonParserInterface {
 
 		JSONArray inner_rings = new JSONArray();
 
-		// first array is always outer ring !!
+		// First array is always outer ring !!
 		// The rest are inner rings
 		for (int counter = 1; counter < child_polygon_coordinates_arrays.size(); counter++) {
 
