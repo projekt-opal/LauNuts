@@ -7,7 +7,7 @@ import org.dice_research.opal.launuts.polygons.PolygonParserException;
 import org.dice_research.opal.launuts.polygons.parser.NutsParser;
 import org.junit.Test;
 
-public class NutParserTest {
+public class NutParserHoleTest {
 	
 	public static TestMultiPolygons tester = new TestMultiPolygons();
 	public static NutsParser nut_parser = new NutsParser();
@@ -32,6 +32,24 @@ public class NutParserTest {
 	//Baden_baden is a hole inside Rastaat
 	private static String nuts_code_of_Rastaat = "DEB3H";
 	private static String nuts_code_of_Baden_Baden = "DEB33";
+	
+	//Berlin is a hole inside Brandenburg
+	private static String nuts_code_of_Brandenburg = "DE40";
+	private static String nuts_code_of_Berlin = "DE3";
+	
+	//Bremen is a hole inside Niedersachsen
+	private static String nuts_code_of_Niedersachsen = "DE9";
+	private static String nuts_code_of_Bremen = "DE501";
+	
+	//Ansbach is a hole inside Ansbach Landkreis
+	private static String nuts_code_of_Ansbach_Landkreis = "DE256";
+	private static String nuts_code_of_Ansbach = "DE251";
+	
+	//Ansbach is a hole inside Ansbach Landkreis
+	private static String nuts_code_of_Coburg_Landkreis = "DE247";
+	private static String nuts_code_of_Coburg_Kreisfreie_Stadt = "DE243";
+	
+	
 
 	
 	@Test
@@ -74,6 +92,42 @@ public class NutParserTest {
 		
 		MultiPolygon a = nut_parser.getMultiPolygonFromHole(nuts_code_of_Rastaat, 1);
 		MultiPolygon b = nut_parser.getNutsPolygon(nuts_code_of_Baden_Baden);
+		Assert.assertEquals(true, tester.areTwoPolygonsEqual(a, b));
+	
+	}
+	
+	@Test
+	public void testCase6ForHoleIntegrityCheck() throws PolygonParserException, ClassCastException, FileNotFoundException{
+		
+		MultiPolygon a = nut_parser.getMultiPolygonFromHole(nuts_code_of_Brandenburg, 1);
+		MultiPolygon b = nut_parser.getNutsPolygon(nuts_code_of_Berlin);
+		Assert.assertEquals(true, tester.areTwoPolygonsEqual(a, b));
+	
+	}
+	
+	@Test
+	public void testCase7ForHoleIntegrityCheck() throws PolygonParserException, ClassCastException, FileNotFoundException{
+		
+		MultiPolygon a = nut_parser.getMultiPolygonFromHole(nuts_code_of_Niedersachsen, 1);
+		MultiPolygon b = nut_parser.getNutsPolygon(nuts_code_of_Bremen);
+		Assert.assertEquals(true, tester.areTwoPolygonsEqual(a, b));
+	
+	}
+	
+	@Test
+	public void testCase8ForHoleIntegrityCheck() throws PolygonParserException, ClassCastException, FileNotFoundException{
+		
+		MultiPolygon a = nut_parser.getMultiPolygonFromHole(nuts_code_of_Ansbach_Landkreis, 1);
+		MultiPolygon b = nut_parser.getNutsPolygon(nuts_code_of_Ansbach);
+		Assert.assertEquals(true, tester.areTwoPolygonsEqual(a, b));
+	
+	}
+	
+	@Test
+	public void testCase9ForHoleIntegrityCheck() throws PolygonParserException, ClassCastException, FileNotFoundException{
+		
+		MultiPolygon a = nut_parser.getMultiPolygonFromHole(nuts_code_of_Coburg_Landkreis, 1);
+		MultiPolygon b = nut_parser.getNutsPolygon(nuts_code_of_Coburg_Kreisfreie_Stadt);
 		Assert.assertEquals(true, tester.areTwoPolygonsEqual(a, b));
 	
 	}

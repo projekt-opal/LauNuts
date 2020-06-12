@@ -21,7 +21,7 @@ public class TestMultiPolygons {
 		int total_number_of_coordinates_of_any_polygon = 0;
 		int total_number_of_approximately_equal_coordinates = 0;
 		int total_percentage_of_approximately_equal_coordinates = 0;
-		double admissibe_threshold =  0.2;
+		double admissibe_threshold =  0.5;
 		int tolerance_for_polygon_size_difference = 2;
 
 		if (b.polygons.size() != a.polygons.size())
@@ -62,7 +62,7 @@ public class TestMultiPolygons {
 			}
 
 			total_percentage_of_approximately_equal_coordinates = (total_number_of_approximately_equal_coordinates
-					/ total_number_of_coordinates_of_any_polygon) * 100;
+					*100)/ total_number_of_coordinates_of_any_polygon;
 		}
 
 		System.out.println("tatal coorrdinates :" + total_number_of_coordinates_of_any_polygon);
