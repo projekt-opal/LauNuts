@@ -6,7 +6,7 @@ import org.dice_research.opal.launuts.polygons.Polygon;
 
 public class TestMultiPolygons {
 
-	/*
+	/**
 	 * This class has been created two test equality of two MultiPolygons A and B.
 	 * The latitude and longitude of each point of A and B are compared to check if
 	 * they are approximately equal or not with a threshold of 0.5. For example,
@@ -16,7 +16,7 @@ public class TestMultiPolygons {
 	 * than 70% then they are equal MutiPolygons.
 	 */
 
-	public boolean areTwoPolygonsEqual(MultiPolygon a, MultiPolygon b) {
+	public boolean areTwoMultiPolygonsEqual(MultiPolygon a, MultiPolygon b) {
 
 		int total_number_of_coordinates_of_any_polygon = 0;
 		int total_number_of_approximately_equal_coordinates = 0;

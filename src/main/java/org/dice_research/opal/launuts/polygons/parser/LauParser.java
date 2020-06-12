@@ -43,16 +43,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * app the zip file "lau_1_1_million" must be extracted and the project must
  * be updated.
  * 
- * @author Gourab
+ * @author Gourab Sahu
  *
  */
 
 
 public class LauParser extends NutsParser{
 	
-	static {
-		name_of_parser_after_final_processing = "LAU_Polygons.json";
-		feature_id_type = "gisco_id";
+	public LauParser() {
+		this.name_of_parser_after_final_processing = "LAU_Polygons.json";
+		this.feature_id_type = "gisco_id";
 	}
 	
 	private static GeometryFactory geometryFactory = new GeometryFactory();
@@ -235,6 +235,5 @@ public class LauParser extends NutsParser{
 
 		return getNutsPolygon(lauCode);
 	}
-
 
 }
