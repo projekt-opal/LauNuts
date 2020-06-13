@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-
 import org.json.simple.parser.JSONParser;
 import org.dice_research.opal.launuts.polygons.Point;
 import org.dice_research.opal.launuts.polygons.PolygonParserException;
@@ -30,33 +29,31 @@ import org.opengis.filter.Filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 /**
- * LauParser reads the shape file from Eurostat and extract the polygons
- * for all 11118 laus. Some functionality for this operation has been taken
- * from NutsParser e.g. some methods such as getCoordinatesLatLongFormat(), 
+ * LauParser reads the shape file from Eurostat and extract the polygons for all
+ * 11118 laus. Some functionality for this operation has been taken from
+ * NutsParser e.g. some methods such as getCoordinatesLatLongFormat(),
  * getInnerRings() have been reused by extending NutsParser. The parsed lau
  * polygons are stored in the file LAU_Polygons.json.
  * 
  * The source/input shape file (from Eurostat) has been compressed and put
- * inside the folder "launuts_geojson_and_shape_files". Before running this
- * app the zip file "lau_1_1_million" must be extracted and the project must
- * be updated.
+ * inside the folder "launuts_geojson_and_shape_files". Before running this app
+ * the zip file "lau_1_1_million" must be extracted and the project must be
+ * updated.
  * 
  * @author Gourab Sahu
  *
  */
 
+public class LauParser extends NutsParser {
 
-public class LauParser extends NutsParser{
-	
 	public LauParser() {
 		this.name_of_parser_after_final_processing = "LAU_Polygons.json";
 		this.feature_id_type = "gisco_id";
 	}
-	
+
 	private static GeometryFactory geometryFactory = new GeometryFactory();
-		
+
 	private static JSONObject wktToJSON(String wkt_parameter) throws IOException, InterruptedException {
 		/**
 		 * Call to Node.JS library to parse WKT to GeoJSON. The response from Node.Js is
@@ -72,8 +69,7 @@ public class LauParser extends NutsParser{
 		JSONParser node_response_parser = new JSONParser();
 
 		// Read the Node response from this location.
-		Reader node_response = new FileReader(
-				"src/main/resources/launuts_geojson_and_shape_files/node_response.json");
+		Reader node_response = new FileReader("src/main/resources/launuts_geojson_and_shape_files/node_response.json");
 
 		JSONObject json_coordinates = null;
 		try {
@@ -82,29 +78,27 @@ public class LauParser extends NutsParser{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return json_coordinates;
 	}
-	
-	private static JSONObject fillRemainingPolygonMetadta(JSONObject a_lau_polygon,JSONArray coordinates, SimpleFeature feature) {
-		
+
+	private static JSONObject fillRemainingPolygonMetadta(JSONObject a_lau_polygon, JSONArray coordinates,
+			SimpleFeature feature) {
 
 		int children_of_coordinates = coordinates.size();
-		JSONArray holes = new JSONArray(); //inner_rings
-		NutsParser lau_parser = new NutsParser(); //To reuse some code	
+		JSONArray holes = new JSONArray(); // inner_rings
+		NutsParser lau_parser = new NutsParser(); // To reuse some code
 		JSONArray coordinates_in_lat_long_format = new JSONArray();
 		int number_of_inner_rings = 0;
 		int outer_ring_size = 0;
 		JSONArray first_child_of_coordinates = (JSONArray) coordinates.get(0);
 
 		if (children_of_coordinates > 1) {
-			
-			for (int array_index = 0; array_index < coordinates.size(); array_index++) 
-			{
-				
+
+			for (int array_index = 0; array_index < coordinates.size(); array_index++) {
+
 				// This array might contain 2 sub-arrays(linear ring, holes)
-				JSONArray child_polygon_coordinates = (JSONArray) coordinates
-						.get(array_index);
+				JSONArray child_polygon_coordinates = (JSONArray) coordinates.get(array_index);
 				System.out.println(feature.getAttributes().toArray()[3].toString());
 				JSONArray child_polygon_inner_rings = null;
 
@@ -114,15 +108,19 @@ public class LauParser extends NutsParser{
 				 */
 				if (child_polygon_coordinates.size() > 1) {
 					child_polygon_inner_rings = lau_parser.getInnerRings(child_polygon_coordinates);
-						holes.add(child_polygon_inner_rings);
-						number_of_inner_rings = number_of_inner_rings + child_polygon_inner_rings.size();
+					holes.add(child_polygon_inner_rings);
+					number_of_inner_rings = number_of_inner_rings + child_polygon_inner_rings.size();
 				}
-				JSONArray child_polygon_outer_ring = (JSONArray) child_polygon_coordinates
-						.get(0);
+				JSONArray child_polygon_outer_ring = (JSONArray) child_polygon_coordinates.get(0);
 				outer_ring_size = outer_ring_size + child_polygon_outer_ring.size();
-				JSONArray child_polygon_coordinates_in_lat_long_format = getCoordinatesLatLongFormat(child_polygon_coordinates);
+				JSONArray child_polygon_coordinates_in_lat_long_format = getCoordinatesLatLongFormat(
+						child_polygon_coordinates);
 				coordinates_in_lat_long_format.add(child_polygon_coordinates_in_lat_long_format);
-			}	
+			}
+			if (lau_parser.areValidPolygons(coordinates_in_lat_long_format, "multipolygon_type"))
+				a_lau_polygon.put("valid_polygon", "true");
+			else
+				a_lau_polygon.put("valid_polygon", "false");
 			a_lau_polygon.put("geometry_type", "MultiPolygon");
 			a_lau_polygon.put("coordinates", coordinates_in_lat_long_format);
 			a_lau_polygon.put("inner_rings", holes);
@@ -130,23 +128,28 @@ public class LauParser extends NutsParser{
 			a_lau_polygon.put("polygon_points", outer_ring_size);
 		} else {
 			System.out.println(feature.getAttributes().toArray()[3].toString());
+			if (lau_parser.areValidPolygons(first_child_of_coordinates, "polygon_type"))
+				a_lau_polygon.put("valid_polygon", "true");
+			else
+				a_lau_polygon.put("valid_polygon", "false");
 			a_lau_polygon.put("geometry_type", "Polygon");
 			a_lau_polygon.put("coordinates", getCoordinatesLatLongFormat(first_child_of_coordinates));
-			
-			if(first_child_of_coordinates.size()>1)
+
+			if (first_child_of_coordinates.size() > 1)
 				holes = lau_parser.getInnerRings(coordinates);
 			JSONArray polygon_outer_ring = (JSONArray) first_child_of_coordinates.get(0);
 			a_lau_polygon.put("inner_rings", holes);
 			a_lau_polygon.put("number_of_inner_rings", holes.size());
 			a_lau_polygon.put("polygon_points", polygon_outer_ring.size());
 		}
-		
+
 		return a_lau_polygon;
 	}
 
 	public static void createLauPolygons() throws IOException, Exception {
-		
-		System.out.println("1. Please ensure that Launuts data in the folder \"resources/launuts_geojson_and_shape_files\" folder has been extracted!!");
+
+		System.out.println(
+				"1. Please ensure that Launuts data in the folder \"resources/launuts_geojson_and_shape_files\" folder has been extracted!!");
 		System.out.println(" ");
 		System.out.println("2. After extraction, do not forget to refresh the project by pressing Alt+F5");
 		System.out.println(" ");
@@ -177,7 +180,7 @@ public class LauParser extends NutsParser{
 			SimpleFeature feature = features.next();
 
 			if (feature.getAttributes().toArray()[3].toString().contains("DE_")) {
-			// Case study: DE_08326074(MultiPolygon), DE_08326054(Polygon)
+				// Case study: DE_08326074(MultiPolygon), DE_08326054(Polygon)
 
 				JSONObject a_lau_polygon = new JSONObject();
 				byte[] byteArrray = feature.getAttributes().toArray()[2].toString().getBytes();
@@ -192,12 +195,10 @@ public class LauParser extends NutsParser{
 
 				String wkt_parameter = '"' + multi_polygon.toString() + '"';
 				JSONObject json_coordinates = wktToJSON(wkt_parameter);
-				
-				
-				
-				//This code block is to evaluate whether a geometry is polygon or multipolygon
+
+				// This code block is to evaluate whether a geometry is polygon or multipolygon
 				JSONArray coordinates = (JSONArray) json_coordinates.get("coordinates");
-				a_lau_polygon = fillRemainingPolygonMetadta(a_lau_polygon,coordinates, feature);			
+				a_lau_polygon = fillRemainingPolygonMetadta(a_lau_polygon, coordinates, feature);
 				all_polygons.add(a_lau_polygon);
 
 				// Runtime visual response
