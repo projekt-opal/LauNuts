@@ -6,12 +6,14 @@
 	<artifactId>launuts</artifactId>
 	<version>0.3.1-SNAPSHOT</version>
 	<name>LauNuts</name>
+
 	<properties>
 		<java.version>1.8</java.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<geotools.version>24-SNAPSHOT</geotools.version>
 	</properties>
+
 	<dependencies>
 	
 	<dependency>
@@ -20,16 +22,19 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-shapefile</artifactId>
             <version>${geotools.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-swing</artifactId>
             <version>${geotools.version}</version>
         </dependency>
+
 		<!-- geo distances -->
 		<!-- https://mvnrepository.com/artifact/net.sf.geographiclib/GeographicLib-Java -->
 		<dependency>
@@ -37,47 +42,47 @@
 			<artifactId>GeographicLib-Java</artifactId>
 			<version>1.49</version>
 		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
 			<version>1.1.1</version>
 		</dependency>
+
 		<!-- Resolving: Missing artifact com.github.jsonld-java.jsonld-java:jsonld-java:bundle:0.12.3 -->
 		<dependency>
 			<groupId>com.github.jsonld-java</groupId>
 			<artifactId>jsonld-java</artifactId>
 			<version>0.12.5</version>
 		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-csv -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-csv</artifactId>
 			<version>1.7</version>
 		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-arq -->
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-rdfconnection</artifactId>
 			<version>[3.9.0,)</version>
 		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/io.github.galbiston/geosparql-jena -->
 		<dependency>
 			<groupId>io.github.galbiston</groupId>
 			<artifactId>geosparql-jena</artifactId>
 			<version>1.1.2</version>
 		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.json/json -->
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20190722</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.vividsolutions/jts -->
-		<dependency>
-			<groupId>com.vividsolutions</groupId>
-			<artifactId>jts</artifactId>
-			<version>1.13</version>
 		</dependency>
 
 
@@ -99,4 +104,5 @@
         <releases><enabled>false</enabled></releases>
       </repository>
     </repositories>
+
 </project>

@@ -18,7 +18,6 @@ import org.dice_research.opal.launuts.matcher.StaticMappings;
 import org.dice_research.opal.launuts.nuts.NutsContainer;
 
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 /**
@@ -58,7 +57,8 @@ public class Main {
 		 * ModelBuilder.
 		 */
 		JSONParser parser = new JSONParser();
-		Reader nuts_reader,laus_reader;
+		Reader nuts_reader;
+		Reader laus_reader;
 		
 		nuts_reader = new FileReader("NUT_Polygons.json");
 		JSONArray nut_polygons = (JSONArray) parser.parse(nuts_reader);
