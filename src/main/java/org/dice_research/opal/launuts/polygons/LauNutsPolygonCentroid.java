@@ -1,79 +1,68 @@
 package org.dice_research.opal.launuts.polygons;
 
 import org.dice_research.opal.launuts.polygons.parser.*;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import org.eclipse.emf.common.util.ArrayDelegatingEList;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 // https://howtodoinjava.com/library/json-simple-read-write-json-examples/
 
 /*
-* Author: Amit Kumar
-*
-* This file implements the computation of nuts polygons centroid.
-*
-* Reusing parser code from NutsParser.java
-*
-* */
+ * Author: Amit Kumar
+ *
+ * This file implements the computation of nuts polygons centroid.
+ *
+ * Reusing parser code from NutsParser.java
+ *
+ * */
 
+public class LauNutsPolygonCentroid extends NutsParser {
+	org.dice_research.opal.launuts.polygons.MultiPolygon MultiPolygon = new org.dice_research.opal.launuts.polygons.MultiPolygon();
+	org.dice_research.opal.launuts.polygons.Point point = new org.dice_research.opal.launuts.polygons.Point();
+	Point pointCentroid = null;
 
-public class LauNutsPolygonCentroid  {
-	protected static String file_name = "NUT_Polygons.json";
-	//JSONParser instance to parse JSON file.
-	private static JSONParser json_parser = new JSONParser();
-	private static Reader geojson_reader;
-	public static int count=0;
-	public static List<Point> centroidPoints=new ArrayList<>();
-	protected static String feature_id_type = "nut_id";
+	public Point iteratingNuts(String nutsCode) {
+		// This function calls getNutsPolygon in NutsParser and fetch the polygon found.
+		//Input: Nuts code
+		//Output: Centroid Point
 
-	public org.dice_research.opal.launuts.polygons.Point getNutsCenterPoints(String nutsCode)
-			throws PolygonParserException {
-
-		org.dice_research.opal.launuts.polygons.PolygonParserInterface List = null;
-		org.dice_research.opal.launuts.polygons.Point point = new org.dice_research.opal.launuts.polygons.Point();
 		try {
+			// Parsing nutsCode to getNutsPolygon to fetch polygon by iterating the JSON file.
+			MultiPolygon = getNutsPolygon(nutsCode);
 
-			List = null;
-			geojson_reader = new FileReader(file_name);
-			JSONArray nuts_array = (JSONArray) json_parser.parse(geojson_reader);
-			centroidPoints = new ArrayList<>();
-			Iterator<JSONObject> nutsIterator = nuts_array.iterator();
-			while (nutsIterator.hasNext()) {
-				JSONObject nuts = nutsIterator.next();
-				if (nuts.get(feature_id_type).toString().equals(nutsCode)) {
-					String geometry_type = nuts.get("geometry_type").toString();
-					JSONArray outer_ring = (JSONArray) nuts.get("outer_ring");
-					if (geometry_type.equals("Polygon")) {
-						for (int index = 0; index < outer_ring.size(); index++) {
-							JSONArray ring = (JSONArray) outer_ring.get(index);
-							org.dice_research.opal.launuts.polygons.Polygon ring_polygon = new org.dice_research.opal.launuts.polygons.Polygon();
-							for (int coordinate_index = 0; coordinate_index < ring.size(); coordinate_index++) {
-								JSONArray lattitude_longitude = (JSONArray) ring.get(coordinate_index);
-								point.latitude += Float.parseFloat(lattitude_longitude.get(0).toString());
-								point.longitude += Float.parseFloat(lattitude_longitude.get(1).toString());
-							}
-							point.latitude = point.latitude / ring.size();
-							point.longitude = point.longitude / ring.size();
-						}
-					}
-				}
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
+			// Calling function which will take polygon as input and compute the centroid
+			pointCentroid = computeCentroidMultiPolygon(MultiPolygon);
+			return pointCentroid;
+		} catch (Exception e) {
+
 		}
-		return point;
+		return null;
 	}
+
+	public Point computeCentroidMultiPolygon(MultiPolygon multiPolygon) throws IOException, ParseException, org.locationtech.jts.io.ParseException {
+		try {
+			Polygon multiPolygonArray = MultiPolygon.polygons.get(0);
+			System.out.println(multiPolygonArray);
+			for (int i = 0; i < multiPolygonArray.points.size(); i++) {
+				org.dice_research.opal.launuts.polygons.Point lat_long = multiPolygonArray.points.get(i);
+				point.latitude += lat_long.latitude;
+				point.longitude += lat_long.longitude;
+			}
+			//Taking a mean of lat and long points to compute centroid.
+			// This implementation for computation of centroid will be changed.
+			point.latitude = point.latitude / multiPolygonArray.points.size();
+			point.longitude = point.longitude / multiPolygonArray.points.size();
+
+			//Implementation using geo tools library pending
+			//WKTReader reader = new WKTReader();
+			//Geometry geom = reader.read(String.valueOf(multiPolygonArray));
+			//pointCentroid = geom.getCentroid();
+
+			return point;
+		} catch (Exception e) {
+		}
+		return null;
+	}
+
 }
+
+

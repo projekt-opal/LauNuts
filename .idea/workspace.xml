@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="73f81e0e-b6b6-4f92-9d62-d8bacab55e1b" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/NUTS_Polygons.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/Tmp.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/dice_research/opal/launuts/GeoContainer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/dice_research/opal/launuts/ontology/EuropaVocabularyOverview.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/dice_research/opal/launuts/polygons/parser/TestMultiPolygons.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LAU_Polygons.json" beforeDir="false" afterPath="$PROJECT_DIR$/LAU_Polygons.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NUT_Polygons.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/dice_research/opal/launuts/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/dice_research/opal/launuts/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/dice_research/opal/launuts/ModelBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/dice_research/opal/launuts/ModelBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/dice_research/opal/launuts/polygons/parser/LauParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/dice_research/opal/launuts/polygons/parser/LauParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/launuts_geojson_and_shape_files/Extracrt_nut_1_1_million.zip" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/launuts_geojson_and_shape_files/Extract_nuts_1_1_million.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/launuts_geojson_and_shape_files/Extract_for_nut_resolution_1_3_to_1_60.zip" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/launuts_geojson_and_shape_files/Extract_nuts_1_3_million_to_1_16_million.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/dice_research/opal/launuts/polygons/parser/LauParserTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/dice_research/opal/launuts/polygons/parser/LauParserTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/dice_research/opal/launuts/polygons/parser/NutParserTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/dice_research/opal/launuts/polygons/parser/NutParserTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wkt_to_json_parser.js" beforeDir="false" afterPath="$PROJECT_DIR$/wkt_to_json_parser.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1cs2eZw38WxtctWUxhp68hABZds" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="Git.Branch.Popup.ShowAllRemotes" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="ExtractSuperBase.RECENT_KEYS">
+      <recent name="org.dice_research.opal.launuts.polygons.parser" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JUnit.LauNutsPolygonCentroidTest">
+    <configuration name="LauNutsPolygonCentroidTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="launuts" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.dice_research.opal.launuts.polygons.parser.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="org.dice_research.opal.launuts.polygons.parser" />
+      <option name="MAIN_CLASS_NAME" value="org.dice_research.opal.launuts.polygons.parser.LauNutsPolygonCentroidTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="LauNutsPolygonCentroidTest.testcentroidcomputation" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="launuts" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.dice_research.opal.launuts.polygons.parser.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="org.dice_research.opal.launuts.polygons.parser" />
+      <option name="MAIN_CLASS_NAME" value="org.dice_research.opal.launuts.polygons.parser.LauNutsPolygonCentroidTest" />
+      <option name="METHOD_NAME" value="testcentroidcomputation" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.LauNutsPolygonCentroidTest" />
+        <item itemvalue="JUnit.LauNutsPolygonCentroidTest.testcentroidcomputation" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="73f81e0e-b6b6-4f92-9d62-d8bacab55e1b" name="Default Changelist" comment="" />
+      <created>1591303075650</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1591303075650</updated>
+      <workItem from="1591303077596" duration="2704000" />
+      <workItem from="1591440572623" duration="28944000" />
+      <workItem from="1591883779837" duration="4546000" />
+      <workItem from="1592190464655" duration="2108000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="340" y="-880" key="#LauNutsPolygonCentroidTest" timestamp="1592193873070">
+      <screen x="-87" y="-1050" width="1680" height="1050" />
+    </state>
+    <state x="340" y="-880" key="#LauNutsPolygonCentroidTest/0.0.1440.900/-87.-1050.1680.1050@-87.-1050.1680.1050" timestamp="1592193873070" />
+    <state x="566" y="-813" key="#com.intellij.ide.util.MemberChooser" timestamp="1591653456352">
+      <screen x="-87" y="-1050" width="1680" height="1050" />
+    </state>
+    <state x="566" y="-813" key="#com.intellij.ide.util.MemberChooser/0.0.1440.900/-87.-1050.1680.1050@-87.-1050.1680.1050" timestamp="1591653456352" />
+    <state width="1638" height="164" key="GridCell.Tab.0.bottom" timestamp="1592193874715">
+      <screen x="-87" y="-1050" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="164" key="GridCell.Tab.0.bottom/0.0.1440.900/-87.-1050.1680.1050@-87.-1050.1680.1050" timestamp="1592193874715" />
+    <state width="1638" height="164" key="GridCell.Tab.0.center" timestamp="1592193874713">
+      <screen x="-87" y="-1050" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="164" key="GridCell.Tab.0.center/0.0.1440.900/-87.-1050.1680.1050@-87.-1050.1680.1050" timestamp="1592193874713" />
+    <state width="1638" height="164" key="GridCell.Tab.0.left" timestamp="1592193874711">
+      <screen x="-87" y="-1050" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="164" key="GridCell.Tab.0.left/0.0.1440.900/-87.-1050.1680.1050@-87.-1050.1680.1050" timestamp="1592193874711" />
+    <state width="1638" height="164" key="GridCell.Tab.0.right" timestamp="1592193874714">
+      <screen x="-87" y="-1050" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="164" key="GridCell.Tab.0.right/0.0.1440.900/-87.-1050.1680.1050@-87.-1050.1680.1050" timestamp="1592193874714" />
+    <state width="1638" height="363" key="GridCell.Tab.1.bottom" timestamp="1591680663015">
+      <screen x="-87" y="-1050" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="363" key="GridCell.Tab.1.bottom/0.0.1440.900/-87.-1050.1680.1050@-87.-1050.1680.1050" timestamp="1591680663015" />
+    <state width="1638" height="363" key="GridCell.Tab.1.center" timestamp="1591680663013">
+      <screen x="-87" y="-1050" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="363" key="GridCell.Tab.1.center/0.0.1440.900/-87.-1050.1680.1050@-87.-1050.1680.1050" timestamp="1591680663013" />
+    <state width="1638" height="363" key="GridCell.Tab.1.left" timestamp="1591680663012">
+      <screen x="-87" y="-1050" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="363" key="GridCell.Tab.1.left/0.0.1440.900/-87.-1050.1680.1050@-87.-1050.1680.1050" timestamp="1591680663012" />
+    <state width="1638" height="363" key="GridCell.Tab.1.right" timestamp="1591680663014">
+      <screen x="-87" y="-1050" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="363" key="GridCell.Tab.1.right/0.0.1440.900/-87.-1050.1680.1050@-87.-1050.1680.1050" timestamp="1591680663014" />
+    <state x="469" y="-801" key="MultipleFileMergeDialog" timestamp="1592193224541">
+      <screen x="-87" y="-1050" width="1680" height="1050" />
+    </state>
+    <state x="469" y="-801" key="MultipleFileMergeDialog/0.0.1440.900/-87.-1050.1680.1050@-87.-1050.1680.1050" timestamp="1592193224541" />
+    <state x="13" y="-950" width="1480" height="850" key="com.intellij.dvcs.ui.CompareBranchesDialog" timestamp="1592192059484">
+      <screen x="-87" y="-1050" width="1680" height="1050" />
+    </state>
+    <state x="13" y="-950" width="1480" height="850" key="com.intellij.dvcs.ui.CompareBranchesDialog/0.0.1440.900/-87.-1050.1680.1050@-87.-1050.1680.1050" timestamp="1592192059484" />
+    <state x="125" y="-658" key="com.intellij.ide.util.TipDialog" timestamp="1592190630272">
+      <screen x="-87" y="-1050" width="1680" height="1050" />
+    </state>
+    <state x="125" y="-658" key="com.intellij.ide.util.TipDialog/0.0.1440.900/-87.-1050.1680.1050@-87.-1050.1680.1050" timestamp="1592190630272" />
+    <state x="182" y="350" key="com.intellij.ide.util.TipDialog/0.23.1440.877/-87.-1027.1680.1027@0.23.1440.877" timestamp="1591594722920" />
+    <state x="557" y="-601" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1591659098815">
+      <screen x="-87" y="-1050" width="1680" height="1050" />
+    </state>
+    <state x="557" y="-601" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1440.900/-87.-1050.1680.1050@-87.-1050.1680.1050" timestamp="1591659098815" />
+    <state x="461" y="-899" key="refactoring.ChangeSignatureDialog" timestamp="1591670103201">
+      <screen x="-87" y="-1050" width="1680" height="1050" />
+    </state>
+    <state x="461" y="-899" key="refactoring.ChangeSignatureDialog/0.0.1440.900/-87.-1050.1680.1050@-87.-1050.1680.1050" timestamp="1591670103201" />
+    <state x="418" y="-817" width="670" height="676" key="search.everywhere.popup" timestamp="1591627814239">
+      <screen x="-87" y="-1050" width="1680" height="1050" />
+    </state>
+    <state x="418" y="-817" width="670" height="676" key="search.everywhere.popup/0.0.1440.900/-87.-1050.1680.1050@-87.-1050.1680.1050" timestamp="1591627814239" />
+  </component>
+</project>
