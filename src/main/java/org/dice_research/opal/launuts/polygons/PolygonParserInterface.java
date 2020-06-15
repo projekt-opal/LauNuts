@@ -33,8 +33,9 @@ public interface PolygonParserInterface {
 
 	/**
 	 * Returns center points of multi-polygons for a related NUTS code.
+	 * @return
 	 */
-	public List<Point> getNutsCenterPoints(String nutsCode) throws PolygonParserException;
+	public PolygonParserInterface getNutsCenterPoints(String nutsCode) throws PolygonParserException;
 
 	/**
 	 * Returns a multi-polygon for a related NUTS code.
@@ -46,4 +47,5 @@ public interface PolygonParserInterface {
 	 * geoJSON format.
 	 */
 	public LauReaderInterface setSourceDirectory(File directory) throws PolygonParserException;
+
 }

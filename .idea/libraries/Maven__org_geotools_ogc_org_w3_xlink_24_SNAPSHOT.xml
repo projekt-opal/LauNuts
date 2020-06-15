@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.geotools.ogc:org.w3.xlink:24-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/geotools/ogc/org.w3.xlink/24-SNAPSHOT/org.w3.xlink-24-20200530.143008-50.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/geotools/ogc/org.w3.xlink/24-SNAPSHOT/org.w3.xlink-24-20200530.143008-50-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/geotools/ogc/org.w3.xlink/24-SNAPSHOT/org.w3.xlink-24-20200530.143008-50-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
