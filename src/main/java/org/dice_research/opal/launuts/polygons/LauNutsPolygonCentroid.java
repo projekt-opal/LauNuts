@@ -1,6 +1,7 @@
 package org.dice_research.opal.launuts.polygons;
 
 import org.dice_research.opal.launuts.polygons.parser.*;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -47,8 +48,6 @@ public class LauNutsPolygonCentroid extends NutsParser {
             Polygon multiPolygonArray = MultiPolygon.polygons.get(0);
 
             for (int i = 0; i < multiPolygonArray.points.size(); i++) {
-
-
                 org.dice_research.opal.launuts.polygons.Point lat_long = multiPolygonArray.points.get(i);
                 point.latitude += lat_long.latitude;
                 point.longitude += lat_long.longitude;
@@ -57,7 +56,6 @@ public class LauNutsPolygonCentroid extends NutsParser {
             // This implementation for computation of centroid will be changed.
             point.latitude = point.latitude / multiPolygonArray.points.size();
             point.longitude = point.longitude / multiPolygonArray.points.size();
-
             return point;
         } catch (Exception e) {
         }
@@ -65,4 +63,3 @@ public class LauNutsPolygonCentroid extends NutsParser {
     }
 
 }
-
