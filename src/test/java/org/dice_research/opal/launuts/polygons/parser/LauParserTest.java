@@ -24,21 +24,21 @@ import org.junit.Test;
 
 public class LauParserTest {
 
-	public static LauParser lau_parser = new LauParser();
+	public static LauParser lauParser = new LauParser();
 	public TestMultiPolygons tester = new TestMultiPolygons();
-	MultiPolygon a;
-	MultiPolygon b;
+	MultiPolygon firstMultipolygon;
+	MultiPolygon SecondMultiPolygon;
 
 	@Before
 	public void setUp() throws Exception {
-		a = new MultiPolygon();
-		b = new MultiPolygon();
+		firstMultipolygon = new MultiPolygon();
+		SecondMultiPolygon = new MultiPolygon();
 	}
 
 	@After
 	public void tearDown() {
-		a = null;
-		b = null;
+		firstMultipolygon = null;
+		SecondMultiPolygon = null;
 	}
 
 	/*
@@ -47,23 +47,23 @@ public class LauParserTest {
 	 */
 	@Test
 	public void testCaseForHoleTestingOfBadenBaden() throws PolygonParserException {
-		Polygon first_hole_of_Baden_Baden_stadt = lau_parser.getHole("DE_08211000", 1, 1);
-		Polygon first_polygon_of_Sinzheim = lau_parser.getOuterRingOfChildPolygonOfMultipolygon("DE_08216049", 1);
+		final Polygon FIRST_HOLE_OF_BADEN_BADEN_STADT = lauParser.getHole("DE_08211000", 1, 1);
+		final Polygon FIRST_POLYGON_OF_SINZHEIM = lauParser.getOuterRingOfChildPolygonOfMultipolygon("DE_08216049", 1);
 
-		Polygon second_hole_of_Baden_Baden_stadt = lau_parser.getHole("DE_08211000", 1, 2);
-		Polygon third_polygon_of_Sinzheim = lau_parser.getOuterRingOfChildPolygonOfMultipolygon("DE_08216049", 3);
+		final Polygon SECOND_HOLE_OF_BADEN_BADEN_STADT = lauParser.getHole("DE_08211000", 1, 2);
+		final Polygon THIRD_POLYGON_OF_SINZHEIM = lauParser.getOuterRingOfChildPolygonOfMultipolygon("DE_08216049", 3);
 
-		Polygon third_hole_of_Baden_Baden_stadt = lau_parser.getHole("DE_08211000", 1, 3);
-		Polygon second_polygon_of_Sinzheim = lau_parser.getOuterRingOfChildPolygonOfMultipolygon("DE_08216049", 2);
+		final Polygon THIRD_HOLE_OF_BADEN_BADEN_STADT = lauParser.getHole("DE_08211000", 1, 3);
+		final Polygon SECOND_POLYGON_OF_SINZHEIM = lauParser.getOuterRingOfChildPolygonOfMultipolygon("DE_08216049", 2);
 		
-		a.polygons.add(first_hole_of_Baden_Baden_stadt);
-		a.polygons.add(second_hole_of_Baden_Baden_stadt);
-		a.polygons.add(third_hole_of_Baden_Baden_stadt);
-		b.polygons.add(first_polygon_of_Sinzheim);
-		b.polygons.add(third_polygon_of_Sinzheim);
-		b.polygons.add(second_polygon_of_Sinzheim);
+		firstMultipolygon.polygons.add(FIRST_HOLE_OF_BADEN_BADEN_STADT);
+		firstMultipolygon.polygons.add(SECOND_HOLE_OF_BADEN_BADEN_STADT);
+		firstMultipolygon.polygons.add(THIRD_HOLE_OF_BADEN_BADEN_STADT);
+		SecondMultiPolygon.polygons.add(FIRST_POLYGON_OF_SINZHEIM);
+		SecondMultiPolygon.polygons.add(THIRD_POLYGON_OF_SINZHEIM);
+		SecondMultiPolygon.polygons.add(SECOND_POLYGON_OF_SINZHEIM);
 		
-		Assert.assertEquals(true, tester.areTwoMultiPolygonsEqual(a, b));
+		Assert.assertEquals(true, tester.areTwoMultiPolygonsEqual(firstMultipolygon, SecondMultiPolygon));
 	}
 
 	/*
@@ -72,13 +72,13 @@ public class LauParserTest {
 	 */
 	@Test
 	public void testCaseForHoleTestingOfKelheim() throws PolygonParserException {
-		Polygon first_hole_of_Kelheim_st = lau_parser.getHole("DE_09273137", 1, 1);
-		Polygon second_polygon_of_Abensberg = lau_parser.getOuterRingOfChildPolygonOfMultipolygon("DE_09273111", 2);
+		final Polygon FIRST_HOLE_OF_KELHEIM_ST = lauParser.getHole("DE_09273137", 1, 1);
+		final Polygon SECOND_POLYGON_OF_ABENSBERG = lauParser.getOuterRingOfChildPolygonOfMultipolygon("DE_09273111", 2);
 		
-		a.polygons.add(first_hole_of_Kelheim_st);
-		b.polygons.add(second_polygon_of_Abensberg);
+		firstMultipolygon.polygons.add(FIRST_HOLE_OF_KELHEIM_ST);
+		SecondMultiPolygon.polygons.add(SECOND_POLYGON_OF_ABENSBERG);
 		
-		Assert.assertEquals(true, tester.areTwoMultiPolygonsEqual(a, b));
+		Assert.assertEquals(true, tester.areTwoMultiPolygonsEqual(firstMultipolygon, SecondMultiPolygon));
 		
 	}
 
@@ -99,29 +99,29 @@ public class LauParserTest {
 		// DE_09472444's 5th polygon's inner_ring is the 2nd ring in the inner_rings
 		// array.
 
-		Polygon first_hole_of_5th_polygon_of_DE_09472444 = lau_parser.getHole("DE_09472444", 2, 1);
-		Polygon first_polygon_of_Bischofsgrün = lau_parser.getOuterRingOfChildPolygonOfMultipolygon("DE_09472121", 1);
+		final Polygon FIRST_HOLE_OF_5TH_POLYGON_OF_DE_09472444 = lauParser.getHole("DE_09472444", 2, 1);
+		final Polygon FIRST_POLYGON_OF_BISCHOFSGRÜN = lauParser.getOuterRingOfChildPolygonOfMultipolygon("DE_09472121", 1);
 
-		Polygon second_hole_of_5th_polygon_of_DE_09472444 = lau_parser.getHole("DE_09472444", 2, 2);
-		Polygon second_polygon_of_Bischofsgrün = lau_parser.getOuterRingOfChildPolygonOfMultipolygon("DE_09472121", 2);
+		final Polygon SECOND_HOLE_OF_5TH_POLYGON_OF_DE_09472444 = lauParser.getHole("DE_09472444", 2, 2);
+		final Polygon SECOND_POLYGON_OF_BISCHOFSGRÜN = lauParser.getOuterRingOfChildPolygonOfMultipolygon("DE_09472121", 2);
 
-		Polygon third_hole_of_5th_polygon_of_DE_09472444 = lau_parser.getHole("DE_09472444", 2, 3);
-		Polygon first_polygon_of_Warmensteinach = lau_parser.getOuterRingOfChildPolygonOfMultipolygon("DE_09472198", 1);
+		final Polygon THIRD_HOLE_OF_5TH_POLYGON_OF_DE_09472444 = lauParser.getHole("DE_09472444", 2, 3);
+		final Polygon FIRST_POLYGON_OF_WARMENSTEINACH = lauParser.getOuterRingOfChildPolygonOfMultipolygon("DE_09472198", 1);
 
-		Polygon fourth_hole_of_5th_polygon_of_DE_09472444 = lau_parser.getHole("DE_09472444", 2, 4);
-		Polygon second_polygon_of_Goldkronach_st = lau_parser.getOuterRingOfChildPolygonOfMultipolygon("DE_09472143",
+		final Polygon FOURTH_HOLE_OF_5TH_POLYGON_OF_DE_09472444 = lauParser.getHole("DE_09472444", 2, 4);
+		final Polygon SECOND_POLYGON_OF_GOLDKRONACH_ST = lauParser.getOuterRingOfChildPolygonOfMultipolygon("DE_09472143",
 				2);
 		
-		a.polygons.add(first_hole_of_5th_polygon_of_DE_09472444);
-		a.polygons.add(second_hole_of_5th_polygon_of_DE_09472444);
-		a.polygons.add(third_hole_of_5th_polygon_of_DE_09472444);
-		a.polygons.add(fourth_hole_of_5th_polygon_of_DE_09472444);
-		b.polygons.add(first_polygon_of_Bischofsgrün);
-		b.polygons.add(second_polygon_of_Bischofsgrün);
-		b.polygons.add(first_polygon_of_Warmensteinach);
-		b.polygons.add(second_polygon_of_Goldkronach_st);
+		firstMultipolygon.polygons.add(FIRST_HOLE_OF_5TH_POLYGON_OF_DE_09472444);
+		firstMultipolygon.polygons.add(SECOND_HOLE_OF_5TH_POLYGON_OF_DE_09472444);
+		firstMultipolygon.polygons.add(THIRD_HOLE_OF_5TH_POLYGON_OF_DE_09472444);
+		firstMultipolygon.polygons.add(FOURTH_HOLE_OF_5TH_POLYGON_OF_DE_09472444);
+		SecondMultiPolygon.polygons.add(FIRST_POLYGON_OF_BISCHOFSGRÜN);
+		SecondMultiPolygon.polygons.add(SECOND_POLYGON_OF_BISCHOFSGRÜN);
+		SecondMultiPolygon.polygons.add(FIRST_POLYGON_OF_WARMENSTEINACH);
+		SecondMultiPolygon.polygons.add(SECOND_POLYGON_OF_GOLDKRONACH_ST);
 		
-		Assert.assertEquals(true, tester.areTwoMultiPolygonsEqual(a, b));
+		Assert.assertEquals(true, tester.areTwoMultiPolygonsEqual(firstMultipolygon, SecondMultiPolygon));
 	}
 
 	/*
@@ -130,18 +130,35 @@ public class LauParserTest {
 	 */
 	@Test
 	public void testCaseForHoleTestingOfTetenbüll() throws PolygonParserException {
-		Polygon first_hole_of_Tetenbüll = lau_parser.getHole("DE_01054135", 1, 1);
-		Polygon second_polygon_of_Oldenswort = lau_parser.getOuterRingOfChildPolygonOfMultipolygon("DE_01054095", 2);
+		final Polygon FIRST_HOLE_OF_TETENBÜLL = lauParser.getHole("DE_01054135", 1, 1);
+		final Polygon SECOND_POLYGON_OF_OLDENSWORT = lauParser.getOuterRingOfChildPolygonOfMultipolygon("DE_01054095", 2);
 
-		Polygon second_hole_of_Tetenbüll = lau_parser.getHole("DE_01054135", 1, 2);
-		Polygon third_polygon_of_Oldenswort = lau_parser.getOuterRingOfChildPolygonOfMultipolygon("DE_01054095", 3);
+		final Polygon SECOND_HOLE_OF_TETENBÜLL = lauParser.getHole("DE_01054135", 1, 2);
+		final Polygon THIRD_POLYGON_OF_OLDENSWORT = lauParser.getOuterRingOfChildPolygonOfMultipolygon("DE_01054095", 3);
 		
-		a.polygons.add(first_hole_of_Tetenbüll);
-		a.polygons.add(second_hole_of_Tetenbüll);
-		b.polygons.add(second_polygon_of_Oldenswort);
-		b.polygons.add(third_polygon_of_Oldenswort);
+		firstMultipolygon.polygons.add(FIRST_HOLE_OF_TETENBÜLL);
+		firstMultipolygon.polygons.add(SECOND_HOLE_OF_TETENBÜLL);
+		SecondMultiPolygon.polygons.add(SECOND_POLYGON_OF_OLDENSWORT);
+		SecondMultiPolygon.polygons.add(THIRD_POLYGON_OF_OLDENSWORT);
 		
-		Assert.assertEquals(true, tester.areTwoMultiPolygonsEqual(a, b));
+		Assert.assertEquals(true, tester.areTwoMultiPolygonsEqual(firstMultipolygon, SecondMultiPolygon));
+	}
+	
+	
+	/*
+	 * Albersdorf(DE_01051001) has no holes.
+	 * Barkenholm (DE_01051005) is a polygon and does not exist as a hole inside Albersdorf.
+	 * 
+	 */
+	@Test
+	public void testCaseForFalseHoleTestingOfAlbersdorf() throws PolygonParserException {
+		final Polygon FIRST_HOLE_OF_ALBERSDORF = lauParser.getHole("DE_01051001", 1, 1);
+		final MultiPolygon POLYGON_OF_BARKENHOLM = lauParser.getNutsPolygon("DE_01051005");
+		
+		firstMultipolygon.polygons.add(FIRST_HOLE_OF_ALBERSDORF);
+		
+		Assert.assertEquals(false, tester.areTwoMultiPolygonsEqual(firstMultipolygon, POLYGON_OF_BARKENHOLM));
+		
 	}
 
 }

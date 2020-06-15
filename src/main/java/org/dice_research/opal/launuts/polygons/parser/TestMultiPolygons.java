@@ -21,7 +21,7 @@ public class TestMultiPolygons {
 		int total_number_of_coordinates_of_any_polygon = 0;
 		int total_number_of_approximately_equal_coordinates = 0;
 		int total_percentage_of_approximately_equal_coordinates = 0;
-		double admissibe_threshold =  0.5;
+		double admissibe_threshold = 0.5;
 		int tolerance_for_polygon_size_difference = 2;
 
 		if (b.polygons.size() != a.polygons.size())
@@ -51,8 +51,10 @@ public class TestMultiPolygons {
 
 						Point ith_coordinate_of_A = polygon_A.points.get(i);
 						Point ith_coordinate_of_B = polygon_B.points.get(i);
-						if (approximatelyEqual(ith_coordinate_of_A.latitude, ith_coordinate_of_B.latitude, admissibe_threshold)
-								&& approximatelyEqual(ith_coordinate_of_A.longitude, ith_coordinate_of_B.longitude, admissibe_threshold))
+						if (approximatelyEqual(ith_coordinate_of_A.latitude, ith_coordinate_of_B.latitude,
+								admissibe_threshold)
+								&& approximatelyEqual(ith_coordinate_of_A.longitude, ith_coordinate_of_B.longitude,
+										admissibe_threshold))
 							total_number_of_approximately_equal_coordinates++;
 
 						total_number_of_coordinates_of_any_polygon++;
@@ -61,8 +63,9 @@ public class TestMultiPolygons {
 
 			}
 
-			total_percentage_of_approximately_equal_coordinates = (total_number_of_approximately_equal_coordinates
-					*100)/ total_number_of_coordinates_of_any_polygon;
+			if (total_number_of_coordinates_of_any_polygon > 0)
+				total_percentage_of_approximately_equal_coordinates = (total_number_of_approximately_equal_coordinates
+						* 100) / total_number_of_coordinates_of_any_polygon;
 		}
 
 		System.out.println("tatal coorrdinates :" + total_number_of_coordinates_of_any_polygon);
