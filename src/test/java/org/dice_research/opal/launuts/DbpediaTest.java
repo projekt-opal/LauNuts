@@ -3,7 +3,8 @@ package org.dice_research.opal.launuts;
 import java.util.Iterator;
 import java.util.List;
 
-import org.dice_research.opal.launuts.dbpedia.DbpediaPlaceContainer;
+import org.dice_research.opal.launuts.archive.Cache;
+import org.dice_research.opal.launuts.archive.dbpedia.DbpediaPlaceContainer;
 
 /**
  * Performs SPARQL query at DBpedia and creates container objects.

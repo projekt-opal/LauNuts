@@ -1,7 +1,7 @@
 package org.dice_research.opal.launuts;
 
-import org.dice_research.opal.launuts.matcher.MatcherVersion1;
-import org.dice_research.opal.launuts.matcher.MatcherVersion2;
+import org.dice_research.opal.launuts.archive.matcher.MatcherVersion1;
+import org.dice_research.opal.launuts.archive.matcher.MatcherVersion2;
 
 /**
  * Runs matcher.

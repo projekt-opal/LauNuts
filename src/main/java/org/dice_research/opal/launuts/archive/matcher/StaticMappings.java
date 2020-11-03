@@ -1,4 +1,4 @@
-package org.dice_research.opal.launuts.matcher;
+package org.dice_research.opal.launuts.archive.matcher;
 
 import java.util.HashMap;
 import java.util.HashSet;

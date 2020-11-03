@@ -1,4 +1,4 @@
-package org.dice_research.opal.launuts;
+package org.dice_research.opal.launuts.archive;
 
 import java.util.HashMap;
 import java.util.Map;

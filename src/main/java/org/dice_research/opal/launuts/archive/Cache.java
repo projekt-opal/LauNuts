@@ -1,17 +1,17 @@
-package org.dice_research.opal.launuts;
+package org.dice_research.opal.launuts.archive;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.dice_research.opal.launuts.dbpedia.DbpediaPlaceContainer;
-import org.dice_research.opal.launuts.dbpedia.DbpediaRemote;
-import org.dice_research.opal.launuts.lau.LauContainer;
-import org.dice_research.opal.launuts.lau.LauCsvParser;
-import org.dice_research.opal.launuts.nuts.NutsContainer;
-import org.dice_research.opal.launuts.nuts.NutsRdfExtractor;
-import org.dice_research.opal.launuts.utils.Serialization;
+import org.dice_research.opal.launuts.archive.dbpedia.DbpediaPlaceContainer;
+import org.dice_research.opal.launuts.archive.dbpedia.DbpediaRemote;
+import org.dice_research.opal.launuts.archive.lau.LauContainer;
+import org.dice_research.opal.launuts.archive.lau.LauCsvParser;
+import org.dice_research.opal.launuts.archive.nuts.NutsContainer;
+import org.dice_research.opal.launuts.archive.nuts.NutsRdfExtractor;
+import org.dice_research.opal.launuts.archive.utils.Serialization;
 
 /**
  * Data access.

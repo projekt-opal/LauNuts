@@ -1,4 +1,4 @@
-package org.dice_research.opal.launuts.matcher;
+package org.dice_research.opal.launuts.archive.matcher;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,13 +11,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
-import org.dice_research.opal.launuts.Cache;
-import org.dice_research.opal.launuts.Cfg;
-import org.dice_research.opal.launuts.Vocabularies;
-import org.dice_research.opal.launuts.dbpedia.DbpediaPlaceContainer;
-import org.dice_research.opal.launuts.lau.LauContainer;
-import org.dice_research.opal.launuts.nuts.NutsContainer;
-import org.dice_research.opal.launuts.utils.GeoUtil;
+import org.dice_research.opal.launuts.archive.Cache;
+import org.dice_research.opal.launuts.archive.Cfg;
+import org.dice_research.opal.launuts.archive.Vocabularies;
+import org.dice_research.opal.launuts.archive.dbpedia.DbpediaPlaceContainer;
+import org.dice_research.opal.launuts.archive.lau.LauContainer;
+import org.dice_research.opal.launuts.archive.nuts.NutsContainer;
+import org.dice_research.opal.launuts.archive.utils.GeoUtil;
 
 /**
  * Matches labels (region names) of different datasets.

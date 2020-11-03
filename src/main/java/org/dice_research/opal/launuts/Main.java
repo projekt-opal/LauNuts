@@ -1,19 +1,15 @@
 package org.dice_research.opal.launuts;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
-import org.dice_research.opal.launuts.dbpedia.DbpediaPlaceContainer;
-import org.dice_research.opal.launuts.dbpedia.DbpediaRemote;
-import org.dice_research.opal.launuts.lau.LauContainer;
-import org.dice_research.opal.launuts.matcher.MatcherVersion2;
-import org.dice_research.opal.launuts.matcher.StaticMappings;
-import org.dice_research.opal.launuts.nuts.NutsContainer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Main entry point.
@@ -22,66 +18,55 @@ import org.dice_research.opal.launuts.nuts.NutsContainer;
  */
 public class Main {
 
+	private static final Logger LOGGER = LogManager.getLogger();
+	private Cfg cfg;
+
 	public static void main(String[] args) throws Exception {
 		new Main().run();
 	}
 
 	private void run() throws Exception {
 
-		// Extract NUTS RDF
-		Map<String, NutsContainer> nutsIndex = Cache.getNuts(true);
+		// Initialize LauNuts
+		initialize();
 
-		// NUTS-1 prefLabel
-		enhancePrefLabel(nutsIndex);
-		removeUnusedNuts(nutsIndex);
+		// Extract NUTS
+		Map<String, List<LauContainer>> lau = new Lau(cfg).extract();
 
-		// Parse LAU CSV
-		List<LauContainer> lauList = Cache.getLau(true);
-
-		// Parse DBpedia places
-		Map<String, DbpediaPlaceContainer> dbpediaIndex = DbpediaRemote.createPlacesIndex(Cache.getDbpedia(true));
-
-		// Match datasets
-		// Writes files for analysis
-		MatcherVersion2 matcher = new MatcherVersion2().run();
-
-		// Create new model
-		ModelBuilder modelBuilder = new ModelBuilder()
-
-				.addNuts(nutsIndex.values())
-
-				.addLau(lauList)
-
-				.addGeoData(dbpediaIndex, matcher.getNutsToDbpedia(), matcher.getLauToDbpedia())
-
-				.writeModel(new File(Cfg.getInstance().get(Cfg.OUT_DIRECTORY)));
-
-		// Statistics
-		// Writes statistics about data types
-		String statistics = new Statistics(modelBuilder.getModel()).compute().getString();
-		System.out.println();
-		System.out.println(statistics);
-		FileUtils.write(new File(Cfg.getInstance().get(Cfg.OUT_DIRECTORY), "statistics.txt"), statistics,
-				StandardCharsets.UTF_8);
-
-		// Analysis
-		// Writes files for analysis of DBpedia mappings
-		Analysis.writeLauMappings(matcher.getLauToDbpedia());
-		Analysis.writeNutsMappings(matcher.getNutsToDbpedia());
-		Analysis.writeMultipleUsage(matcher.getNutsToDbpedia(), matcher.getLauToDbpedia());
-	}
-
-	private void enhancePrefLabel(Map<String, NutsContainer> nutsIndex) {
-		for (Entry<String, String> nutsUri2prefLabel : new StaticMappings().getNutsCodeToPrefLabel().entrySet()) {
-			NutsContainer nutsContainer = nutsIndex.get(nutsUri2prefLabel.getKey());
-			nutsContainer.prefLabel = new HashSet<String>();
-			nutsContainer.prefLabel.add(nutsUri2prefLabel.getValue());
+		// TODO
+		for (Entry<String, List<LauContainer>> sheet : lau.entrySet()) {
+			System.out.println(sheet.getKey() + " " + sheet.getValue().size());
 		}
+
 	}
 
-	void removeUnusedNuts(Map<String, NutsContainer> nutsIndex) {
-		for (String nutsCode : new StaticMappings().getUnusedNutsCodes()) {
-			nutsIndex.remove(nutsCode);
-		}
+	private void initialize() {
+
+		// Initialize configuration
+		cfg = new Cfg();
+
+		// Get data
+		download(Files.NUTS_RDF, Files.NUTS_RDF_LOCAL);
+		download(Files.LAU_2017_XLSX, Files.LAU_2017_XLSX_LOCAL);
 	}
+
+	private void download(String url, String filename) {
+		File file = new File(cfg.get(CfgKeys.ioDownloadDirectory), filename);
+
+		// Only log, if file exists
+		if (file.exists()) {
+			LOGGER.info("Local file found: " + file.getAbsolutePath());
+			return;
+		}
+
+		// Download
+		LOGGER.info("Downloading: " + url);
+		try {
+			FileUtils.copyURLToFile(new URL(url), file);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		LOGGER.info("Downloaded: " + file.getAbsolutePath());
+	}
+
 }

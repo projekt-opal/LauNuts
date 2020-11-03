@@ -1,4 +1,4 @@
-package org.dice_research.opal.launuts.ontology;
+package org.dice_research.opal.launuts.archive.ontology;
 
 import java.io.File;
 import java.util.LinkedList;

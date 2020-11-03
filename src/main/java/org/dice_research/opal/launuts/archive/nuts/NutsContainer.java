@@ -1,10 +1,10 @@
-package org.dice_research.opal.launuts.nuts;
+package org.dice_research.opal.launuts.archive.nuts;
 
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.dice_research.opal.launuts.Vocabularies;
+import org.dice_research.opal.launuts.archive.Vocabularies;
 
 /**
  * Container for NUTS data. Used in {@link NutsRdfExtractor}.

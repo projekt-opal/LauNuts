@@ -1,8 +1,8 @@
-package org.dice_research.opal.launuts.lau;
+package org.dice_research.opal.launuts.archive.lau;
 
 import java.io.Serializable;
 
-import org.dice_research.opal.launuts.Vocabularies;
+import org.dice_research.opal.launuts.archive.Vocabularies;
 
 /**
  * Container for LAU data. Used in {@link LauCsvParser}.

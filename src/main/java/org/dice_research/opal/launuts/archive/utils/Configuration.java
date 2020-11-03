@@ -1,4 +1,4 @@
-package org.dice_research.opal.launuts.utils;
+package org.dice_research.opal.launuts.archive.utils;
 
 import java.io.File;
 import java.io.FileInputStream;

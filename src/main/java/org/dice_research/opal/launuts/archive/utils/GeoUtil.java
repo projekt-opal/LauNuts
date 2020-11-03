@@ -1,4 +1,4 @@
-package org.dice_research.opal.launuts.utils;
+package org.dice_research.opal.launuts.archive.utils;
 
 import net.sf.geographiclib.Geodesic;
 import net.sf.geographiclib.GeodesicLine;
