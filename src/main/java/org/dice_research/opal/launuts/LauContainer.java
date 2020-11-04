@@ -1,6 +1,10 @@
 package org.dice_research.opal.launuts;
 
-public class LauContainer {
+import java.io.Serializable;
+
+public class LauContainer implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	public String nutsCode;
 	public String lauCode;

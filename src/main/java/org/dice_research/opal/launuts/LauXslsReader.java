@@ -17,35 +17,40 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 /**
- * Local Administrative Units (LAU)
+ * Local Administrative Units (LAU), reader for XSLX files.
+ * 
+ * Usage: Set file in {@link #LauXslsReader(File)}, read with
+ * {@link #extract()}, get results with {@link #getResults()}.
  * 
  * Dev note: The 2019 file consumed too much memory. Maybe the SXSSF (Streaming
  * Usermodel API) can be used to load it.
  * 
+ * @see File source:
+ *      https://ec.europa.eu/eurostat/web/nuts/local-administrative-units
+ * 
  * @author Adrian Wilke
  */
-public class Lau {
+public class LauXslsReader {
 
 	private static final Logger LOGGER = LogManager.getLogger();
-	private Cfg cfg;
 
-	public static final String NUTS = "NUTS 3 CODE";
-	public static final String LAU = "LAU CODE";
-	public static final String NAME = "LAU NAME LATIN";
-	public static final String POPULATION = "POPULATION";
-	public static final String AREA = "TOTAL AREA (m2)";
+	private File file;
+	private Map<String, List<LauContainer>> results;
 
-	public Lau(Cfg cfg) {
-		this.cfg = cfg;
+	public LauXslsReader(File lauXslxFile) {
+		this.file = lauXslxFile;
 	}
 
-	public Map<String, List<LauContainer>> extract() {
-		Map<String, List<LauContainer>> map = new TreeMap<>();
+	/**
+	 * Extracts data. Filtered by {@link LauContainer#isValid()}.
+	 */
+	public LauXslsReader extract() {
+
+		results = new TreeMap<>();
 
 		// Open XLSX file
 		Workbook workbook;
 		try {
-			File file = new File(cfg.get(CfgKeys.ioDownloadDirectory), Files.LAU_2017_XLSX_LOCAL);
 			workbook = WorkbookFactory.create(file);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -56,7 +61,7 @@ public class Lau {
 		while (sheetIt.hasNext()) {
 			Sheet sheet = sheetIt.next();
 			if (checkSheetFormat(sheet)) {
-				map.put(sheet.getSheetName(), extractSheetData(sheet));
+				results.put(sheet.getSheetName(), extractSheetData(sheet));
 			}
 		}
 
@@ -67,10 +72,15 @@ public class Lau {
 			throw new RuntimeException(e);
 		}
 
-		return map;
+		return this;
+	}
+
+	public Map<String, List<LauContainer>> getResults() {
+		return results;
 	}
 
 	private boolean checkSheetFormat(Sheet sheet) {
+
 		// Only country IDs
 		if (sheet.getSheetName().length() > 2) {
 			LOGGER.info("Skipping sheet: " + sheet.getSheetName());
@@ -216,5 +226,4 @@ public class Lau {
 			}
 		}
 	}
-
 }

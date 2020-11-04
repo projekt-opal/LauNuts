@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="directory.output">/home/adi/DICE/Data/LauNuts/out</entry>
+<entry key="directory.cache">/home/adi/DICE/Data/LauNuts/cache</entry>
+<entry key="lau.csv.file">/home/adi/DICE/Data/LauNuts/in/EU-28-LAU-2019-NUTS-2016-DE.csv</entry>
+<entry key="nuts.rdf.file">/home/adi/DICE/Data/LauNuts/in/nuts.rdf</entry>
+</properties>

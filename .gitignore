@@ -1,6 +1,12 @@
-launuts-configuration.xml
+# Default cache dir
+cache/
 
+# Default download dir
 download/
+
+
+
+
 
 ### https://github.com/github/gitignore/blob/master/Java.gitignore
 

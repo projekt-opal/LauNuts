@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.dice-research.opal</groupId>
 	<artifactId>launuts</artifactId>
-	<version>0.3.1-SNAPSHOT</version>
+	<version>0.4.0-SNAPSHOT</version>
 	<name>LauNuts</name>
 
 	<properties>
@@ -18,18 +18,10 @@
 		<!-- Apache POI - Java API To Access Microsoft Format Files -->
 		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
 		<dependency>
-		<groupId>org.apache.poi</groupId>
-		<artifactId>poi-ooxml</artifactId>
-		<version>4.1.2</version>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>4.1.2</version>
 		</dependency>
-
-		<!-- Apache POI - Java API To Access Microsoft Format Files -->
-		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.apache.poi</groupId> -->
-<!-- 			<artifactId>poi</artifactId> -->
-<!-- 			<version>4.1.2</version> -->
-<!-- 		</dependency> -->
 
 
 		<!-- Logging -->
