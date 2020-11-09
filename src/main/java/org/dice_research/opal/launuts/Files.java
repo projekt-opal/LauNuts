@@ -23,11 +23,22 @@ public abstract class Files {
 	public static final String NUTS_RDF = "https://data.europa.eu/euodp/repository/ec/estat/nuts/nuts.rdf";
 	public static final String NUTS_RDF_LOCAL = "nuts.rdf";
 
-	public static final String LAU_2019_XLSX = "https://ec.europa.eu/eurostat/documents/345175/501971/EU-28-LAU-2019-NUTS-2016.xlsx";
-	public static final String LAU_2019_XLSX_LOCAL = "EU-28-LAU-2019-NUTS-2016.xlsx";
+//  Was too large to process in Java
+//	public static final String LAU_2019_XLSX = "https://ec.europa.eu/eurostat/documents/345175/501971/EU-28-LAU-2019-NUTS-2016.xlsx";
+//	public static final String LAU_2019_XLSX_LOCAL = "EU-28-LAU-2019-NUTS-2016.xlsx";
 
 	public static final String LAU_2017_XLSX = "https://ec.europa.eu/eurostat/documents/345175/501971/EU-28_LAU_2017_NUTS_2016.xlsx";
 	public static final String LAU_2017_XLSX_LOCAL = "EU-28_LAU_2017_NUTS_2016.xlsx";
+
+	public static final String GEO_NUTS_2016_60M_ZIP = "http://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2021-60m.geojson.zip";
+	public static final String GEO_NUTS_2016_60M_ZIP_LOCAL = "ref-nuts-2021-60m.geojson.zip";
+	public static final String GEO_NUTS_2016_60M_ZIP_DIR = "ref-nuts-2021-60m";
+	public static final String GEO_NUTS_2016_60M_GEOJSON = "NUTS_LB_2021_4326.geojson";
+
+	public static final String GEO_LAU_2016_1M_ZIP = "http://gisco-services.ec.europa.eu/distribution/v2/lau/download/ref-lau-2016-01m.geojson.zip";
+	public static final String GEO_LAU_2016_1M_ZIP_LOCAL = "ref-lau-2016-01m.geojson.zip";
+	public static final String GEO_LAU_2016_1M_ZIP_DIR = "ref-lau-2016-01m";
+	public static final String GEO_LAU_2016_1M_GEOJSON = "LAU_RG_01M_2016_4326.geojson";
 
 	public static File getFileDownloaded(Cfg cfg, String filename) {
 		return new File(cfg.get(CfgKeys.ioDownloadDirectory), filename);

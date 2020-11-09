@@ -75,6 +75,11 @@ public class LauXslsReader {
 		return this;
 	}
 
+	/**
+	 * Returns results.
+	 * 
+	 * Map keys: county codes.
+	 */
 	public Map<String, List<LauContainer>> getResults() {
 		return results;
 	}
