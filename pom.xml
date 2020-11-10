@@ -15,6 +15,13 @@
 
 	<dependencies>
 
+		<!-- https://repo.osgeo.org/#browse/browse:geotools-releases:org%2Fgeotools%2Fgt-process-geometry%2F24.0 -->
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-process-geometry</artifactId>
+			<version>24.0</version>
+		</dependency>
+
 		<!-- ZIP -->
 		<!-- https://mvnrepository.com/artifact/net.lingala.zip4j/zip4j -->
 		<dependency>
@@ -94,5 +101,23 @@
 		</dependency>
 
 	</dependencies>
+
+	<repositories>
+
+		<!-- GeoTools -->
+		<!-- https://wiki.osgeo.org/wiki/SAC:Repo -->
+		<repository>
+			<id>osgeo-release</id>
+			<name>OSGeo Repository</name>
+			<url>https://repo.osgeo.org/repository/release/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+
+	</repositories>
 
 </project>

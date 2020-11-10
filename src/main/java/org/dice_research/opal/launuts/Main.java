@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.rdf.model.Model;
@@ -33,10 +34,11 @@ public class Main {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private Cfg cfg;
 
-	public static final boolean STEP_1_NUTS = true;
-	public static final boolean STEP_2_LAU = true;
-	public static final boolean STEP_3_POINTS = true;
-	public static final boolean STEP_4_RDF = true;
+	public static final boolean STEP_1_NUTS = false;
+	public static final boolean STEP_2_LAU = false;
+	public static final boolean STEP_3_GEO_NUTS = false;
+	public static final boolean STEP_4_GEO_LAU = true;
+	public static final boolean STEP_5_RDF = false;
 
 	public static void main(String[] args) throws Exception {
 		new Main().run();
@@ -73,11 +75,12 @@ public class Main {
 			}
 		}
 
-		// Read geo data
+		// Read NUTS geo data
 		// Files description:
 		// https://interactivetool.eu/EASME/EOCIC/map/geoJson/ref-nuts-2016-20m.geojson%20%289%29/release-notes.txt
 
-		if (STEP_3_POINTS) {
+		Map<String, PointsContainer> nutsGeo = new TreeMap<>();
+		if (STEP_3_GEO_NUTS) {
 			File polyZipFile = Files.getFileDownloaded(cfg, Files.GEO_NUTS_2016_60M_ZIP_LOCAL);
 			File polyUnzipDir = Files.getFileCached(cfg, Files.GEO_NUTS_2016_60M_ZIP_DIR);
 			if (!polyUnzipDir.exists()) {
@@ -85,14 +88,45 @@ public class Main {
 				new ZipFile(polyZipFile).extractAll(polyUnzipDir.getAbsolutePath());
 			}
 
+			LOGGER.info("Reading NUTS geo points");
 			File polyGeoJson = new File(polyUnzipDir, Files.GEO_NUTS_2016_60M_GEOJSON);
-			Map<String, PointsContainer> points = new PointsReader(polyGeoJson).extract().getResults();
-			LOGGER.info("Extracted NUTS geo points, size: " + points.size());
+			nutsGeo = new PointsReader(polyGeoJson).extract().getResults();
+			LOGGER.info("Extracted NUTS geo points, size: " + nutsGeo.size());
+		}
+
+		// Read LAU geo data
+
+		Map<String, Map<String, PolygonContainer>> lauGeo = new TreeMap<>();
+		if (STEP_4_GEO_LAU) {
+			File polyZipFile = Files.getFileDownloaded(cfg, Files.GEO_LAU_2016_1M_ZIP_LOCAL);
+			File polyUnzipDir = Files.getFileCached(cfg, Files.GEO_LAU_2016_1M_ZIP_DIR);
+			if (!polyUnzipDir.exists()) {
+				LOGGER.info("Extracting polygons from " + polyZipFile + " to " + polyUnzipDir);
+				new ZipFile(polyZipFile).extractAll(polyUnzipDir.getAbsolutePath());
+			}
+
+			LOGGER.info("Reading LAU geo polygons");
+			lauGeo = Cache.readLauGeo(cfg);
+			if (null == lauGeo) {
+				File polyGeoJson = new File(polyUnzipDir, Files.GEO_LAU_2016_1M_GEOJSON);
+				lauGeo = new PolygonReader(polyGeoJson).extract().getResults();
+				Cache.writeLauGeo(cfg, lauGeo);
+				LOGGER.info("Extracted LAU geo polygons, countries: " + lauGeo.size());
+			} else {
+				LOGGER.info("Loaded LAU geo polygons from cache, countries: " + lauGeo.size());
+			}
+
+			// TODO
+			String key = lauGeo.get("DE").keySet().iterator().next();
+			PolygonContainer x = lauGeo.get("DE").get(key);
+			System.out.println(x.polygonGeoJson);
+			System.out.println(x.name);
+			System.out.println(x.centroid);
 		}
 
 		// Build model
 
-		if (STEP_4_RDF) {
+		if (STEP_5_RDF) {
 			ModelBuilder modelBuilder = new ModelBuilder();
 			modelBuilder.addNuts(nutsModel);
 			modelBuilder.addLau(lau);

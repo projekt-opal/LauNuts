@@ -33,4 +33,25 @@ public abstract class Cache extends Serialization {
 		}
 	}
 
+	/**
+	 * Writes data to cache file.
+	 */
+	protected static void writeLauGeo(Cfg cfg, Map<String, Map<String, PolygonContainer>> lauGeo) throws IOException {
+		write(lauGeo, Files.getFileCached(cfg, Files.CACHE_LAU_GEO));
+	}
+
+	/**
+	 * Reads data from cache file.
+	 */
+	@SuppressWarnings("unchecked")
+	protected static Map<String, Map<String, PolygonContainer>> readLauGeo(Cfg cfg)
+			throws ClassNotFoundException, IOException {
+		File file = Files.getFileCached(cfg, Files.CACHE_LAU_GEO);
+		if (file.canRead()) {
+			return (Map<String, Map<String, PolygonContainer>>) Serialization.read(file);
+		} else {
+			return null;
+		}
+	}
+
 }

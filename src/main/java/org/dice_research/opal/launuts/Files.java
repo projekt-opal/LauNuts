@@ -18,6 +18,7 @@ import java.io.File;
 public abstract class Files {
 
 	public static final String CACHE_LAU = "lau.cache";
+	public static final String CACHE_LAU_GEO = "lau-geo.cache";
 	public static final String FINAL_MODEL = "LauNuts-" + Main.VERSION + ".ttl";
 
 	public static final String NUTS_RDF = "https://data.europa.eu/euodp/repository/ec/estat/nuts/nuts.rdf";

@@ -25,4 +25,24 @@ public class PointsContainer implements Serializable {
 		}
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(nutsId);
+		sb.append(" [");
+		sb.append(longitude);
+		sb.append(",");
+		sb.append(latitude);
+		sb.append("] ");
+		if (nameLatin != null) {
+			sb.append(nameLatin);
+			sb.append(" ");
+		}
+		if (level != null) {
+			sb.append(level);
+			sb.append(" ");
+		}
+		return sb.toString();
+	}
 }
