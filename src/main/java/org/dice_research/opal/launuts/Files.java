@@ -19,7 +19,9 @@ public abstract class Files {
 
 	public static final String CACHE_LAU = "lau.cache";
 	public static final String CACHE_LAU_GEO = "lau-geo.cache";
+	
 	public static final String FINAL_MODEL = "LauNuts-" + Main.VERSION + ".ttl";
+	public static final String FINAL_OPAL = "places-de-at.txt";
 
 	public static final String NUTS_RDF = "https://data.europa.eu/euodp/repository/ec/estat/nuts/nuts.rdf";
 	public static final String NUTS_RDF_LOCAL = "nuts.rdf";

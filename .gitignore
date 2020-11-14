@@ -4,8 +4,8 @@ cache/
 # Default download dir
 download/
 
-
-
+places-de-at.txt
+./LauNuts*
 
 
 ### https://github.com/github/gitignore/blob/master/Java.gitignore

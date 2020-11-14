@@ -29,16 +29,17 @@ public class Main {
 	/**
 	 * Version from pom.xml
 	 */
-	public static final String VERSION = "0.4.0-SNAPSHOT";
+	public static final String VERSION = "0.4.0";
 
 	private static final Logger LOGGER = LogManager.getLogger();
 	private Cfg cfg;
 
-	public static final boolean STEP_1_NUTS = false;
-	public static final boolean STEP_2_LAU = false;
-	public static final boolean STEP_3_GEO_NUTS = false;
+	public static final boolean STEP_1_NUTS = true;
+	public static final boolean STEP_2_LAU = true;
+	public static final boolean STEP_3_GEO_NUTS = true;
 	public static final boolean STEP_4_GEO_LAU = true;
-	public static final boolean STEP_5_RDF = false;
+	public static final boolean STEP_5_RDF = true;
+	public static final boolean STEP_6_GENERATE_TXT = true;
 
 	public static void main(String[] args) throws Exception {
 		new Main().run();
@@ -115,13 +116,6 @@ public class Main {
 			} else {
 				LOGGER.info("Loaded LAU geo polygons from cache, countries: " + lauGeo.size());
 			}
-
-			// TODO
-			String key = lauGeo.get("DE").keySet().iterator().next();
-			PolygonContainer x = lauGeo.get("DE").get(key);
-			System.out.println(x.polygonGeoJson);
-			System.out.println(x.name);
-			System.out.println(x.centroid);
 		}
 
 		// Build model
@@ -137,6 +131,15 @@ public class Main {
 			RDFDataMgr.write(fos, modelBuilder.getModel(), Lang.TURTLE);
 			fos.close();
 			LOGGER.info("Wrote file: " + outFile.getAbsolutePath());
+		}
+
+		// Generate file for OPAL metadata refinement
+
+		if (STEP_6_GENERATE_TXT) {
+			OpalGenerator opalGenerator = new OpalGenerator();
+			opalGenerator.collectNuts(nutsModel, "DE", nutsGeo).collectNuts(nutsModel, "AT", nutsGeo);
+			opalGenerator.collectLau(lau, "DE", lauGeo).collectLau(lau, "AT", lauGeo);
+			opalGenerator.createOpalData();
 		}
 	}
 
